@@ -1,65 +1,140 @@
 package da;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseManager {
-	/*
-    private static final String CREATE_TABLE_USERS = "CREATE TABLE users(id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT);";
-    private static final String CREATE_TABLE_TASKS = "CREATE TABLE tasks(id INTEGER PRIMARY KEY, name TEXT, projected_start DATE, actual_start DATE, projected_end DATE, actual_end DATE, tasks TEXT, users TEXT, to_do TEXT);";
-    private static final String CREATE_TABLE_PROJECTS = "CREATE TABLE projects(id INTEGER PRIMARY KEY, name TEXT, tasks TEXT, managers TEXT, start_date DATE, projected_end DATE, end_date DATE);";
-	*/	
-	
-	public void connect(){
-		Connection connection = null;
-		ResultSet resultSet = null;
-		Statement statement = null;
+	private Connection connection = null;
+	private ResultSet resultSet = null;
+	private Statement statement = null;
 
+	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager
-					.getConnection("jdbc:sqlite:C:\\testdb.db");
-			
-			
-			statement = connection.createStatement();
-			
-			/*
-			//tests table creation
-			//find how to check if tables are already created
-			statement.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT);");
-			statement.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, projected_start DATE, actual_start DATE, projected_end DATE, actual_end DATE, tasks TEXT, users TEXT, to_do TEXT);");
-			statement.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tasks TEXT, managers TEXT, start_date DATE, projected_end DATE, end_date DATE);");
-			
-			//tests user insertion
-			statement.execute("INSERT INTO users VALUES(null,'Chris', 'Allard');");
-			statement.execute("INSERT INTO users VALUES(null,'George', 'Lambadass');");
-			statement.execute("INSERT INTO users VALUES(null,'Samuel', 'Leblanc');");
-			*/
-			
-			//test table query
-			resultSet = statement
-					.executeQuery("SELECT * FROM users");
-			
-			//prints query result
-			while (resultSet.next()) {
-				System.out.println("id: " + resultSet.getInt("id") + " first_name:" + resultSet.getString("first_name") + " last_name:" + resultSet.getString("last_name"));
-			}
+			connection = DriverManager.getConnection("jdbc:sqlite:C:\\testdb.db");
+			createTables();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void close() {
+		try {
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createTables(){
+		try{
+			//checking if tables are created
+			DatabaseMetaData data = connection.getMetaData();
+			statement = connection.createStatement();
+			
+			resultSet = data.getTables(null, null, "users", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT);");
+			}
+			
+			resultSet = data.getTables(null, null, "tasks", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, projected_start DATE, actual_start DATE, projected_end DATE, actual_end DATE, prereqs TEXT, users TEXT, to_do TEXT);");
+			}
+			
+			resultSet = data.getTables(null, null, "projects", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tasks TEXT, managers TEXT, start_date DATE, projected_end DATE, end_date DATE);");
+			}
+			
+			resultSet = data.getTables(null, null, "project_tasks", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE project_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, project_id INTEGER, task_id INTEGER);");
+			}
+			
+			resultSet = data.getTables(null, null, "task_reqs", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE task_reqs(id INTEGER PRIMARY KEY AUTOINCREMENT, task_id INTEGER, task_req INTEGER);");
+			}
+			
+			resultSet = data.getTables(null, null, "user_tasks", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE user_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, task_id INTEGER);");
+			}
+			
+			resultSet = data.getTables(null, null, "project_managers", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE project_managers(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, project_id INTEGER);");
+			}
+		} catch (Exception e){
+			e.printStackTrace();
 		} finally {
-			try {
-				resultSet.close();
+			try{
 				statement.close();
-				connection.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	private void close(){
-		
+	public boolean insertUser(String firstName, String lastName){
+		boolean success = true;
+		 connect();
+		 try{
+			 statement = connection.createStatement();
+			 statement.execute("INSERT INTO users VALUES(null, '" + firstName + "', '" + lastName + "');");
+		 } catch (Exception e){
+			 success = false;
+			 e.printStackTrace();
+		 } finally{
+			 close();
+			 try{
+				 statement.close();
+			 } catch (Exception e){
+				 e.printStackTrace();
+			 }
+		 }
+		return success;
+	}
+	
+	public void getUsers(){
+		connect();
+		try{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM users");
+			System.out.println("User:");
+			while(resultSet.next()){
+				System.out.println(resultSet.getString("first_name") + ", " + resultSet.getString("last_name"));
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			close();
+			try{
+				statement.close();
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void removeUser(int id){
+		connect();
+		try{
+			statement = connection.createStatement();
+			statement.execute("DELETE FROM users WHERE id = " + id + ";");
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			close();
+			try{
+				statement.close();
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 }

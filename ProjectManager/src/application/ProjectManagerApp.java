@@ -14,8 +14,10 @@ public class ProjectManagerApp {
 
 	public static void main(String[] args) {
 		DatabaseManager dbm = new DatabaseManager();
-		dbm.connect();
-		
+		dbm.insertUser("Chris", "Allard");
+		dbm.getUsers();
+		dbm.removeUser(1);
+		dbm.getUsers();
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new ProjectManager();
