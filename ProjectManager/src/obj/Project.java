@@ -3,6 +3,11 @@ package obj;
 import java.util.Arrays;
 import java.util.Date;
 
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ */
 public class Project {
 	private int id;
 	private String name;

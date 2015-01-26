@@ -1,4 +1,4 @@
-package da;
+package dataAccess;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -6,6 +6,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ */
 public class DatabaseManager {
 	private Connection connection;
 	private ResultSet resultSet;
@@ -44,43 +49,44 @@ public class DatabaseManager {
 			
 			resultSet = data.getTables(null, null, "users", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT);");
+				statement.execute("CREATE TABLE users(	id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, username TEXT UNIQUE, password TEXT, salt TEXT, role INTEGER(1));");
 			}
 			
 			resultSet = data.getTables(null, null, "tasks", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, projected_start DATE, actual_start DATE, projected_end DATE, actual_end DATE, prereqs TEXT, users TEXT, to_do TEXT);");
+				statement.execute("CREATE TABLE tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, projected_start DATE, actual_start DATE, projected_end DATE, actual_end DATE, to_do TEXT);");
 			}
 			
 			resultSet = data.getTables(null, null, "projects", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tasks TEXT, managers TEXT, start_date DATE, projected_end DATE, end_date DATE);");
+				statement.execute("CREATE TABLE projects(	id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, start_date DATE, projected_end DATE, end_date DATE);");
 			}
 			
 			resultSet = data.getTables(null, null, "project_tasks", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE project_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, project_id INTEGER, task_id INTEGER);");
+				statement.execute("CREATE TABLE project_tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT, project_id INTEGER, task_id INTEGER, FOREIGN KEY (project_id) REFERENCES projects(id), FOREIGN KEY (task_id) REFERENCES tasks(id));");
 			}
 			
 			resultSet = data.getTables(null, null, "task_reqs", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE task_reqs(id INTEGER PRIMARY KEY AUTOINCREMENT, task_id INTEGER, task_req INTEGER);");
+				statement.execute("CREATE TABLE task_reqs(	id INTEGER PRIMARY KEY AUTOINCREMENT, task_id INTEGER, task_req INTEGER, FOREIGN KEY (task_id) REFERENCES tasks(id), FOREIGN KEY (task_req) REFERENCES tasks(id), UNIQUE (task_id,  task_req));");
+			}
+			
+			resultSet = data.getTables(null, null, "project_users", null);
+			if(!resultSet.next()) {
+				statement.execute("CREATE TABLE project_users(	id INTEGER PRIMARY KEY AUTOINCREMENT, project_id INTEGER, user_id INTEGER, project_role INTEGER, FOREIGN KEY (project_id) REFERENCES projects(id), FOREIGN KEY (user_id) REFERENCES users(id), UNIQUE (project_id,  user_id));");
 			}
 			
 			resultSet = data.getTables(null, null, "user_tasks", null);
 			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE user_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, task_id INTEGER);");
+				statement.execute("CREATE TABLE user_tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, task_id INTEGER, project_users INTEGER, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (task_id) REFERENCES tasks(id), FOREIGN KEY (project_users) REFERENCES project_users(id), UNIQUE(user_id,  task_id));");
 			}
 			
-			resultSet = data.getTables(null, null, "project_managers", null);
-			if(!resultSet.next()) {
-				statement.execute("CREATE TABLE project_managers(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, project_id INTEGER);");
-			}
 		} catch (Exception e){
 			e.printStackTrace();
 		} finally {
+			close();
 			try{
-				close();
 				statement.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -88,12 +94,12 @@ public class DatabaseManager {
 		}
 	}
 	
-	public boolean insertUser(String firstName, String lastName){
+	public boolean insertUser(String firstName, String lastName, String username, String password, String salt, int role){
 		boolean success = true;
 		 connect();
 		 try{
 			 statement = connection.createStatement();
-			 statement.execute("INSERT INTO users VALUES(null, '" + firstName + "', '" + lastName + "');");
+			 statement.execute("INSERT INTO users VALUES(null, '" + firstName + "', '" + lastName + "', '" + username + "', '" + password + "', '" + salt + "', " + role +");");
 		 } catch (Exception e){
 			 success = false;
 			 e.printStackTrace();

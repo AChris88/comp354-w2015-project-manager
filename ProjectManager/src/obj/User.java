@@ -1,5 +1,10 @@
 package obj;
 
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ */
 public class User {
 	private int id;
 	private String firstName;

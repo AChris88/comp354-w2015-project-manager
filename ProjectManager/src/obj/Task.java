@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ */
 public class Task {
 	private int id;
 	private String name;
