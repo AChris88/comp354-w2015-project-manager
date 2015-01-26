@@ -7,15 +7,21 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseManager {
-	private Connection connection = null;
-	private ResultSet resultSet = null;
-	private Statement statement = null;
+	private Connection connection;
+	private ResultSet resultSet;
+	private Statement statement;
 
+	public DatabaseManager(){
+		connection = null;
+		resultSet = null;
+		statement = null;
+		createTables();
+	}
+	
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager.getConnection("jdbc:sqlite:C:\\testdb.db");
-			createTables();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -31,6 +37,7 @@ public class DatabaseManager {
 
 	private void createTables(){
 		try{
+			connect();
 			//checking if tables are created
 			DatabaseMetaData data = connection.getMetaData();
 			statement = connection.createStatement();
@@ -73,6 +80,7 @@ public class DatabaseManager {
 			e.printStackTrace();
 		} finally {
 			try{
+				close();
 				statement.close();
 			} catch (Exception e) {
 				e.printStackTrace();
