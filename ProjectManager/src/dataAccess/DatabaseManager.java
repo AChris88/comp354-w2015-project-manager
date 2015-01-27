@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import util.PasswordUtil;
+
 /**
  * 
  * @author Christian Allard 7026188
@@ -97,9 +99,10 @@ public class DatabaseManager {
 	public boolean insertUser(String firstName, String lastName, String username, String password, String salt, int role){
 		boolean success = true;
 		 connect();
+		 PasswordUtil util = new PasswordUtil(password);
 		 try{
 			 statement = connection.createStatement();
-			 statement.execute("INSERT INTO users VALUES(null, '" + firstName + "', '" + lastName + "', '" + username + "', '" + password + "', '" + salt + "', " + role +");");
+			 statement.execute("INSERT INTO users VALUES(null, '" + firstName + "', '" + lastName + "', '" + username + "', '" + util.getHash() + "', '" + util.getSalt() + "', " + role +");");
 		 } catch (Exception e){
 			 success = false;
 			 e.printStackTrace();
@@ -150,5 +153,35 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean login(String username, String password){
+		boolean valid = false;
+		String salt;
+		String hash;
+		String userHash;
+		PasswordUtil util;
+		
+		connect();
+		try{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM users WHERE username = '" + username + "';");
+			salt = resultSet.getString("salt");
+			hash = resultSet.getString("password");
+			util = new PasswordUtil(password, salt);
+			userHash = util.getHash();
+			if(hash.equals(userHash))
+				valid = true;
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			close();
+			try{
+				statement.close();
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+		return valid;
 	}
 }

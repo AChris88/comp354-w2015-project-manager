@@ -1,48 +1,51 @@
 package util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.util.Random;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class PasswordUtil {
 	private String password;
 	private String salt;
 	private String hash;
-	
+
+	//Constructor used for registering password/salt into db
 	public PasswordUtil(String password) {
 		this.password = password;
+		generateSalt();
+		hashPassword();
+	}
+
+	//Constructor used for authenticating user
+	public PasswordUtil(String password, String salt){
+		this.password = password;
+		this.salt = salt;
 		hashPassword();
 	}
 	
-	private void hashPassword(){
-		final Random random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-		SecretKeyFactory f;
-		byte[] hash = null;
+	private void generateSalt(){
+		SecureRandom random = new SecureRandom();
+		String ranString = new BigInteger(130, random).toString(32);
+		salt = ranString + System.currentTimeMillis();  
+	}
+	
+	private void hashPassword() {
+		MessageDigest messageDigest;
 		try {
-			f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-			hash = f.generateSecret(spec).getEncoded();
+			messageDigest = MessageDigest.getInstance("SHA-256");
+			messageDigest.update((password + salt).getBytes());
+			hash = new String(messageDigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
 		}
-		this.salt = salt.toString();
-		this.hash = hash.toString();
 	}
-	
-	public String getSalt(){
+
+	public String getSalt() {
 		return salt;
 	}
-	
-	public String getPasswordHash(){
+
+	public String getHash() {
 		return hash;
 	}
 }
