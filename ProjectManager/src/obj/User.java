@@ -13,7 +13,7 @@ public class User {
 	private String password;
 	private String salt;
 	private int role;
-	
+
 	public User(int id, String firstName, String lastName, String username,
 			String password, String salt, int role) {
 		super();
@@ -25,37 +25,47 @@ public class User {
 		this.salt = salt;
 		this.role = role;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public int getRole() {
 		return role;
 	}
+
 	public void setRole(int role) {
 		this.role = role;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public String getSalt() {
 		return salt;
 	}
+
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+
 	public String getLastName() {
 		return lastName;
 	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
 	public int getId() {
 		return id;
 	}

@@ -3,6 +3,11 @@
  */
 package application;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import obj.Project;
+import obj.Task;
 import obj.User;
 import util.PasswordUtil;
 import dataAccess.DatabaseManager;
@@ -15,14 +20,35 @@ import dataAccess.DatabaseManager;
 public class ProjectManagerApp {
 
 	public static void main(String[] args) {
-		//test insert
-		
+		//test user insertion
+		/*
 		DatabaseManager dbm = new DatabaseManager();
-		dbm.insertUser(new User(0, "Chris", "Allard", "herp", "daDerp", "salt", 0));
+		User user = new User(1, "Chris", "Allard", "herp", "daDerp", "salt", 0)
+		dbm.insertUser(user);
 		dbm.getUsers();
-		dbm.removeUser(1);
+		dbm.removeUser(user);
 		dbm.getUsers();
+		*/
 		
+		//test task insertion
+		/*
+		DatabaseManager dbm = new DatabaseManager();
+		Task task = new Task(1, "Super important task", new Date(), new Date(), new Date(), new Date(), new ArrayList<Task>());
+		dbm.insertTask(task);
+		dbm.getTasks();
+		dbm.removeTask(task);
+		dbm.getTasks();
+		*/
+		
+		//test project insertion
+		/*
+		DatabaseManager dbm = new DatabaseManager();
+		Project project = new Project(1, "Super important project", new Date(), new Date(), new Date());
+		dbm.insertProject(project);
+		dbm.getProjects();
+		dbm.removeProject(project);
+		dbm.getProjects();
+		*/
 		
 		//test password salting and hashing
 		/*

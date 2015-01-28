@@ -1,6 +1,5 @@
 package obj;
 
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -11,58 +10,61 @@ import java.util.Date;
 public class Project {
 	private int id;
 	private String name;
-	private Task[] tasks;
-	private User[] managers;
 	private Date startDate;
-	private Date projectEndDate;
+	private Date projectedEndDate;
 	private Date endDate;
-	
+
+	public Project(int id, String name, Date startDate, Date projectedEndDate,
+			Date endDate) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.startDate = startDate;
+		this.projectedEndDate = projectedEndDate;
+		this.endDate = endDate;
+	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Task[] getTasks() {
-		return tasks;
-	}
-	public void setTasks(Task[] tasks) {
-		this.tasks = tasks;
-	}
-	public User[] getManagers() {
-		return managers;
-	}
-	public void setManagers(User[] managers) {
-		this.managers = managers;
-	}
+
 	public Date getStartDate() {
 		return startDate;
 	}
+
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	public Date getProjectEndDate() {
-		return projectEndDate;
+
+	public Date getProjectedEndDate() {
+		return projectedEndDate;
 	}
-	public void setProjectEndDate(Date projectEndDate) {
-		this.projectEndDate = projectEndDate;
+
+	public void setProjectedEndDate(Date projectedEndDate) {
+		this.projectedEndDate = projectedEndDate;
 	}
+
 	public Date getEndDate() {
 		return endDate;
 	}
+
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", tasks="
-				+ Arrays.toString(tasks) + ", managers="
-				+ Arrays.toString(managers) + ", startDate=" + startDate
-				+ ", projectEndDate=" + projectEndDate + ", endDate=" + endDate
-				+ "]";
+		return "Project [id=" + id + ", name=" + name + ", startDate="
+				+ startDate + ", projectedEndDate=" + projectedEndDate
+				+ ", endDate=" + endDate + "]";
 	}
+
 }

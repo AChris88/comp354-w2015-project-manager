@@ -1,8 +1,7 @@
 package obj;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 
@@ -14,70 +13,79 @@ public class Task {
 	private String name;
 	private Date projectedStartDate;
 	private Date startDate;
-	private Date projectEndDate;
+	private Date projectedEndDate;
 	private Date endDate;
-	private Task[] prereqs;
-	private User[] workers;
-	private List<Task> toDo;
-	
+	private ArrayList<Task> toDo;
+
+	public Task(int id, String name, Date projectedStartDate, Date startDate,
+			Date projectedEndDate, Date endDate, ArrayList<Task> toDo) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.projectedStartDate = projectedStartDate;
+		this.startDate = startDate;
+		this.projectedEndDate = projectedEndDate;
+		this.endDate = endDate;
+		this.toDo = toDo;
+	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public Date getProjectedStartDate() {
 		return projectedStartDate;
 	}
+
 	public void setProjectedStartDate(Date projectedStartDate) {
 		this.projectedStartDate = projectedStartDate;
 	}
+
 	public Date getStartDate() {
 		return startDate;
 	}
+
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	public Date getProjectEndDate() {
-		return projectEndDate;
+
+	public Date getProjectedEndDate() {
+		return projectedEndDate;
 	}
-	public void setProjectEndDate(Date projectEndDate) {
-		this.projectEndDate = projectEndDate;
+
+	public void setProjectedEndDate(Date projectedEndDate) {
+		this.projectedEndDate = projectedEndDate;
 	}
+
 	public Date getEndDate() {
 		return endDate;
 	}
+
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public Task[] getPrereqs() {
-		return prereqs;
-	}
-	public void setPrereqs(Task[] prereqs) {
-		this.prereqs = prereqs;
-	}
-	public User[] getWorkers() {
-		return workers;
-	}
-	public void setWorkers(User[] workers) {
-		this.workers = workers;
-	}
-	public List<Task> getToDo() {
+
+	public ArrayList<Task> getToDo() {
 		return toDo;
 	}
-	public void setToDo(List<Task> toDo) {
+
+	public void setToDo(ArrayList<Task> toDo) {
 		this.toDo = toDo;
 	}
+
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Task [id=" + id + ", name=" + name + ", projectedStartDate="
 				+ projectedStartDate + ", startDate=" + startDate
-				+ ", projectEndDate=" + projectEndDate + ", endDate=" + endDate
-				+ ", prereqs=" + Arrays.toString(prereqs) + ", workers="
-				+ Arrays.toString(workers) + ", toDo=" + toDo + "]";
+				+ ", projectEndDate=" + projectedEndDate + ", endDate="
+				+ endDate + ", toDo=" + toDo + "]";
 	}
 }
