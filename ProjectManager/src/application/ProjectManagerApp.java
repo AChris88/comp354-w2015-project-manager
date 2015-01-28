@@ -5,7 +5,6 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Date;
-
 import obj.Project;
 import obj.Task;
 import obj.User;
