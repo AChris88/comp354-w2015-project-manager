@@ -3,6 +3,7 @@
  */
 package application;
 
+import obj.User;
 import util.PasswordUtil;
 import dataAccess.DatabaseManager;
 
@@ -15,13 +16,13 @@ public class ProjectManagerApp {
 
 	public static void main(String[] args) {
 		//test insert
-		/*
+		
 		DatabaseManager dbm = new DatabaseManager();
-		dbm.insertUser("Chris", "Allard", "herp", "daDerp", "salt", 0);
+		dbm.insertUser(new User(0, "Chris", "Allard", "herp", "daDerp", "salt", 0));
 		dbm.getUsers();
 		dbm.removeUser(1);
 		dbm.getUsers();
-		*/
+		
 		
 		//test password salting and hashing
 		/*
@@ -33,7 +34,7 @@ public class ProjectManagerApp {
 		//test user login
 		/*
 		DatabaseManager dbm = new DatabaseManager();
-		dbm.insertUser("Chris", "Allard", "slaiy", "password", "", 0);
+		dbm.insertUser(new User(0, "Chris", "Allard", "slaiy", "password", "salt", 0));
 		System.out.println("Login successful: " + dbm.login("slaiy", "password"));
 		*/
 		
