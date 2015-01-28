@@ -399,22 +399,26 @@ public class DatabaseManager {
 	public boolean login(String username, String password) {
 		boolean valid = false;
 		String salt;
-		String hash;
 		String userHash;
 		PasswordUtil util;
 		try {
 			connect();
 			preparedStatement = connection
-					.prepareStatement("SELECT * FROM users WHERE username = ?");
+					.prepareStatement("SELECT salt FROM users WHERE username = ?");
 			preparedStatement.setString(1, username);
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				salt = resultSet.getString("salt");
-				hash = resultSet.getString("password");
 				util = new PasswordUtil(password, salt);
 				userHash = util.getHash();
-				if (hash.equals(userHash))
+				preparedStatement = connection
+						.prepareStatement("SELECT id, first_name, last_name, username, role FROM users WHERE username = ? AND password = ?");
+				preparedStatement.setString(1, username);
+				preparedStatement.setString(2, userHash);
+				resultSet = preparedStatement.executeQuery();
+				if (resultSet.next()) {
 					valid = true;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
