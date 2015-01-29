@@ -42,6 +42,8 @@ public class DatabaseManager {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager.getConnection("jdbc:sqlite:testdb.db");
+			statement = connection.createStatement();
+			statement.execute("PRAGMA foreign_keys = ON");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,7 +95,7 @@ public class DatabaseManager {
 								+ "projected_end DATE, "
 								+ "actual_end DATE, "
 								+ "to_do TEXT,"
-								+ "FOREIGN KEY (project_id) REFERENCES projects(id));");
+								+ "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);");
 			}
 
 			resultSet = data.getTables(null, null, "task_reqs", null);
@@ -102,8 +104,8 @@ public class DatabaseManager {
 						.execute("CREATE TABLE task_reqs(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 								+ "task_id INTEGER, "
 								+ "task_req INTEGER, "
-								+ "FOREIGN KEY (task_id) REFERENCES tasks(id), "
-								+ "FOREIGN KEY (task_req) REFERENCES tasks(id), "
+								+ "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (task_req) REFERENCES tasks(id) ON DELETE CASCADE, "
 								+ "UNIQUE (task_id,  task_req));");
 			}
 
@@ -114,8 +116,8 @@ public class DatabaseManager {
 								+ "project_id INTEGER, "
 								+ "user_id INTEGER, "
 								+ "project_role INTEGER, "
-								+ "FOREIGN KEY (project_id) REFERENCES projects(id), "
-								+ "FOREIGN KEY (user_id) REFERENCES users(id), "
+								+ "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
 								+ "UNIQUE (project_id,  user_id));");
 			}
 
@@ -126,9 +128,9 @@ public class DatabaseManager {
 								+ "user_id INTEGER, "
 								+ "task_id INTEGER, "
 								+ "project_users INTEGER, "
-								+ "FOREIGN KEY (user_id) REFERENCES users(id), "
-								+ "FOREIGN KEY (task_id) REFERENCES tasks(id), "
-								+ "FOREIGN KEY (project_users) REFERENCES project_users(id), "
+								+ "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (project_users) REFERENCES project_users(id) ON DELETE CASCADE, "
 								+ "UNIQUE(user_id,  task_id));");
 			}
 
@@ -545,19 +547,22 @@ public class DatabaseManager {
 		return valid;
 	}
 
-	/*
 	public boolean updateTask(Task task) {
 		boolean valid = true;
 		try {
 			String update = "UPDATE tasks SET project_id= "
 					+ task.getProjectId() + ", name = '" + task.getName()
-					+ "', projected_start = " + task.getProjectedStartDate()
-					+ ", actual_start = " + task.getStartDate()
-					+ ", projected_end = " + task.getProjectedEndDate()
-					+ ", actual_end = " + task.getEndDate() + ", to_do = '"
-					+ task.getToDo() + "' WHERE id= " + task.getId();
+					+ "', projected_start = "
+					+ new java.sql.Date(task.getProjectedStartDate().getTime())
+					+ ", actual_start = "
+					+ new java.sql.Date(task.getStartDate().getTime())
+					+ ", projected_end = "
+					+ new java.sql.Date(task.getProjectedEndDate().getTime())
+					+ ", actual_end = "
+					+ new java.sql.Date(task.getEndDate().getTime())
+					+ ", to_do = '" + task.getToDo() + "' WHERE id= "
+					+ task.getId();
 			connect();
-			System.out.println("update String: " +update);
 			preparedStatement = connection.prepareStatement(update);
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
@@ -574,7 +579,6 @@ public class DatabaseManager {
 		}
 		return valid;
 	}
-	*/
 
 	// DELETES - D
 

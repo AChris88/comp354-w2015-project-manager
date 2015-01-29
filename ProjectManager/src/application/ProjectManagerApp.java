@@ -32,7 +32,6 @@ public class ProjectManagerApp {
 		*/
 		
 		//test project update
-		/*
 		DatabaseManager dbm = new DatabaseManager();
 		Project project = new Project(1, "Super important project", new Date(), new Date(), new Date());
 		dbm.insertProject(project);
@@ -43,11 +42,9 @@ public class ProjectManagerApp {
 		project.setProjectedEndDate(newEndDate);
 		dbm.updateProject(project);
 		System.out.println(dbm.getProjects().get(0));
-		*/
 		
 		//test task update
-		/*
-		DatabaseManager dbm = new DatabaseManager();
+//		DatabaseManager dbm = new DatabaseManager();
 		Task task = new Task(1, 1, "Super important task", new Date(), new Date(), new Date(), new Date(), new ArrayList<Task>());
 		dbm.insertTask(task);
 		System.out.println(dbm.getTasks().get(0));
@@ -57,7 +54,6 @@ public class ProjectManagerApp {
 		task.setEndDate(newDate);
 		dbm.updateTask(task);
 		System.out.println(dbm.getTasks().get(0));
-		*/
 		
 		//test password salting and hashing
 		/*

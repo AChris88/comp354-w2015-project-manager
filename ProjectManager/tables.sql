@@ -17,7 +17,7 @@ CREATE TABLE tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 					projected_end DATE,
 					actual_end DATE,
 					to_do TEXT,
-					FOREIGN KEY (project_id) REFERENCES projects(id));
+					FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);
 					
 CREATE TABLE projects(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 						name TEXT,
@@ -28,23 +28,23 @@ CREATE TABLE projects(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 CREATE TABLE task_reqs(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 						task_id INTEGER,
 						task_req INTEGER,
-						FOREIGN KEY (task_id) REFERENCES tasks(id),
-						FOREIGN KEY (task_req) REFERENCES tasks(id),
+						FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+						FOREIGN KEY (task_req) REFERENCES tasks(id) ON DELETE CASCADE,
 						UNIQUE id_req (task_id, task_req));
 						
 CREATE TABLE project_users(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 							project_id INTEGER,
 							user_id INTEGER,
 							project_role INTEGER,
-							FOREIGN KEY (project_id) REFERENCES projects(id),
-							FOREIGN KEY (user_id) REFERENCES users(id),
+							FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+							FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 							UNIQUE project_users (project_id, user_id));
 						
 CREATE TABLE user_tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 						user_id INTEGER,
 						task_id INTEGER,
 						project_users INTEGER,
-						FOREIGN KEY (user_id) REFERENCES users(id),
-						FOREIGN KEY (task_id) REFERENCES tasks(id),
-						FOREIGN KEY (project_users) REFERENCES project_users(id),
+						FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+						FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+						FOREIGN KEY (project_users) REFERENCES project_users(id) ON DELETE CASCADE,
 						UNIQUE user_tasks(user_id, task_id));
