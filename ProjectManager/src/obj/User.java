@@ -13,6 +13,7 @@ public class User {
 	private String salt;
 	private int role;
 
+    //The id is useless for inserts!
 	public User(int id, String firstName, String lastName, String username, String salt, int role) {
 		super();
 		this.id = id;

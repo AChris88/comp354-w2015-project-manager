@@ -39,7 +39,7 @@ public class DatabaseManager {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager
-					.getConnection("jdbc:sqlite:C:\\testdb.db");
+					.getConnection("jdbc:sqlite:testdb.db");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
