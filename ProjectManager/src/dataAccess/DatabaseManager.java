@@ -12,8 +12,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import obj.Project;
+import obj.ProjectUser;
 import obj.Task;
+import obj.TaskRequirement;
 import obj.User;
+import obj.UserTask;
 import util.PasswordUtil;
 
 /**
@@ -38,8 +41,7 @@ public class DatabaseManager {
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager
-					.getConnection("jdbc:sqlite:testdb.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:testdb.db");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,7 +81,7 @@ public class DatabaseManager {
 								+ "start_date DATE, "
 								+ "projected_end DATE, " + "end_date DATE);");
 			}
-			
+
 			resultSet = data.getTables(null, null, "tasks", null);
 			if (!resultSet.next()) {
 				statement
@@ -142,8 +144,8 @@ public class DatabaseManager {
 		}
 	}
 
-	//INSERTS
-	
+	// INSERTS - C
+
 	public boolean insertUser(User user, String password) {
 		boolean success = true;
 		PasswordUtil util = new PasswordUtil(password);
@@ -183,9 +185,12 @@ public class DatabaseManager {
 					.prepareStatement("INSERT INTO projects (id, name, start_date, projected_end, end_date) VALUES(?,?,?,?,?)");
 			preparedStatement.setString(1, null);
 			preparedStatement.setString(2, project.getName());
-			preparedStatement.setDate(3, new java.sql.Date(project.getStartDate().getTime()));
-			preparedStatement.setDate(4, new java.sql.Date(project.getProjectedEndDate().getTime()));
-			preparedStatement.setDate(5, new java.sql.Date(project.getEndDate().getTime()));
+			preparedStatement.setDate(3, new java.sql.Date(project
+					.getStartDate().getTime()));
+			preparedStatement.setDate(4, new java.sql.Date(project
+					.getProjectedEndDate().getTime()));
+			preparedStatement.setDate(5, new java.sql.Date(project.getEndDate()
+					.getTime()));
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
 				success = false;
@@ -201,8 +206,8 @@ public class DatabaseManager {
 			}
 		}
 		return success;
-	}	
-	
+	}
+
 	public boolean insertTask(Task task) {
 		boolean success = true;
 		try {
@@ -212,10 +217,14 @@ public class DatabaseManager {
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, task.getProjectId());
 			preparedStatement.setString(3, task.getName());
-			preparedStatement.setDate(4, new java.sql.Date(task.getProjectedStartDate().getTime()));
-			preparedStatement.setDate(5, new java.sql.Date(task.getStartDate().getTime()));
-			preparedStatement.setDate(6, new java.sql.Date(task.getProjectedEndDate().getTime()));
-			preparedStatement.setDate(7, new java.sql.Date(task.getEndDate().getTime()));
+			preparedStatement.setDate(4, new java.sql.Date(task
+					.getProjectedStartDate().getTime()));
+			preparedStatement.setDate(5, new java.sql.Date(task.getStartDate()
+					.getTime()));
+			preparedStatement.setDate(6, new java.sql.Date(task
+					.getProjectedEndDate().getTime()));
+			preparedStatement.setDate(7, new java.sql.Date(task.getEndDate()
+					.getTime()));
 			preparedStatement.setString(8, new Gson().toJson(task.getToDo()));
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
@@ -233,22 +242,102 @@ public class DatabaseManager {
 		}
 		return success;
 	}
-	
-	//GETS
 
-	public void getUsers() {
+	public boolean insertProjectUser(ProjectUser projectUser) {
+		boolean success = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("INSERT INTO project_users (id, project_id, user_id, project_role) VALUES(?,?,?,?)");
+			preparedStatement.setString(1, null);
+			preparedStatement.setInt(2, projectUser.getProjectId());
+			preparedStatement.setInt(3, projectUser.getUserId());
+			preparedStatement.setInt(4, projectUser.getProjectRole());
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				success = false;
+		} catch (Exception e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
+	}
+
+	public boolean insertUserTask(UserTask userTask) {
+		boolean success = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("INSERT INTO user_tasks (id, user_id, task_id, project_users) VALUES(?,?,?,?)");
+			preparedStatement.setString(1, null);
+			preparedStatement.setInt(2, userTask.getUserId());
+			preparedStatement.setInt(3, userTask.getTaskId());
+			preparedStatement.setInt(4, userTask.getProjectUsers());
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				success = false;
+		} catch (Exception e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
+	}
+
+	public boolean insertTaskRequirement(TaskRequirement taskRequirement) {
+		boolean success = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("INSERT INTO task_reqs (id, task_id, task_req) VALUES(?,?,?)");
+			preparedStatement.setString(1, null);
+			preparedStatement.setInt(2, taskRequirement.getTaskId());
+			preparedStatement.setInt(3, taskRequirement.getTaskReq());
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				success = false;
+		} catch (Exception e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
+	}
+
+	// GETS - R
+
+	public ArrayList<User> getUsers() {
+		ArrayList<User> users = null;
 		try {
 			connect();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM users");
-			User user;
+			users = new ArrayList<User>();
 			while (resultSet.next()) {
-				user = new User(resultSet.getInt("id"),
-						resultSet.getString("first_name"),
-						resultSet.getString("last_name"),
-						resultSet.getString("username"),
-						resultSet.getString("salt"), resultSet.getInt("role"));
-				System.out.println(user);
+				users.add(new User(resultSet.getInt("id"), resultSet
+						.getString("first_name"), resultSet
+						.getString("last_name"), resultSet
+						.getString("username"), resultSet.getString("salt"),
+						resultSet.getInt("role")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,21 +349,21 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
+		return users;
 	}
-	
-	public void getProjects() {
+
+	public ArrayList<Project> getProjects() {
+		ArrayList<Project> projects = null;
 		try {
 			connect();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM projects");
-			Project project;
+			projects = new ArrayList<Project>();
 			while (resultSet.next()) {
-				project = new Project(resultSet.getInt("id"),
-						resultSet.getString("name"),
-						resultSet.getDate("start_date"),
-						resultSet.getDate("projected_end"),
-						resultSet.getDate("end_date"));
-				System.out.println(project);
+				projects.add(new Project(resultSet.getInt("id"), resultSet
+						.getString("name"), resultSet.getDate("start_date"),
+						resultSet.getDate("projected_end"), resultSet
+								.getDate("end_date")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -286,26 +375,28 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
+		return projects;
 	}
-	
-	public void getTasks() {
+
+	public ArrayList<Task> getTasks() {
+		ArrayList<Task> tasks = null;
 		try {
 			connect();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM tasks");
-			Task task;
 			ArrayList<Task> toDo;
+			tasks = new ArrayList<Task>();
 			Gson gson = new Gson();
 			while (resultSet.next()) {
-				toDo = gson.fromJson(resultSet.getString("to_do"), new TypeToken<ArrayList<Task>>(){}.getType());
-				task = new Task(resultSet.getInt("id"),
-						resultSet.getInt("project_id"),
-						resultSet.getString("name"),
-						resultSet.getDate("projected_start"),
-						resultSet.getDate("actual_start"),
-						resultSet.getDate("projected_end"),
-						resultSet.getDate("actual_end"), toDo);
-				System.out.println(task);
+				toDo = gson.fromJson(resultSet.getString("to_do"),
+						new TypeToken<ArrayList<Task>>() {
+						}.getType());
+				tasks.add(new Task(resultSet.getInt("id"), resultSet
+						.getInt("project_id"), resultSet.getString("name"),
+						resultSet.getDate("projected_start"), resultSet
+								.getDate("actual_start"), resultSet
+								.getDate("projected_end"), resultSet
+								.getDate("actual_end"), toDo));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -317,10 +408,176 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
+		return tasks;
 	}
-	
-	//DELETES
-	
+
+	public ArrayList<ProjectUser> getProjectUsers() {
+		ArrayList<ProjectUser> projectUsers = null;
+		try {
+			connect();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM project_users");
+			projectUsers = new ArrayList<ProjectUser>();
+			while (resultSet.next()) {
+				projectUsers.add(new ProjectUser(resultSet.getInt("id"),
+						resultSet.getInt("project_id"), resultSet
+								.getInt("user_id"), resultSet
+								.getInt("project_role")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return projectUsers;
+	}
+
+	public ArrayList<UserTask> getUserTasks() {
+		ArrayList<UserTask> userTasks = null;
+		try {
+			connect();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM user_task");
+			userTasks = new ArrayList<UserTask>();
+			while (resultSet.next()) {
+				userTasks.add(new UserTask(resultSet.getInt("id"), resultSet
+						.getInt("user_id"), resultSet.getInt("task_id"),
+						resultSet.getInt("project_users")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return userTasks;
+	}
+
+	public ArrayList<TaskRequirement> getTaskRequirements() {
+		ArrayList<TaskRequirement> taskReqs = null;
+		try {
+			connect();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM task_reqs");
+			taskReqs = new ArrayList<TaskRequirement>();
+			while (resultSet.next()) {
+				taskReqs.add(new TaskRequirement(resultSet.getInt("id"),
+						resultSet.getInt("task_id"), resultSet
+								.getInt("task_req")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return taskReqs;
+	}
+
+	// UPDATES - U
+
+	public boolean updateUser(User user) {
+		boolean valid = true;
+		try {
+			String update = "UPDATE users SET first_name= '"
+					+ user.getFirstName() + "', last_name = '"
+					+ user.getLastName() + "', username = '"
+					+ user.getUsername() + "', role = " + user.getRole()
+					+ " WHERE id= " + user.getId();
+			connect();
+			preparedStatement = connection.prepareStatement(update);
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				valid = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
+
+	public boolean updateProject(Project project) {
+		boolean valid = true;
+		try {
+			String update = "UPDATE projects SET name= '"
+					+ project.getName()
+					+ ", start_date = "
+					+ new java.sql.Date(project.getStartDate().getTime())
+					+ ", projected_end = "
+					+ new java.sql.Date(project.getProjectedEndDate().getTime())
+					+ "', end_date = "
+					+ new java.sql.Date(project.getEndDate().getTime())
+					+ " WHERE id= " + project.getId();
+			connect();
+			preparedStatement = connection.prepareStatement(update);
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				valid = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
+
+	/*
+	public boolean updateTask(Task task) {
+		boolean valid = true;
+		try {
+			String update = "UPDATE tasks SET project_id= "
+					+ task.getProjectId() + ", name = '" + task.getName()
+					+ "', projected_start = " + task.getProjectedStartDate()
+					+ ", actual_start = " + task.getStartDate()
+					+ ", projected_end = " + task.getProjectedEndDate()
+					+ ", actual_end = " + task.getEndDate() + ", to_do = '"
+					+ task.getToDo() + "' WHERE id= " + task.getId();
+			connect();
+			System.out.println("update String: " +update);
+			preparedStatement = connection.prepareStatement(update);
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				valid = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
+	*/
+
+	// DELETES - D
+
 	public boolean removeUser(User user) {
 		boolean removed = true;
 		try {
@@ -364,7 +621,7 @@ public class DatabaseManager {
 		}
 		return removed;
 	}
-	
+
 	public boolean removeTask(Task task) {
 		boolean removed = true;
 		try {
@@ -386,11 +643,11 @@ public class DatabaseManager {
 		}
 		return removed;
 	}
-	
-	//ADDITIONAL OR UTILITY METHODS
-	
-	public boolean login(String username, String password) {
-		boolean valid = false;
+
+	// ADDITIONAL OR UTILITY METHODS
+
+	public User login(String username, String password) {
+		User user = null;
 		String salt;
 		String userHash;
 		PasswordUtil util;
@@ -410,7 +667,12 @@ public class DatabaseManager {
 				preparedStatement.setString(2, userHash);
 				resultSet = preparedStatement.executeQuery();
 				if (resultSet.next()) {
-					valid = true;
+					user = new User(resultSet.getInt("id"),
+							resultSet.getString("first_name"),
+							resultSet.getString("last_name"),
+							resultSet.getString("username"),
+							resultSet.getString("salt"),
+							resultSet.getInt("role"));
 				}
 			}
 		} catch (Exception e) {
@@ -423,6 +685,22 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
-		return valid;
+		return user;
+	}
+
+	public void useCaseTest() {
+
+	}
+
+	private ArrayList<Project> managerSearch(String username, String password) {
+		User user = login(username, password);
+		ArrayList<Project> projects = null;
+		ArrayList<User> users = null;
+		if (user.getRole() == 1) {
+			projects = getProjects();
+			users = getUsers();
+
+		}
+		return projects;
 	}
 }

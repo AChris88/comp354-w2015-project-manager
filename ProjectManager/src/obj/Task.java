@@ -18,6 +18,17 @@ public class Task {
 	private Date endDate;
 	private ArrayList<Task> toDo;
 
+	public Task() {
+		id = 0;
+		projectId = 0;
+		name = "";
+		projectedStartDate = null;
+		startDate = null;
+		projectedEndDate = null;
+		endDate = null;
+		toDo = null;
+	}
+
 	public Task(int id, int projectId, String name, Date projectedStartDate,
 			Date startDate, Date projectedEndDate, Date endDate,
 			ArrayList<Task> toDo) {

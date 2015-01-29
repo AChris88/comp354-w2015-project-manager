@@ -13,8 +13,18 @@ public class User {
 	private String salt;
 	private int role;
 
-    //The id is useless for inserts!
-	public User(int id, String firstName, String lastName, String username, String salt, int role) {
+	public User() {
+		id = 0;
+		firstName = "";
+		lastName = "";
+		username = "";
+		salt = "";
+		role = 0;
+	}
+
+	// The id is useless for inserts!
+	public User(int id, String firstName, String lastName, String username,
+			String salt, int role) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -67,7 +77,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", username=" + username + ", password="
-				+ ", salt=" + salt + ", role=" + role + "]";
+				+ lastName + ", username=" + username + ", salt=" + salt
+				+ ", role=" + role + "]";
 	}
 }

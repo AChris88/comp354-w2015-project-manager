@@ -14,6 +14,14 @@ public class Project {
 	private Date projectedEndDate;
 	private Date endDate;
 
+	public Project() {
+		id = 0;
+		name = "";
+		startDate = null;
+		projectedEndDate = null;
+		endDate = null;
+	}
+
 	public Project(int id, String name, Date startDate, Date projectedEndDate,
 			Date endDate) {
 		super();

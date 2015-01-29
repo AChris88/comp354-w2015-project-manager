@@ -19,34 +19,44 @@ import dataAccess.DatabaseManager;
 public class ProjectManagerApp {
 
 	public static void main(String[] args) {
-		//test user insertion
+		//test user update
 		/*
 		DatabaseManager dbm = new DatabaseManager();
-		User user = new User(1, "Chris", "Allard", "herp", "daDerp", "salt", 0);
+		User user = new User(1, "Chris", "Allard", "herp", "salt", 0);
 		dbm.insertUser(user, "password");
-		dbm.getUsers();
-		dbm.removeUser(user);
-		dbm.getUsers();
+		System.out.println(dbm.getUsers().get(0));
+		user.setFirstName("George");
+		user.setLastName("Lambadass");
+		dbm.updateUser(user);
+		System.out.println(dbm.getUsers().get(0));
 		*/
 		
-		//test project insertion
+		//test project update
 		/*
 		DatabaseManager dbm = new DatabaseManager();
 		Project project = new Project(1, "Super important project", new Date(), new Date(), new Date());
 		dbm.insertProject(project);
-		dbm.getProjects();
-		dbm.removeProject(project);
-		dbm.getProjects();
+		System.out.println(dbm.getProjects().get(0));
+		project.setName("Even more important project");
+		Date newEndDate = new Date();
+		newEndDate.setTime(0);
+		project.setProjectedEndDate(newEndDate);
+		dbm.updateProject(project);
+		System.out.println(dbm.getProjects().get(0));
 		*/
 		
-		//test task insertion
+		//test task update
 		/*
 		DatabaseManager dbm = new DatabaseManager();
 		Task task = new Task(1, 1, "Super important task", new Date(), new Date(), new Date(), new Date(), new ArrayList<Task>());
 		dbm.insertTask(task);
-		dbm.getTasks();
-		dbm.removeTask(task);
-		dbm.getTasks();
+		System.out.println(dbm.getTasks().get(0));
+		task.setName("even more important task");
+		Date newDate = new Date();
+		newDate.setTime(0);
+		task.setEndDate(newDate);
+		dbm.updateTask(task);
+		System.out.println(dbm.getTasks().get(0));
 		*/
 		
 		//test password salting and hashing
