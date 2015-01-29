@@ -10,18 +10,15 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String username;
-	private String password;
 	private String salt;
 	private int role;
 
-	public User(int id, String firstName, String lastName, String username,
-			String password, String salt, int role) {
+	public User(int id, String firstName, String lastName, String username, String salt, int role) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
-		this.password = password;
 		this.salt = salt;
 		this.role = role;
 	}
@@ -40,10 +37,6 @@ public class User {
 
 	public void setRole(int role) {
 		this.role = role;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 	public String getSalt() {
@@ -74,6 +67,6 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", username=" + username + ", password="
-				+ password + ", salt=" + salt + ", role=" + role + "]";
+				+ ", salt=" + salt + ", role=" + role + "]";
 	}
 }

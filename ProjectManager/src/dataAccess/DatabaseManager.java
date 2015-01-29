@@ -71,18 +71,6 @@ public class DatabaseManager {
 								+ "salt TEXT, " + "role INTEGER(1));");
 			}
 
-			resultSet = data.getTables(null, null, "tasks", null);
-			if (!resultSet.next()) {
-				statement
-						.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-								+ "name TEXT UNIQUE, "
-								+ "projected_start DATE, "
-								+ "actual_start DATE, "
-								+ "projected_end DATE, "
-								+ "actual_end DATE, "
-								+ "to_do TEXT);");
-			}
-
 			resultSet = data.getTables(null, null, "projects", null);
 			if (!resultSet.next()) {
 				statement
@@ -91,15 +79,19 @@ public class DatabaseManager {
 								+ "start_date DATE, "
 								+ "projected_end DATE, " + "end_date DATE);");
 			}
-
-			resultSet = data.getTables(null, null, "project_tasks", null);
+			
+			resultSet = data.getTables(null, null, "tasks", null);
 			if (!resultSet.next()) {
 				statement
-						.execute("CREATE TABLE project_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+						.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 								+ "project_id INTEGER, "
-								+ "task_id INTEGER, "
-								+ "FOREIGN KEY (project_id) REFERENCES projects(id), "
-								+ "FOREIGN KEY (task_id) REFERENCES tasks(id));");
+								+ "name TEXT UNIQUE, "
+								+ "projected_start DATE, "
+								+ "actual_start DATE, "
+								+ "projected_end DATE, "
+								+ "actual_end DATE, "
+								+ "to_do TEXT,"
+								+ "FOREIGN KEY (project_id) REFERENCES projects(id));");
 			}
 
 			resultSet = data.getTables(null, null, "task_reqs", null);
@@ -152,9 +144,9 @@ public class DatabaseManager {
 
 	//INSERTS
 	
-	public boolean insertUser(User user) {
+	public boolean insertUser(User user, String password) {
 		boolean success = true;
-		PasswordUtil util = new PasswordUtil(user.getPassword());
+		PasswordUtil util = new PasswordUtil(password);
 		try {
 			connect();
 			preparedStatement = connection
@@ -216,14 +208,15 @@ public class DatabaseManager {
 		try {
 			connect();
 			preparedStatement = connection
-					.prepareStatement("INSERT INTO tasks (id, name, projected_start, actual_start, projected_end, actual_end, to_do) VALUES(?,?,?,?,?,?,?)");
+					.prepareStatement("INSERT INTO tasks (id, project_id, name, projected_start, actual_start, projected_end, actual_end, to_do) VALUES(?,?,?,?,?,?,?,?)");
 			preparedStatement.setString(1, null);
-			preparedStatement.setString(2, task.getName());
-			preparedStatement.setDate(3, new java.sql.Date(task.getProjectedStartDate().getTime()));
-			preparedStatement.setDate(4, new java.sql.Date(task.getStartDate().getTime()));
-			preparedStatement.setDate(5, new java.sql.Date(task.getProjectedEndDate().getTime()));
-			preparedStatement.setDate(6, new java.sql.Date(task.getEndDate().getTime()));
-			preparedStatement.setString(7, new Gson().toJson(task.getToDo()));
+			preparedStatement.setInt(2, task.getProjectId());
+			preparedStatement.setString(3, task.getName());
+			preparedStatement.setDate(4, new java.sql.Date(task.getProjectedStartDate().getTime()));
+			preparedStatement.setDate(5, new java.sql.Date(task.getStartDate().getTime()));
+			preparedStatement.setDate(6, new java.sql.Date(task.getProjectedEndDate().getTime()));
+			preparedStatement.setDate(7, new java.sql.Date(task.getEndDate().getTime()));
+			preparedStatement.setString(8, new Gson().toJson(task.getToDo()));
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
 				success = false;
@@ -254,7 +247,6 @@ public class DatabaseManager {
 						resultSet.getString("first_name"),
 						resultSet.getString("last_name"),
 						resultSet.getString("username"),
-						resultSet.getString("password"),
 						resultSet.getString("salt"), resultSet.getInt("role"));
 				System.out.println(user);
 			}
@@ -307,6 +299,7 @@ public class DatabaseManager {
 			while (resultSet.next()) {
 				toDo = gson.fromJson(resultSet.getString("to_do"), new TypeToken<ArrayList<Task>>(){}.getType());
 				task = new Task(resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
 						resultSet.getString("name"),
 						resultSet.getDate("projected_start"),
 						resultSet.getDate("actual_start"),

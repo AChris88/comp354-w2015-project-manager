@@ -10,24 +10,20 @@ CREATE TABLE users(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 					role INTEGER(1));
 					
 CREATE TABLE tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT,
+					project_id INTEGER,
 					name TEXT UNIQUE,
 					projected_start DATE,
 					actual_start DATE,
 					projected_end DATE,
 					actual_end DATE,
-					to_do TEXT);
+					to_do TEXT,
+					FOREIGN KEY (project_id) REFERENCES projects(id));
 					
 CREATE TABLE projects(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 						name TEXT,
 						start_date DATE,
 						projected_end DATE,
 						end_date DATE);
-						
-CREATE TABLE project_tasks(	id INTEGER PRIMARY KEY AUTOINCREMENT,
-							project_id INTEGER,
-							task_id INTEGER,
-							FOREIGN KEY (project_id) REFERENCES projects(id),
-							FOREIGN KEY (task_id) REFERENCES tasks(id));
 						
 CREATE TABLE task_reqs(	id INTEGER PRIMARY KEY AUTOINCREMENT,
 						task_id INTEGER,

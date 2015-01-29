@@ -10,6 +10,7 @@ import java.util.Date;
  */
 public class Task {
 	private int id;
+	private int projectId;
 	private String name;
 	private Date projectedStartDate;
 	private Date startDate;
@@ -17,10 +18,12 @@ public class Task {
 	private Date endDate;
 	private ArrayList<Task> toDo;
 
-	public Task(int id, String name, Date projectedStartDate, Date startDate,
-			Date projectedEndDate, Date endDate, ArrayList<Task> toDo) {
+	public Task(int id, int projectId, String name, Date projectedStartDate,
+			Date startDate, Date projectedEndDate, Date endDate,
+			ArrayList<Task> toDo) {
 		super();
 		this.id = id;
+		this.projectId = projectId;
 		this.name = name;
 		this.projectedStartDate = projectedStartDate;
 		this.startDate = startDate;
@@ -81,11 +84,16 @@ public class Task {
 		return id;
 	}
 
+	public int getProjectId() {
+		return projectId;
+	}
+
 	@Override
 	public String toString() {
-		return "Task [id=" + id + ", name=" + name + ", projectedStartDate="
-				+ projectedStartDate + ", startDate=" + startDate
-				+ ", projectEndDate=" + projectedEndDate + ", endDate="
-				+ endDate + ", toDo=" + toDo + "]";
+		return "Task [id=" + id + ", projectId=" + projectId + ", name=" + name
+				+ ", projectedStartDate=" + projectedStartDate + ", startDate="
+				+ startDate + ", projectedEndDate=" + projectedEndDate
+				+ ", endDate=" + endDate + ", toDo=" + toDo + "]";
 	}
+
 }
