@@ -22,15 +22,21 @@ import util.PasswordUtil;
 /**
  * 
  * @author Christian Allard 7026188
- *
+ * 
  */
 public class DatabaseManager {
 	private Connection connection;
 	private ResultSet resultSet;
 	private PreparedStatement preparedStatement;
 	private Statement statement;
+	private String dbName;
 
 	public DatabaseManager() {
+		this("testdb.db");
+	}
+
+	public DatabaseManager(String dbName) {
+		this.dbName = dbName;
 		connection = null;
 		resultSet = null;
 		statement = null;
@@ -41,7 +47,7 @@ public class DatabaseManager {
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:testdb.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" + dbName);
 			statement = connection.createStatement();
 			statement.execute("PRAGMA foreign_keys = ON");
 		} catch (Exception e) {
