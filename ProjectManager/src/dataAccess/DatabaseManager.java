@@ -185,7 +185,7 @@ public class DatabaseManager {
 		return success;
 	}
 
-	public boolean insertProject(Project project) {
+	public boolean insertProject(Project project, User user) {
 		boolean success = true;
 		try {
 			connect();
@@ -200,7 +200,9 @@ public class DatabaseManager {
 			preparedStatement.setDate(5, new java.sql.Date(project.getEndDate()
 					.getTime()));
 			int records = preparedStatement.executeUpdate();
-			if (records != 1)
+			ProjectUser projectUser = new ProjectUser(0, project.getId(),
+					user.getId(), user.getRole());
+			if (records != 1 || !insertProjectUser(projectUser))
 				success = false;
 		} catch (Exception e) {
 			success = false;
@@ -699,18 +701,52 @@ public class DatabaseManager {
 	}
 
 	public void useCaseTest() {
-
+		User user = new User(0, "Chris", "Allard", "slaiy", "salt", 1);
+		insertUser(user, "password");
+		System.out.println("Data insert success: " + dataInsert());
+		System.out.println("Manager search and update success: " + managerSearch(user.getUsername(), "password"));
 	}
 
-	private ArrayList<Project> managerSearch(String username, String password) {
-		User user = login(username, password);
-		ArrayList<Project> projects = null;
-		ArrayList<User> users = null;
-		if (user.getRole() == 1) {
-			projects = getProjects();
-			users = getUsers();
-
+	private boolean dataInsert() {
+		boolean success = true;
+		User user = new User(0, "fName", "lName", "username", "salt", 0);
+		Project project = new Project(0, "Project name", new java.sql.Date(1),
+				new java.sql.Date(2), new java.sql.Date(3));
+		Task task = new Task(0, 1, "Task name", new java.sql.Date(1),
+				new java.sql.Date(2), new java.sql.Date(3),
+				new java.sql.Date(4), new ArrayList<Task>());
+		try{
+			connect();
+			if (!insertUser(user, "password2") || !insertProject(project, user) || !insertTask(task))
+				success = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
 		}
-		return projects;
+		
+		return success;
+	}
+
+	private boolean managerSearch(String username, String password) {
+		boolean success = true;
+		User user = login(username, password);
+		ArrayList<User> users = null;
+		ArrayList<Project> projects = null;
+		ArrayList<Task> tasks = null;
+		if (user.getRole() == 1) {
+			users = getUsers();
+			projects = getProjects();
+			tasks = getTasks();
+
+			users.get(0).setUsername("new username");
+			projects.get(0).setName("new project name");
+			tasks.get(0).setName("new task name");
+
+			if (!updateUser(users.get(0)) || !updateProject(projects.get(0))
+					|| !updateTask(tasks.get(0)))
+				success = false;
+		}
+		return success;
 	}
 }
