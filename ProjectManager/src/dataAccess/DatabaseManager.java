@@ -683,7 +683,7 @@ public class DatabaseManager {
 							resultSet.getString("first_name"),
 							resultSet.getString("last_name"),
 							resultSet.getString("username"),
-							resultSet.getString("salt"),
+							"", //TODO ask Chris what this is about
 							resultSet.getInt("role"));
 				}
 			}

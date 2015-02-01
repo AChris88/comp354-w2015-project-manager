@@ -16,6 +16,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import obj.User;
+
+import dataAccess.DatabaseManager;
+
+import authentication.AuthenticationPanel;
+
 /**
  * @author George Lambadas 7077076
  *
@@ -25,9 +31,12 @@ public class ProjectManager extends JFrame {
 	private static final long serialVersionUID = 8535188348113824366L;
 	private GridBagConstraints activePanelConstraints;
 	private JPanel activePanel;
+	public DatabaseManager db;
+	public User currentUser;
 	
 	public ProjectManager() {
 		initialize();
+		db = new DatabaseManager();
 		setVisible(true);
 		
 	}
@@ -42,7 +51,7 @@ public class ProjectManager extends JFrame {
 		// makeHelpMenu();
 
 		//TODO set menu bar
-		setJMenuBar(createMenuBar());
+		//setJMenuBar(createMenuBar());
 
 		// set up constraints that will be used for adding whatever panel is
 		// active to the main part of the GUI
@@ -77,12 +86,28 @@ public class ProjectManager extends JFrame {
 		constraints.gridx++;
 		add(leftPanel, constraints);*/
 
-		activePanel = new JPanel();
+		activePanel = new AuthenticationPanel(this);
 		add(activePanel);
 
 		pack();
 	}
 
+	public void exit() {
+		this.dispose();
+	}
+	
+	public void setActivePanel(JPanel activePanel) {
+		
+		//remove old panel
+		this.activePanel.setVisible(false);
+		
+		this.activePanel = activePanel;
+		this.add(activePanel);
+		this.setBounds(activePanel.getBounds());
+		//this.pack();
+	}
+	
+	
 	/**
 	 * @return JMenuBar 
 	 */

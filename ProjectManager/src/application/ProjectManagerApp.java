@@ -20,7 +20,7 @@ public class ProjectManagerApp {
 
 	public static void main(String[] args) {
 		//test user update
-		/*
+		
 		DatabaseManager dbm = new DatabaseManager();
 		User user = new User(1, "Chris", "Allard", "herp", "salt", 0);
 		dbm.insertUser(user, "password");
@@ -29,7 +29,7 @@ public class ProjectManagerApp {
 		user.setLastName("Lambadass");
 		dbm.updateUser(user);
 		System.out.println(dbm.getUsers().get(0));
-		*/
+		
 		
 		//test project update
 		/*
@@ -57,7 +57,7 @@ public class ProjectManagerApp {
 		newDate.setTime(0);
 		task.setEndDate(newDate);
 		dbm.updateTask(task);
-		System.out.println(dbm.getTasks().get(0));
+		System.out.println(dbm.getTasks().get(0));*/
 		*/
 		
 		//test password salting and hashing
