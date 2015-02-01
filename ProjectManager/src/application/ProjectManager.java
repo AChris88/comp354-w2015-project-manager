@@ -86,7 +86,7 @@ public class ProjectManager extends JFrame {
 		constraints.gridx++;
 		add(leftPanel, constraints);*/
 
-		activePanel = new AuthenticationPanel(this);
+		setActivePanel(new AuthenticationPanel(this), "Login");
 		add(activePanel);
 
 		pack();
@@ -96,15 +96,15 @@ public class ProjectManager extends JFrame {
 		this.dispose();
 	}
 	
-	public void setActivePanel(JPanel activePanel) {
-		
-		//remove old panel
-		this.activePanel.setVisible(false);
-		
+	public void setActivePanel(JPanel activePanel, String title) {
+		if(this.activePanel != null) {
+			this.remove(this.activePanel);
+		}
 		this.activePanel = activePanel;
 		this.add(activePanel);
 		this.setBounds(activePanel.getBounds());
-		//this.pack();
+		
+		this.setTitle(title);
 	}
 	
 	

@@ -47,7 +47,7 @@ public class AuthenticationPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-		
+
 		errorMessageLabel = new JLabel();
 		errorMessageLabel.setForeground(Color.RED);
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
@@ -93,7 +93,7 @@ public class AuthenticationPanel extends JPanel {
 
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ButtonClickListener());
-		
+
 		GridBagConstraints gbc_cancelButton = new GridBagConstraints();
 		gbc_cancelButton.insets = new Insets(0, 0, 0, 5);
 		gbc_cancelButton.gridx = 3;
@@ -120,20 +120,22 @@ public class AuthenticationPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
-			
+
 			if (source == loginButton) {
-				//authenticate here
-				manager.currentUser = manager.db.login(usernameField.getText(), passwordField.getText());
+				// authenticate here
+				manager.currentUser = manager.db.login(usernameField.getText(),
+						passwordField.getText());
 				if (manager.currentUser == null) {
 					errorMessageLabel.setText("Invalid username or password.");
 				} else {
 					System.out.println("hello");
-					manager.setActivePanel(new DashboardPanel(manager));
+					manager.setActivePanel(new DashboardPanel(manager),
+							manager.currentUser.getFirstName() + "'s Dashboard");
 				}
 			} else if (source == cancelButton) {
 				manager.exit();
 			}
-			
+
 		}
 	}
 

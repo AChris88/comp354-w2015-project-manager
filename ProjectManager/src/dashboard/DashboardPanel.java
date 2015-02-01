@@ -99,8 +99,8 @@ public class DashboardPanel extends JPanel {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (model.getProjectAt(row) != null)
-					/*manager.setActivePanel(new ProjectEditorPanel(manager,
-							model.getProjectAt(row)));*/;//TODO
+					manager.setActivePanel(new ProjectEditorPanel(manager,
+							model.getProjectAt(row)), "Project: " + model.getProjectAt(row).getName());
 
 			}
 		}

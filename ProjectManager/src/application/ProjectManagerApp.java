@@ -58,7 +58,6 @@ public class ProjectManagerApp {
 		task.setEndDate(newDate);
 		dbm.updateTask(task);
 		System.out.println(dbm.getTasks().get(0));*/
-		*/
 		
 		//test password salting and hashing
 		/*
