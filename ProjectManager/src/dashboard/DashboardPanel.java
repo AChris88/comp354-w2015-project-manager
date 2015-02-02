@@ -5,6 +5,7 @@ package dashboard;
 
 import javax.swing.JPanel;
 
+
 import application.ProjectManager;
 import java.awt.GridBagLayout;
 import javax.swing.JButton;
@@ -20,7 +21,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
 import projectEditor.ProjectEditorPanel;
-import customComponents.ProjectTable;
 import customComponents.ProjectTableModel;
 
 /**

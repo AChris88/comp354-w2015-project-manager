@@ -7,20 +7,20 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import obj.Project;
+import obj.Task;
 
 /**
  * @author George Lambadas 7077076
  * 
  */
-public class ProjectTableModel extends AbstractTableModel {
+public class TaskTableModel extends AbstractTableModel {
 
 	private ArrayList<String> columnNames;
-	private ArrayList<Project> data;
+	private ArrayList<Task> data;
 
-	public ProjectTableModel() {
+	public TaskTableModel() {
 		this.columnNames = new ArrayList<String>();
-		columnNames.add("Name");
+		columnNames.add("Task Name");
 		columnNames.add("Projected End Date");
 	}
 
@@ -51,12 +51,11 @@ public class ProjectTableModel extends AbstractTableModel {
 		}
 	}
 
-	public void populateModel(ArrayList<Project> projects) {
-		this.data = projects;
-	}
-
-	public Project getProjectAt(int index) {
-		return data.get(index);
+	/**
+	 * @param tasks tasks to be displayed in the table
+	 */
+	public void populateModel(ArrayList<Task> tasks) {
+		this.data = tasks;
 	}
 
 }

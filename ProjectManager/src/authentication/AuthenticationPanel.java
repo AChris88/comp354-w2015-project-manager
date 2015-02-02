@@ -124,7 +124,7 @@ public class AuthenticationPanel extends JPanel {
 			if (source == loginButton) {
 				// authenticate here
 				manager.currentUser = manager.db.login(usernameField.getText(),
-						passwordField.getText());
+						new String(passwordField.getPassword()));
 				if (manager.currentUser == null) {
 					errorMessageLabel.setText("Invalid username or password.");
 				} else {
