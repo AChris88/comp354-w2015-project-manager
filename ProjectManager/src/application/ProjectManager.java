@@ -3,8 +3,10 @@
  */
 package application;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,9 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import obj.User;
-
 import dataAccess.DatabaseManager;
-
 import authentication.AuthenticationPanel;
 
 /**
@@ -38,7 +38,7 @@ public class ProjectManager extends JFrame {
 		initialize();
 		db = new DatabaseManager();
 		setVisible(true);
-		
+		centerScreen();
 	}
 	
 	/**
@@ -191,5 +191,12 @@ public class ProjectManager extends JFrame {
 		menuItem.addActionListener(listener);
 		menuItem.setActionCommand(name);
 		return menuItem;
+	}
+	
+	private void centerScreen() {
+		Dimension dim = getToolkit().getScreenSize();
+		Rectangle abounds = getBounds();
+		setLocation((dim.width - abounds.width) / 2,
+				(dim.height - abounds.height) / 2);
 	}
 }
