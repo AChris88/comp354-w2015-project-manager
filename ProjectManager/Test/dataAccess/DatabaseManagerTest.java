@@ -49,6 +49,7 @@ public class DatabaseManagerTest {
         _test_project_manager = new User(0,"SamuelM", "Beland-LeblancM", "manager","salt",1);
 
         _db_mg.insertUser(_test_project_manager, "pwd");
+        _test_project_manager = getUserByUsername( _db_mg.getUsers(), _test_project_manager.getUsername());
         _db_mg.insertProject(_test_project_delete, _test_project_manager);
 
 //        _db_mg.insertProject()
@@ -108,9 +109,9 @@ public class DatabaseManagerTest {
 //        assertTrue("Inserting dummy user",_db_mg.insertUser(testUser,"lawl"));
 //
         ArrayList<User> users = _db_mg.getUsers();
-        assertNotNull("should have at least 1 user in DB", users);
-        User uToDelete = getUserByUsername(users, _test_user_delete.getUsername());
-        assertNotNull("Has the right user to delete", uToDelete);
+//        assertNotNull("should have at least 1 user in DB", users);
+//        User uToDelete = getUserByUsername(users, _test_user_delete.getUsername());
+//        assertNotNull("Has the right user to delete", uToDelete);
 
         assertTrue("Deleting user", _db_mg.removeUser(_test_user_delete));
 
@@ -136,11 +137,17 @@ public class DatabaseManagerTest {
 
         ArrayList<Project> projects = _db_mg.getProjects();
         assertNotNull("At least 1 project should be there", projects);
-        assert
+
+        Project pTemp = projects.get(projects.size() - 1);
+        assertEquals("Validating project name ", _test_project_insert.getName(), pTemp.getName());
+        assertEquals("Validating project Start Date ", _test_project_insert.getStartDate(), pTemp.getStartDate());
+        assertEquals("Validating project Projected End Date ", _test_project_insert.getProjectedEndDate(), pTemp.getProjectedEndDate());
+        assertEquals("Validating project End Date ", _test_project_insert.getEndDate(), pTemp.getEndDate());
+
 
     }
 
-    public boolean getProjectByID(ArrayList<Project> projects, int id){
+    public Project getProjectByID(ArrayList<Project> projects, int id){
         for(Project p : projects){
             if (p.getId() == id){
                 return p;
