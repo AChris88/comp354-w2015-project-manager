@@ -6,14 +6,20 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JTable;
 
+import java.awt.Event;
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import obj.Task;
@@ -32,6 +38,8 @@ public class TaskEditorPanel extends JPanel implements Observer{
 	private JTextField expectedEndTextField;
 	private JLabel lblActualEnd;
 	private JTextField endTextField;
+	private JTabbedPane tabbedPane;
+	private int tabCtr;
 	
 	/**
 	 * @wbp.parser.constructor
@@ -49,6 +57,10 @@ public class TaskEditorPanel extends JPanel implements Observer{
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
 				Double.MIN_VALUE };
 		setLayout(gridBagLayout);
+		
+		tabbedPane = new JTabbedPane();
+		tabCtr = 0;
+        add(tabbedPane);
 		
 		JLabel lblTakeName = new JLabel("Task Name:");
 		GridBagConstraints gbc_lblTakeName = new GridBagConstraints();
@@ -150,6 +162,58 @@ public class TaskEditorPanel extends JPanel implements Observer{
 		TaskEditorModel taskModel = new TaskEditorModel();
 		taskModel.setTask(task);
 	}
+	
+	private void addTab(Task task){
+//		ImageIcon icon = createImageIcon("images/middle.gif");
+		
+		JComponent panel1 = makeTextPanel(task.getName());
+        tabbedPane.addTab(task.getName(), null, panel1, task.getName());
+        
+        int keyEvent = 0;
+        
+        switch (tabCtr) {
+        case 0: 
+        	keyEvent = KeyEvent.VK_1;
+        	break;
+        case 1: 
+        	keyEvent = KeyEvent.VK_2;
+        	break;
+        case 2: 
+        	keyEvent = KeyEvent.VK_3;
+        	break;
+        case 3: 
+        	keyEvent = KeyEvent.VK_4;
+        	break;
+        case 4: 
+        	keyEvent = KeyEvent.VK_5;
+        	break;
+        case 5: 
+        	keyEvent = KeyEvent.VK_6;
+        	break;
+        }
+        
+        //keyEvent could also be represented as (tabCtr + 49)
+        tabbedPane.setMnemonicAt(tabCtr++, keyEvent);
+	}
+	
+	private JComponent makeTextPanel(String text) {
+        JPanel panel = new JPanel(false);
+        JLabel filler = new JLabel(text);
+        filler.setHorizontalAlignment(JLabel.CENTER);
+        panel.setLayout(new GridLayout(1, 1));
+        panel.add(filler);
+        return panel;
+    }
+	
+	private ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = ProjectManager.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
 	
 	@Override
 	public void update(Observable arg0, Object arg1) {

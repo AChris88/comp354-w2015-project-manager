@@ -31,12 +31,6 @@ public class DatabaseManager {
 	private Statement statement;
 	private String dbName;
 
-	//getTaskForProject
-	//getProjectForUsers
-	//getUsersForProject
-	//getUsersForTask
-	//public ArrayList<Task> getRequiredTasks(Task task)
-	
 	public DatabaseManager() {
 		this("testdb.db");
 	}
@@ -210,7 +204,7 @@ public class DatabaseManager {
 					.executeQuery("SELECT rowid as id FROM projects");
 			ProjectUser projectUser = null;
 			if (resultSet.next()) {
-				
+
 				projectUser = new ProjectUser(1, resultSet.getInt("id"),
 						user.getId(), user.getRole());
 				close();
@@ -361,8 +355,7 @@ public class DatabaseManager {
 				users.add(new User(resultSet.getInt("id"), resultSet
 						.getString("first_name"), resultSet
 						.getString("last_name"), resultSet
-						.getString("username"),
-						resultSet.getInt("role")));
+						.getString("username"), resultSet.getInt("role")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -489,8 +482,6 @@ public class DatabaseManager {
 		return projectUsers;
 	}
 
-	// getPorjectUsers(Project project)
-
 	public ArrayList<UserTask> getUserTasks() {
 		ArrayList<UserTask> userTasks = null;
 		try {
@@ -515,8 +506,6 @@ public class DatabaseManager {
 		}
 		return userTasks;
 	}
-
-	// getUserTasks(User user)
 
 	public ArrayList<TaskRequirement> getTaskRequirements() {
 		ArrayList<TaskRequirement> taskReqs = null;
@@ -543,7 +532,165 @@ public class DatabaseManager {
 		return taskReqs;
 	}
 
-	// getTaskRequirements(Task task)
+	public ArrayList<Task> getTasksForProject(Project project) {
+		ArrayList<Task> tasks = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM tasks WHERE project_id = ?");
+			preparedStatement.setInt(1, project.getId());
+			resultSet = preparedStatement.executeQuery();
+			tasks = new ArrayList<Task>();
+			ArrayList<Task> toDo;
+			Gson gson = new Gson();
+			while (resultSet.next()) {
+				toDo = gson.fromJson(resultSet.getString("to_do"),
+						new TypeToken<ArrayList<Task>>() {
+						}.getType());
+				tasks.add(new Task(resultSet.getInt("id"), resultSet
+						.getInt("project_id"), resultSet.getString("name"),
+						new java.sql.Date(resultSet.getDate("projected_start")
+								.getTime()), new java.sql.Date(resultSet
+								.getDate("actuel_start").getTime()),
+						new java.sql.Date(resultSet.getDate("projected_end")
+								.getTime()), new java.sql.Date(resultSet
+								.getDate("actual_end").getTime()), toDo));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return tasks;
+	}
+
+	public ArrayList<Project> getProjectForUsers(User user) {
+		ArrayList<Project> projects = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM projects WHERE project_users.user_id = ?");
+			preparedStatement.setInt(1, user.getId());
+			resultSet = preparedStatement.executeQuery();
+			projects = new ArrayList<Project>();
+			while (resultSet.next()) {
+				projects.add(new Project(resultSet.getInt("id"), resultSet
+						.getString("name"), new java.sql.Date(resultSet
+						.getDate("start_date").getTime()), new java.sql.Date(
+						resultSet.getDate("projected_end").getTime()),
+						new java.sql.Date(resultSet.getDate("actual_end")
+								.getTime())));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return projects;
+	}
+
+	public ArrayList<User> getUsersForProject(Project project) {
+		ArrayList<User> users = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM users WHERE project_users.project_id = ?");
+			preparedStatement.setInt(1, project.getId());
+			resultSet = preparedStatement.executeQuery();
+			users = new ArrayList<User>();
+			while (resultSet.next()) {
+				users.add(new User(resultSet.getInt("id"), resultSet
+						.getString("first_name"), resultSet
+						.getString("last_name"), resultSet
+						.getString("username"), resultSet.getInt("role")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return users;
+	}
+
+	public ArrayList<User> getUsersForTask(Task task) {
+		ArrayList<User> users = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM users WHERE user_tasks.user_id = ?");
+			preparedStatement.setInt(1, task.getId());
+			resultSet = preparedStatement.executeQuery();
+			users = new ArrayList<User>();
+			while (resultSet.next()) {
+				users.add(new User(resultSet.getInt("id"), resultSet
+						.getString("first_name"), resultSet
+						.getString("last_name"), resultSet
+						.getString("username"), resultSet.getInt("role")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return users;
+	}
+
+	public ArrayList<Task> getTaskRequirements(Task task) {
+		ArrayList<Task> tasks = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM tasks WHERE task_reqs.task_id = ?");
+			preparedStatement.setInt(1, task.getId());
+			resultSet = preparedStatement.executeQuery();
+			tasks = new ArrayList<Task>();
+			ArrayList<Task> toDo;
+			Gson gson = new Gson();
+			while (resultSet.next()) {
+				toDo = gson.fromJson(resultSet.getString("to_do"),
+						new TypeToken<ArrayList<Task>>() {
+						}.getType());
+				tasks.add(new Task(resultSet.getInt("id"), resultSet
+						.getInt("project_id"), resultSet.getString("name"),
+						new java.sql.Date(resultSet.getDate("projected_start")
+								.getTime()), new java.sql.Date(resultSet
+								.getDate("actuel_start").getTime()),
+						new java.sql.Date(resultSet.getDate("projected_end")
+								.getTime()), new java.sql.Date(resultSet
+								.getDate("actual_end").getTime()), toDo));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return tasks;
+	}
 
 	// UPDATES - U
 
