@@ -1,8 +1,10 @@
 package dataAccess;
 
+import obj.Project;
 import obj.User;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,25 +20,49 @@ import static org.junit.Assert.*;
 public class DatabaseManagerTest {
 
     private DatabaseManager _db_mg;
-    private User _test_user;
+    private User _test_user_insert;
+    private User _test_user_delete;
+    private User _test_user_duplicate;
+    private User _test_project_manager;
+    private Project _test_project_insert;
+    private Project _test_project_delete;
 
     @Before
     public void beforeTest() throws Exception {
-        _db_mg = new DatabaseManager();
-        _test_user = new User(1,"Samuel", "Beland-Leblanc","sbleblanc","salt",0);
+        File testDbFile = new File("testDataDb.db");
+        if(testDbFile.exists()){
+            testDbFile.delete();
+        }
+
+        _db_mg = new DatabaseManager("testDataDb.db");
+        _test_user_insert = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_insert","salt",0);
+        _test_user_delete = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_delete","salt",0);
+        _test_user_duplicate = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_duplicate","salt",0);
+
+        _db_mg.insertUser(_test_user_delete, "pwd");
+        _db_mg.insertUser(_test_user_duplicate, "pwd");
+
+        //No need to check for duplication since there are no constraints on the date
+        _test_project_insert = new Project(0,"Project Insert",new Date(), new Date(),new Date());
+        _test_project_delete = new Project(0,"Project Delete",new Date(), new Date(),new Date());
+
+        _test_project_manager = new User(0,"SamuelM", "Beland-LeblancM", "manager","salt",1);
+
+        _db_mg.insertUser(_test_project_manager, "pwd");
+        _db_mg.insertProject(_test_project_delete, _test_project_manager);
+
+//        _db_mg.insertProject()
     }
+
 
     @Test
     public void testInsertUser() throws Exception {
 
-        String uName = Long.toString(System.currentTimeMillis());
-        User testUser =  new User(1,"Samuel", "Beland-Leblanc",uName,"salt",0);
-
-        assertTrue("Adding the test user Samuel : ", _db_mg.insertUser(testUser, "myPass"));
+        assertTrue("Adding the test user Samuel : ", _db_mg.insertUser(_test_user_insert, "myPass"));
 
         ArrayList<User> users = _db_mg.getUsers();
 
-        assertTrue("The test user as been succefully added", checkIfUserExists(users, uName));
+        assertTrue("The test user as been succefully added", checkIfUserExists(users, _test_user_insert.getUsername()));
 
     }
 
@@ -50,55 +76,43 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testInsertUser_Duplicates() throws Exception {
-
-        //3 dummy unique username for testing
-        String uName = Long.toString(System.currentTimeMillis());
-        String uName2 = Long.toString(System.currentTimeMillis() + 1);
-        String uName3 = Long.toString(System.currentTimeMillis() + 2);
-
-        //Add a base user to test duplication validation
-        User testUser =  new User(1,"Samuel", "Beland-Leblanc",uName,"salt",0);
-        assertTrue("Inserting dummy user", _db_mg.insertUser(testUser,"lawl"));
-
-        ArrayList<User> users;
-
-        //4 dummy with 4 different case of possible duplication
-        User dup1 = new User(testUser.getId(), "Dup1", "Dup2", uName2,"salt",0);
-        User dup2 = new User(2, "Dup1", "Dup2", testUser.getUsername(),"salt",0);
-        User dup3 = new User(testUser.getId(), "Dup1", "Dup2", testUser.getUsername(),"salt",0);
-        User dup4 = new User(1, testUser.getFirstName(),testUser.getLastName(),uName3,"salt",0);
-
-
-        assertTrue("Adding user with same ID : ",_db_mg.insertUser(dup1, "myPass"));
-        users = _db_mg.getUsers();
+    public void testInsertUser_DuplicateID() throws Exception{
+        User tempUser = new User(_test_user_duplicate.getId(),"test","test","testDupID","salt",0);
+        assertTrue("Adding user with same ID : ",_db_mg.insertUser(tempUser, "myPass"));
+        ArrayList<User> users = _db_mg.getUsers();
         assertNotNull("should have at least 1 user in DB", users);
-        assertTrue("The user should've been added with same ID", checkIfUserExists(users,uName2));
+        assertTrue("The user should've been added with same ID", checkIfUserExists(users,tempUser.getUsername()));
+    }
 
-        assertFalse("Adding user with same username : ",_db_mg.insertUser(dup2, "myPass"));
-        assertFalse("Adding user with same ID and username : ",_db_mg.insertUser(dup3, "myPass"));
+    @Test
+    public void testInsertUser_DuplicateUsername() throws Exception{
+        User tempUser = new User(0,"test","test",_test_user_duplicate.getUsername(),"salt",0);
+        assertFalse("Adding user with same username : ",_db_mg.insertUser(tempUser, "myPass"));
+    }
 
-
-        assertTrue("Adding user with the same first and last name : ", _db_mg.insertUser(dup4,"khdfksdhb"));
-        users = _db_mg.getUsers();
+    @Test
+    public void testInsertUser_DuplicateFirstLastName() throws Exception{
+        User tempUser = new User(0,_test_user_duplicate.getFirstName(),_test_user_duplicate.getLastName(),"testDupUsername","salt",0);
+        assertTrue("Adding user with same first and last name : ",_db_mg.insertUser(tempUser, "myPass"));
+        ArrayList<User> users = _db_mg.getUsers();
         assertNotNull("should have at least 1 user in DB", users);
-        assertTrue("The user should've been added with same first and last name", checkIfUserExists(users,uName3));
+        assertTrue("The user should've been added with same first and last name", checkIfUserExists(users,tempUser.getUsername()));
     }
 
     @Test
     public void testRemoveUser() throws Exception {
-        String uName = Long.toString(System.currentTimeMillis());
-
-        //Add a base user to test deletion
-        User testUser =  new User(1,"Samuel", "Beland-Leblanc",uName,"salt",0);
-        assertTrue("Inserting dummy user",_db_mg.insertUser(testUser,"lawl"));
-
+//        String uName = Long.toString(System.currentTimeMillis());
+//
+//        //Add a base user to test deletion
+//        User testUser =  new User(1,"Samuel", "Beland-Leblanc",uName,"salt",0);
+//        assertTrue("Inserting dummy user",_db_mg.insertUser(testUser,"lawl"));
+//
         ArrayList<User> users = _db_mg.getUsers();
         assertNotNull("should have at least 1 user in DB", users);
-        User uToDelete = getUserByUsername(users, testUser.getUsername());
+        User uToDelete = getUserByUsername(users, _test_user_delete.getUsername());
         assertNotNull("Has the right user to delete", uToDelete);
 
-        assertTrue("Deleting user", _db_mg.removeUser(uToDelete));
+        assertTrue("Deleting user", _db_mg.removeUser(_test_user_delete));
 
         ArrayList<User> usersAfterDelete = _db_mg.getUsers();
         assertEquals("Should have 1 less record in db", users.size() - 1, users.size() - (users.size() - usersAfterDelete.size()));
@@ -118,6 +132,21 @@ public class DatabaseManagerTest {
     @Test
     public void testInsertProject() throws Exception {
 
+        assertTrue("Adding a project with the test manager", _db_mg.insertProject(_test_project_insert, _test_project_manager));
+
+        ArrayList<Project> projects = _db_mg.getProjects();
+        assertNotNull("At least 1 project should be there", projects);
+        assert
+
+    }
+
+    public boolean getProjectByID(ArrayList<Project> projects, int id){
+        for(Project p : projects){
+            if (p.getId() == id){
+                return p;
+            }
+        }
+        return null;
     }
 
     @Test
