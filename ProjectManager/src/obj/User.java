@@ -10,7 +10,6 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String username;
-	private String salt;
 	private int role;
 
 	public User() {
@@ -18,19 +17,17 @@ public class User {
 		firstName = "";
 		lastName = "";
 		username = "";
-		salt = "";
 		role = 0;
 	}
 
 	// The id is useless for inserts!
 	public User(int id, String firstName, String lastName, String username,
-			String salt, int role) {
+			int role) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
-		this.salt = salt;
 		this.role = role;
 	}
 
@@ -48,10 +45,6 @@ public class User {
 
 	public void setRole(int role) {
 		this.role = role;
-	}
-
-	public String getSalt() {
-		return salt;
 	}
 
 	public String getFirstName() {
@@ -77,7 +70,6 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", username=" + username + ", salt=" + salt
-				+ ", role=" + role + "]";
+				+ lastName + ", username=" + username + ", role=" + role + "]";
 	}
 }

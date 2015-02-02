@@ -58,7 +58,7 @@ public class ProjectUser {
 	@Override
 	public String toString() {
 		return "ProjectUser [id=" + id + ", projectId=" + projectId
-				+ ", projectRole=" + projectRole + "]";
+				+ ", userId=" + userId + ", projectRole=" + projectRole + "]";
 	}
 
 }

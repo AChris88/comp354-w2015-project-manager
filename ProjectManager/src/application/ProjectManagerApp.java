@@ -20,7 +20,7 @@ public class ProjectManagerApp {
 
 	public static void main(String[] args) {
 		//test user update
-		
+		/*
 		DatabaseManager dbm = new DatabaseManager();
 		User user = new User(1, "Chris", "Allard", "herp", "salt", 0);
 		dbm.insertUser(user, "password");
@@ -29,13 +29,14 @@ public class ProjectManagerApp {
 		user.setLastName("Lambadass");
 		dbm.updateUser(user);
 		System.out.println(dbm.getUsers().get(0));
-		
+		*/
 		
 		//test project update
-		/*
+		
 		DatabaseManager dbm = new DatabaseManager();
 		Project project = new Project(1, "Super important project", new Date(), new Date(), new Date());
-		User user = new User(0, "Chris", "Allard", "slaiy", "salt", 0);
+		User user = new User(1, "Chris", "Allard", "slaiy", 0);
+		dbm.insertUser(user, "password");
 		dbm.insertProject(project, user);
 		System.out.println(dbm.getProjects().get(0));
 		project.setName("Even more important project");
@@ -44,7 +45,7 @@ public class ProjectManagerApp {
 		project.setProjectedEndDate(newEndDate);
 		dbm.updateProject(project);
 		System.out.println(dbm.getProjects().get(0));
-		*/
+		
 		
 		//test task update
 		/*

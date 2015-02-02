@@ -35,9 +35,9 @@ public class DatabaseManagerTest {
         }
 
         _db_mg = new DatabaseManager("testDataDb.db");
-        _test_user_insert = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_insert","salt",0);
-        _test_user_delete = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_delete","salt",0);
-        _test_user_duplicate = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_duplicate","salt",0);
+        _test_user_insert = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_insert",0);
+        _test_user_delete = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_delete",0);
+        _test_user_duplicate = new User(1,"Samuel", "Beland-Leblanc","sbleblanc_duplicate",0);
 
         _db_mg.insertUser(_test_user_delete, "pwd");
         _db_mg.insertUser(_test_user_duplicate, "pwd");
@@ -46,7 +46,7 @@ public class DatabaseManagerTest {
         _test_project_insert = new Project(0,"Project Insert",new Date(), new Date(),new Date());
         _test_project_delete = new Project(0,"Project Delete",new Date(), new Date(),new Date());
 
-        _test_project_manager = new User(0,"SamuelM", "Beland-LeblancM", "manager","salt",1);
+        _test_project_manager = new User(0,"SamuelM", "Beland-LeblancM", "manager",1);
 
         _db_mg.insertUser(_test_project_manager, "pwd");
         _test_project_manager = getUserByUsername( _db_mg.getUsers(), _test_project_manager.getUsername());
@@ -78,7 +78,7 @@ public class DatabaseManagerTest {
 
     @Test
     public void testInsertUser_DuplicateID() throws Exception{
-        User tempUser = new User(_test_user_duplicate.getId(),"test","test","testDupID","salt",0);
+        User tempUser = new User(_test_user_duplicate.getId(),"test","test","testDupID",0);
         assertTrue("Adding user with same ID : ",_db_mg.insertUser(tempUser, "myPass"));
         ArrayList<User> users = _db_mg.getUsers();
         assertNotNull("should have at least 1 user in DB", users);
@@ -87,13 +87,13 @@ public class DatabaseManagerTest {
 
     @Test
     public void testInsertUser_DuplicateUsername() throws Exception{
-        User tempUser = new User(0,"test","test",_test_user_duplicate.getUsername(),"salt",0);
+        User tempUser = new User(0,"test","test",_test_user_duplicate.getUsername(),0);
         assertFalse("Adding user with same username : ",_db_mg.insertUser(tempUser, "myPass"));
     }
 
     @Test
     public void testInsertUser_DuplicateFirstLastName() throws Exception{
-        User tempUser = new User(0,_test_user_duplicate.getFirstName(),_test_user_duplicate.getLastName(),"testDupUsername","salt",0);
+        User tempUser = new User(0,_test_user_duplicate.getFirstName(),_test_user_duplicate.getLastName(),"testDupUsername",0);
         assertTrue("Adding user with same first and last name : ",_db_mg.insertUser(tempUser, "myPass"));
         ArrayList<User> users = _db_mg.getUsers();
         assertNotNull("should have at least 1 user in DB", users);

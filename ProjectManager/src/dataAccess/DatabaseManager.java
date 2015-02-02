@@ -85,7 +85,7 @@ public class DatabaseManager {
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-								+ "name TEXT, "
+								+ "name TEXT UNIQUE, "
 								+ "start_date DATE, "
 								+ "projected_end DATE, " + "end_date DATE);");
 			}
@@ -200,16 +200,24 @@ public class DatabaseManager {
 			preparedStatement.setDate(5, new java.sql.Date(project.getEndDate()
 					.getTime()));
 			int records = preparedStatement.executeUpdate();
-			ProjectUser projectUser = new ProjectUser(0, project.getId(),
-					user.getId(), user.getRole());
-			if (records != 1 || !insertProjectUser(projectUser))
-				success = false;
+			resultSet = statement
+					.executeQuery("SELECT rowid as id FROM projects");
+			ProjectUser projectUser = null;
+			if (resultSet.next()) {
+				
+				projectUser = new ProjectUser(1, resultSet.getInt("id"),
+						user.getId(), user.getRole());
+				close();
+				if (records != 1 || !insertProjectUser(projectUser))
+					success = false;
+			}
 		} catch (Exception e) {
 			success = false;
 			e.printStackTrace();
 		} finally {
 			close();
 			try {
+				statement.close();
 				preparedStatement.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -263,6 +271,7 @@ public class DatabaseManager {
 			preparedStatement.setInt(2, projectUser.getProjectId());
 			preparedStatement.setInt(3, projectUser.getUserId());
 			preparedStatement.setInt(4, projectUser.getProjectRole());
+			System.out.println(projectUser);
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
 				success = false;
@@ -346,7 +355,7 @@ public class DatabaseManager {
 				users.add(new User(resultSet.getInt("id"), resultSet
 						.getString("first_name"), resultSet
 						.getString("last_name"), resultSet
-						.getString("username"), resultSet.getString("salt"),
+						.getString("username"),
 						resultSet.getInt("role")));
 			}
 		} catch (Exception e) {
@@ -386,6 +395,33 @@ public class DatabaseManager {
 			}
 		}
 		return projects;
+	}
+
+	public Project getProjectByName(String name) {
+		Project project = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM projects WHERE name = ?");
+			preparedStatement.setString(1, name);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next())
+				project = new Project(resultSet.getInt("id"),
+						resultSet.getString("name"),
+						resultSet.getDate("start_date"),
+						resultSet.getDate("projected_end"),
+						resultSet.getDate("end_date"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return project;
 	}
 
 	public ArrayList<Task> getTasks() {
@@ -447,6 +483,8 @@ public class DatabaseManager {
 		return projectUsers;
 	}
 
+	// getPorjectUsers(Project project)
+
 	public ArrayList<UserTask> getUserTasks() {
 		ArrayList<UserTask> userTasks = null;
 		try {
@@ -472,6 +510,8 @@ public class DatabaseManager {
 		return userTasks;
 	}
 
+	// getUserTasks(User user)
+
 	public ArrayList<TaskRequirement> getTaskRequirements() {
 		ArrayList<TaskRequirement> taskReqs = null;
 		try {
@@ -496,6 +536,8 @@ public class DatabaseManager {
 		}
 		return taskReqs;
 	}
+
+	// getTaskRequirements(Task task)
 
 	// UPDATES - U
 
@@ -530,11 +572,11 @@ public class DatabaseManager {
 		try {
 			String update = "UPDATE projects SET name= '"
 					+ project.getName()
-					+ ", start_date = "
+					+ "', start_date = "
 					+ new java.sql.Date(project.getStartDate().getTime())
 					+ ", projected_end = "
 					+ new java.sql.Date(project.getProjectedEndDate().getTime())
-					+ "', end_date = "
+					+ ", end_date = "
 					+ new java.sql.Date(project.getEndDate().getTime())
 					+ " WHERE id= " + project.getId();
 			connect();
@@ -683,7 +725,6 @@ public class DatabaseManager {
 							resultSet.getString("first_name"),
 							resultSet.getString("last_name"),
 							resultSet.getString("username"),
-							"", //TODO ask Chris what this is about
 							resultSet.getInt("role"));
 				}
 			}
@@ -701,30 +742,32 @@ public class DatabaseManager {
 	}
 
 	public void useCaseTest() {
-		User user = new User(0, "Chris", "Allard", "slaiy", "salt", 1);
+		User user = new User(0, "Chris", "Allard", "slaiy", 1);
 		insertUser(user, "password");
 		System.out.println("Data insert success: " + dataInsert());
-		System.out.println("Manager search and update success: " + managerSearch(user.getUsername(), "password"));
+		System.out.println("Manager search and update success: "
+				+ managerSearch(user.getUsername(), "password"));
 	}
 
 	private boolean dataInsert() {
 		boolean success = true;
-		User user = new User(0, "fName", "lName", "username", "salt", 0);
+		User user = new User(0, "fName", "lName", "username", 0);
 		Project project = new Project(0, "Project name", new java.sql.Date(1),
 				new java.sql.Date(2), new java.sql.Date(3));
 		Task task = new Task(0, 1, "Task name", new java.sql.Date(1),
 				new java.sql.Date(2), new java.sql.Date(3),
 				new java.sql.Date(4), new ArrayList<Task>());
-		try{
+		try {
 			connect();
-			if (!insertUser(user, "password2") || !insertProject(project, user) || !insertTask(task))
+			if (!insertUser(user, "password2") || !insertProject(project, user)
+					|| !insertTask(task))
 				success = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			close();
 		}
-		
+
 		return success;
 	}
 
