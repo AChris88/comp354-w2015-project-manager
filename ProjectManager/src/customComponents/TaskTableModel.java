@@ -58,4 +58,12 @@ public class TaskTableModel extends AbstractTableModel {
 		this.data = tasks;
 	}
 
+	/**
+	 * @param row index of row
+	 * @return task at row
+	 */
+	public Task getTaskAt(int row) {
+		return data.get(row);
+	}
+
 }

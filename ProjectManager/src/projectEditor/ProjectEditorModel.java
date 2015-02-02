@@ -18,6 +18,7 @@ public class ProjectEditorModel extends Observable {
 
 	public void setProject(Project p) {
 		this.p = p;
+		setChanged();
 		notifyObservers();
 	}
 

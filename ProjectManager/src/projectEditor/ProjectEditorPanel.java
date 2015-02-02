@@ -5,7 +5,9 @@ package projectEditor;
 
 import javax.swing.JPanel;
 
+
 import obj.Project;
+import taskEditor.TaskEditorPanel;
 
 import application.ProjectManager;
 import java.awt.GridBagLayout;
@@ -13,6 +15,8 @@ import javax.swing.JList;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
@@ -40,6 +44,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JTextField txtActualEndDate;
 	private JLabel lblTaskList;
 	private JTable table;
+	private TaskTableModel tableModel;
 	private JSplitPane splitPane;
 	private JButton btnCancel;
 	private JButton btnSave;
@@ -144,10 +149,12 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		add(lblTaskList, gbc_lblTaskList);
 		
 		
-		TaskTableModel tableModel = new TaskTableModel();
+		tableModel = new TaskTableModel();
 		tableModel.populateModel(manager.db.getTasks()); //TODO get tasks for project
 
-		table = new JTable();//TODO new JTable(tableModel);
+		table = new JTable(tableModel); //TODO new JTable() to view in design
+
+		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.gridwidth = 3;
 		gbc_table.fill = GridBagConstraints.BOTH;
@@ -155,8 +162,10 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_table.gridy = 7;
 		add(new JScrollPane(table), gbc_table);
 
-		//projectModel = new ProjectEditorModel();
-		//projectModel.setProject(project);
+		projectModel = new ProjectEditorModel();
+		projectModel.addObserver(this);
+		
+		projectModel.setProject(project);
 	}
 
 	@Override
@@ -184,4 +193,39 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					+ calendar.get(Calendar.DATE));
 		}
 	}
+	
+	private class DoubleClickListener implements MouseListener {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				JTable target = (JTable) e.getSource();
+				int row = target.getSelectedRow();
+				if (tableModel.getTaskAt(row) != null)
+					manager.setActivePanel(new TaskEditorPanel(manager,
+							tableModel.getTaskAt(row)), "Project: " + tableModel.getTaskAt(row).getName());
+
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+	}
+
 }
