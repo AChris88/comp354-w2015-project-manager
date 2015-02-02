@@ -1,5 +1,6 @@
 package obj;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -13,6 +14,8 @@ public class Project {
 	private Date startDate;
 	private Date projectedEndDate;
 	private Date endDate;
+	private ArrayList<Task> tasks;
+	private ArrayList<User> users;
 
 	public Project() {
 		id = 0;

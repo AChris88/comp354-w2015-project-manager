@@ -31,6 +31,12 @@ public class DatabaseManager {
 	private Statement statement;
 	private String dbName;
 
+	//getTaskForProject
+	//getProjectForUsers
+	//getUsersForProject
+	//getUsersForTask
+	//public ArrayList<Task> getRequiredTasks(Task task)
+	
 	public DatabaseManager() {
 		this("testdb.db");
 	}

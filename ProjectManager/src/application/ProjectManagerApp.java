@@ -32,7 +32,7 @@ public class ProjectManagerApp {
 		*/
 		
 		//test project update
-		
+		/*
 		DatabaseManager dbm = new DatabaseManager();
 		Project project = new Project(1, "Super important project", new Date(), new Date(), new Date());
 		User user = new User(1, "Chris", "Allard", "slaiy", 0);
@@ -45,7 +45,7 @@ public class ProjectManagerApp {
 		project.setProjectedEndDate(newEndDate);
 		dbm.updateProject(project);
 		System.out.println(dbm.getProjects().get(0));
-		
+		*/
 		
 		//test task update
 		/*
