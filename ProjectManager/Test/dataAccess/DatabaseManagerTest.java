@@ -1,5 +1,6 @@
 package dataAccess;
 
+import com.sun.deploy.util.ArrayUtil;
 import obj.*;
 import org.junit.Assume;
 import org.junit.Before;
@@ -306,46 +307,135 @@ public class DatabaseManagerTest {
     @Test
     public void testInsertTaskRequirement() throws Exception {
 
+        Task taskToAdd1 = new Task(0,_test_project_delete.getId(),"task1",new Date(),new Date(),new Date(),new Date(),null);
+        Task taskToAdd2 = new Task(0,_test_project_delete.getId(),"task2",new Date(),new Date(),new Date(),new Date(),null);
+
+        assumeTrue(_db_mg.insertTask(taskToAdd1));
+        assumeTrue(_db_mg.insertTask(taskToAdd2));
+
+        TaskRequirement trToAdd = new TaskRequirement(0,taskToAdd1.getId(),taskToAdd2.getId());
+        assertTrue("Inserting TR in DB", _db_mg.insertTaskRequirement(trToAdd));
+
+        ArrayList<TaskRequirement> tReqs = _db_mg.getTaskRequirements();
+        assertNotNull("There should be at least 1 task requirement in the DB", tReqs);
+        assertNotNull("The link between the task should be in the DB", getTRById(tReqs, trToAdd.getId()));
     }
 
     @Test
     public void testGetProjectByName() throws Exception {
 
-    }
+        Project p = _db_mg.getProjectByName(_test_project_delete.getName());
+        assertNotNull("Should have retrieved a test project", p);
 
+        assertEquals("Should be the right project that got retrived", _test_project_delete.getId(),p.getId());
+
+    }
 
     @Test
     public void testGetProjectUsers() throws Exception {
+
+        ProjectUser pUserToAdd = new ProjectUser(0,_test_project_delete.getId(),_test_user_delete.getId(), 0);
+        assumeTrue(_db_mg.insertProjectUser(pUserToAdd));
+
+        ArrayList<ProjectUser> pUsers = _db_mg.getProjectUsers();
+        assertNotNull("There should be at least 1 test PU in the DB",pUsers );
+        ProjectUser pu = getPUById(pUsers, pUserToAdd.getId());
+        assertNotNull("A specific test PU should've be in the DB", pu);
 
     }
 
     @Test
     public void testGetUserTasks() throws Exception {
 
+        Task taskToAdd = new Task(0,_test_project_delete.getId(),"task",new Date(),new Date(),new Date(),new Date(),null);
+        assumeTrue(_db_mg.insertTask(taskToAdd));
+        ProjectUser pUserToAdd = new ProjectUser(0,_test_project_delete.getId(),_test_user_delete.getId(), 0);
+        assumeTrue(_db_mg.insertProjectUser(pUserToAdd));
+
+        UserTask ut = new UserTask(0,_test_user_delete.getId(),taskToAdd.getId(),pUserToAdd.getProjectId());
+        assumeTrue(_db_mg.insertUserTask(ut));
+
+        ArrayList<UserTask> uTasks = _db_mg.getUserTasks();
+        assertNotNull(uTasks);
+        UserTask utTemp = getUTById(uTasks,ut.getId());
+        assertNotNull("The UT should be in the DB",utTemp);
+
     }
 
     @Test
     public void testGetTaskRequirements() throws Exception {
+
+        Task taskToAdd1 = new Task(0,_test_project_delete.getId(),"task1",new Date(),new Date(),new Date(),new Date(),null);
+        Task taskToAdd2 = new Task(0,_test_project_delete.getId(),"task2",new Date(),new Date(),new Date(),new Date(),null);
+
+        assumeTrue(_db_mg.insertTask(taskToAdd1));
+        assumeTrue(_db_mg.insertTask(taskToAdd2));
+
+        TaskRequirement trToAdd = new TaskRequirement(0,taskToAdd1.getId(),taskToAdd2.getId());
+        assumeTrue(_db_mg.insertTaskRequirement(trToAdd));
+
+        ArrayList<TaskRequirement> tReqs = _db_mg.getTaskRequirements();
+        assertNotNull("There should be at least 1 task requirement in the DB", tReqs);
+        assertNotNull("The link between the task should be in the DB", getTRById(tReqs, trToAdd.getId()));
 
     }
 
     @Test
     public void testGetTasksForProject() throws Exception {
 
+        Task taskToAdd1 = new Task(0,_test_project_delete.getId(),"task1",new Date(),new Date(),new Date(),new Date(),null);
+
+        ArrayList<Task> tasks = _db_mg.getTasksForProject(_test_project_delete);
+
+        assertNotNull("Should not have returned by an exception", tasks);
+        assertEquals("The project should not have task right now", 0, tasks.size());
+
+        assumeTrue(_db_mg.insertTask(taskToAdd1));
+
+        tasks = _db_mg.getTasksForProject(_test_project_delete);
+        assertNotNull("Should not have returned by an exception", tasks);
+        assertFalse("The project should not have task right now", tasks.size() == 0);
+
+
     }
 
     @Test
     public void testGetProjectForUsers() throws Exception {
+
+        ArrayList<Project> projects = _db_mg.getProjectForUsers(_test_project_manager);
+        assertNotNull(projects);
+        assertEquals("Should have 1 project for a certain user",1,projects.size());
+
+        Project p = new Project(0,"Project 2",new Date(), new Date(),new Date());
+        assumeTrue(_db_mg.insertProject(p, _test_project_manager));
+
+        projects = _db_mg.getProjectForUsers(_test_project_manager);
+        assertNotNull(projects);
+        assertEquals("Should have 2 project for a certain user",2,projects.size());
 
     }
 
     @Test
     public void testGetUsersForProject() throws Exception {
 
+        ArrayList<User> users = _db_mg.getUsersForProject(_test_project_delete);
+        assertNotNull(users);
+        assertEquals("There should be 1 user for a certain project", 1, users.size());
+
+        assumeTrue(_db_mg.insertProjectUser(new ProjectUser(0,_test_project_delete.getId(),_test_user_duplicate.getId(),0)));
+
+        users = _db_mg.getUsersForProject(_test_project_delete);
+        assertNotNull(users);
+        assertEquals("There should be 2 users for a certain project", 2, users.size());
+
+
     }
 
     @Test
     public void testGetUsersForTask() throws Exception {
+
+        Task taskToAdd = new Task(0,_test_project_delete.getId(),"task",new Date(),new Date(),new Date(),new Date(),null);
+
 
     }
 
@@ -419,6 +509,14 @@ public class DatabaseManagerTest {
         for(UserTask ut : uTasks){
             if (ut.getId() == id){
                 return ut;
+            }
+        }
+        return null;
+    }
+    public TaskRequirement getTRById(ArrayList<TaskRequirement> tReqs, int id){
+        for(TaskRequirement tr : tReqs){
+            if (tr.getId() == id){
+                return tr;
             }
         }
         return null;
