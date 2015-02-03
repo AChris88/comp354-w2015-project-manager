@@ -5,9 +5,6 @@ package projectEditor;
 
 import javax.swing.JPanel;
 
-
-
-
 import obj.Project;
 import obj.Task;
 import taskEditor.TaskEditorPanel;
@@ -22,10 +19,13 @@ import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -38,6 +38,8 @@ import customComponents.TaskTableModel;
 
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
+
+import dashboard.DashboardPanel;
 
 /**
  * @author George Lambadas 7077076
@@ -57,6 +59,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JSplitPane splitPane;
 	private JButton btnCancel;
 	private JButton btnSave;
+	private JButton btnAddTask;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -69,11 +72,11 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 1.0,
 				Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-				Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		JLabel lblName = new JLabel("Name");
@@ -147,24 +150,25 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_txtYyyymmdd_2.gridy = 5;
 		add(txtActualEndDate, gbc_txtYyyymmdd_2);
 		txtActualEndDate.setColumns(10);
-		
-		this.setBounds(100, 100, 500, 500);
-		
+
+		this.setBounds(100, 100, 500, 450);
+
 		lblTaskList = new JLabel("Task List:");
 		GridBagConstraints gbc_lblTaskList = new GridBagConstraints();
 		gbc_lblTaskList.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTaskList.gridx = 3;
 		gbc_lblTaskList.gridy = 6;
 		add(lblTaskList, gbc_lblTaskList);
-		
-		
-		tableModel = new TaskTableModel();
-		tableModel.populateModel(manager.db.getTasks()); //TODO get tasks for project
 
-		table = new JTable(tableModel); //TODO new JTable() to view in design
+		tableModel = new TaskTableModel();
+		tableModel.populateModel(manager.db.getTasks()); // TODO get tasks for
+															// project
+
+		table = new JTable(tableModel); // TODO
 
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
+		gbc_table.insets = new Insets(0, 0, 5, 0);
 		gbc_table.gridwidth = 3;
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 2;
@@ -173,44 +177,132 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		projectModel = new ProjectEditorModel();
 		projectModel.addObserver(this);
-		
+
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(new ButtonClickListener());
+
+		btnAddTask = new JButton("Add Task");
+		btnSave.addActionListener(new ButtonClickListener());
+
+		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
+		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
+		gbc_btnAddTask.gridx = 3;
+		gbc_btnAddTask.gridy = 8;
+		add(btnAddTask, gbc_btnAddTask);
+		GridBagConstraints gbc_btnSave = new GridBagConstraints();
+		gbc_btnSave.gridx = 4;
+		gbc_btnSave.gridy = 8;
+		add(btnSave, gbc_btnSave);
+
 		projectModel.setProject(project);
 	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		txtProjectName.setText(projectModel.getProjectName());
-		
+		txtProjectName.setText(projectModel.getProject().getName());
+
 		Calendar calendar = Calendar.getInstance();
-		
-		calendar.setTime(projectModel.getProjectStartDate());
-		txtStartDate.setText(calendar.get(Calendar.YEAR) + "-"
-				+ calendar.get(Calendar.MONTH) + "-"
-				+ calendar.get(Calendar.DATE));
 
-		//set projected end field
-		calendar.setTime(projectModel.getProjectProjectedEndDate());
-		txtProjectedEndDate.setText(calendar.get(Calendar.YEAR) + "-"
-				+ calendar.get(Calendar.MONTH) + "-"
-				+ calendar.get(Calendar.DATE));
-
-		//set actual end date if not null
-		if (projectModel.getProjectEndDate() != null) {
-			calendar.setTime(projectModel.getProjectEndDate());
-			txtActualEndDate.setText(calendar.get(Calendar.YEAR) + "-"
-					+ calendar.get(Calendar.MONTH) + "-"
+		if (projectModel.getProject().getStartDate() != null) {
+			calendar.setTime(projectModel.getProject().getStartDate());
+			txtStartDate.setText(calendar.get(Calendar.YEAR) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
 					+ calendar.get(Calendar.DATE));
+		} else {
+			txtStartDate.setText("YYYY-MM-DD");
+		}
+
+		// set projected end field
+		if (projectModel.getProject().getProjectedEndDate() != null) {
+			calendar.setTime(projectModel.getProject().getProjectedEndDate());
+			txtProjectedEndDate.setText(calendar.get(Calendar.YEAR) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
+					+ calendar.get(Calendar.DATE));
+		} else {
+			txtProjectedEndDate.setText("YYYY-MM-DD");
+		}
+
+		// set actual end date if not null
+		if (projectModel.getProject().getEndDate() != null) {
+			calendar.setTime(projectModel.getProject().getEndDate());
+			txtActualEndDate.setText(calendar.get(Calendar.YEAR) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
+					+ calendar.get(Calendar.DATE));
+		} else {
+			txtActualEndDate.setText("YYYY-MM-DD");
 		}
 	}
-	
+
+	/**
+	 * Listener class for button clicking
+	 * 
+	 * @author George Lambadas 7077076
+	 * 
+	 */
+	private class ButtonClickListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JButton source = (JButton) e.getSource();
+
+			if (source == btnSave) {
+				Project p = projectModel.getProject();
+				p.setName(txtProjectName.getText());
+
+				Calendar c = Calendar.getInstance();
+				String[] dateComponents = new String[3];
+
+				if (txtStartDate.getText().equals("YYYY-MM-DD")) {
+					p.setStartDate(null);
+				} else {
+					dateComponents = txtStartDate.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					p.setStartDate(c.getTime());
+				}
+
+				if (txtProjectedEndDate.getText().equals("YYYY-MM-DD")) {
+					p.setProjectedEndDate(null);
+				} else {
+					dateComponents = txtProjectedEndDate.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					p.setProjectedEndDate(c.getTime());
+				}
+
+				if (txtActualEndDate.getText().equals("YYYY-MM-DD")) {
+					p.setEndDate(null);
+				} else {
+					dateComponents = txtActualEndDate.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					p.setEndDate(c.getTime());
+				}
+
+				projectModel.setProject(p);
+
+				manager.db.updateProject(p);
+
+			} else if (source == btnAddTask) {
+				manager.addTab(new TaskEditorPanel(manager, new Task()),
+						"New Task");
+			}
+		}
+	}
+
 	private class DoubleClickListener implements MouseListener {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (tableModel.getTaskAt(row) != null)
-					manager.setActivePanel(new TaskEditorPanel(manager,
-							tableModel.getTaskAt(row)), "Project: " + tableModel.getTaskAt(row).getName());
+					manager.addTab(
+							new TaskEditorPanel(manager, tableModel
+									.getTaskAt(row)), "Task: "
+									+ tableModel.getTaskAt(row).getName());
 
 			}
 		}
@@ -236,5 +328,4 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		}
 
 	}
-
 }

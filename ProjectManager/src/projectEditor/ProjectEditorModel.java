@@ -10,10 +10,10 @@ import obj.Project;
 
 /**
  * @author George Lambadas 7077076
- *
+ * 
  */
 public class ProjectEditorModel extends Observable {
-	
+
 	private Project p;
 
 	public void setProject(Project p) {
@@ -22,32 +22,23 @@ public class ProjectEditorModel extends Observable {
 		notifyObservers();
 	}
 
-	/**
-	 * @return
-	 */
-	public String getProjectName() {
-		return p.getName();
+	public Project getProject() {
+		return p;
 	}
 
-	/**
-	 * @return
-	 */
-	public Date getProjectStartDate() {
-		return p.getStartDate();
+	public void setName(String name) {
+		p.setName(name);
 	}
 
-	/**
-	 * @return
-	 */
-	public Date getProjectProjectedEndDate() {
-		return p.getProjectedEndDate();
+	public void setStartDate(Date startDate) {
+		p.setStartDate(startDate);
 	}
 
-	/**
-	 * @return
-	 */
-	public Date getProjectEndDate() {
-		return p.getEndDate();
+	public void setProjectedEndDate(Date projectedEndDate) {
+		p.setProjectedEndDate(projectedEndDate);
 	}
 
+	public void setEndDate(Date endDate) {
+		p.setEndDate(endDate);
+	}
 }

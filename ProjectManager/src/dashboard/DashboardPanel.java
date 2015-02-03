@@ -5,20 +5,24 @@ package dashboard;
 
 import javax.swing.JPanel;
 
-
 import application.ProjectManager;
 import java.awt.GridBagLayout;
 import javax.swing.JButton;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+
+import obj.Project;
 
 import projectEditor.ProjectEditorPanel;
 import customComponents.ProjectTableModel;
@@ -57,6 +61,8 @@ public class DashboardPanel extends JPanel {
 		}
 
 		btnNewProject = new JButton("New Project");
+		btnNewProject.addActionListener(new ButtonClickListener());
+		
 		GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
 		gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewProject.gridx = 6;
@@ -93,15 +99,26 @@ public class DashboardPanel extends JPanel {
 		this.setBounds(100, 100, 500, 200);
 	}
 
+	private class ButtonClickListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JButton source = (JButton) e.getSource();
+
+			if (source == btnNewProject) {
+				manager.openProject(new Project());
+			}
+		}
+
+	}
+
 	private class DoubleClickListener implements MouseListener {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (model.getProjectAt(row) != null)
-					manager.setActivePanel(new ProjectEditorPanel(manager,
-							model.getProjectAt(row)), "Project: " + model.getProjectAt(row).getName());
-
+					manager.openProject(model.getProjectAt(row));
 			}
 		}
 

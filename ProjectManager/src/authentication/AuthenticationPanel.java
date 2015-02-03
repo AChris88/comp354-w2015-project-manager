@@ -128,7 +128,6 @@ public class AuthenticationPanel extends JPanel {
 				if (manager.currentUser == null) {
 					errorMessageLabel.setText("Invalid username or password.");
 				} else {
-					System.out.println("hello");
 					manager.setActivePanel(new DashboardPanel(manager),
 							manager.currentUser.getFirstName() + "'s Dashboard");
 				}

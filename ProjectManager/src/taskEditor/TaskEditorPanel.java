@@ -53,6 +53,7 @@ public class TaskEditorPanel extends JPanel implements Observer{
 	private JLabel lblPrerequisites;
 	private JButton btnSave;
 	private JButton btnReset;
+	private ProjectManager manager;
 	
 	/**
 	 * @wbp.parser.constructor
@@ -62,6 +63,7 @@ public class TaskEditorPanel extends JPanel implements Observer{
 	}
 	
 	public TaskEditorPanel(ProjectManager manager, Task task) {
+		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -297,8 +299,9 @@ public class TaskEditorPanel extends JPanel implements Observer{
 			if (e.getClickCount() == 2) {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
-				if (tableModel.getTaskAt(row) != null);
-					//TODO create new tab with selected task req
+				if (tableModel.getTaskAt(row) != null) {
+					manager.addTab(new TaskEditorPanel(manager, tableModel.getTaskAt(row)), "Task: "+tableModel.getTaskAt(row).getName());
+				}
 			}
 		}
 
