@@ -55,6 +55,8 @@ public class UserTask {
 		return id;
 	}
 
+    public void setId(int id) {this.id = id;}
+
 	@Override
 	public String toString() {
 		return "UserTask [id=" + id + ", userId=" + userId + ", taskId="

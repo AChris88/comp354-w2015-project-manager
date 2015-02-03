@@ -55,6 +55,8 @@ public class ProjectUser {
 		return id;
 	}
 
+    public void setId(int id) {this.id = id;}
+
 	@Override
 	public String toString() {
 		return "ProjectUser [id=" + id + ", projectId=" + projectId

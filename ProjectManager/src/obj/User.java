@@ -67,6 +67,8 @@ public class User {
 		return id;
 	}
 
+    public void setId(int id) { this.id = id;}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="

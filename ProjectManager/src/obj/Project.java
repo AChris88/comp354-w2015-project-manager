@@ -71,6 +71,8 @@ public class Project {
 		return id;
 	}
 
+    public void setId(int id) { this.id = id;}
+
 	@Override
 	public String toString() {
 		return "Project [id=" + id + ", name=" + name + ", startDate="
