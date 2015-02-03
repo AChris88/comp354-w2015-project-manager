@@ -1,4 +1,4 @@
-package taskComponents;
+package taskEditor;
 
 import java.util.Date;
 import java.util.Observable;
