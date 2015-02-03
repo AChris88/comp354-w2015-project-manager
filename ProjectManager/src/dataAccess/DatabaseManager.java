@@ -609,13 +609,13 @@ public class DatabaseManager {
 				idString = idString.substring(0, idString.length() - 2);
 
 				preparedStatement = connection
-						.prepareStatement("select req_id from task_reqs where task_id in ("
+						.prepareStatement("select task_req from task_reqs where task_id in ("
 								+ idString + ")");
 
 				resultSet = preparedStatement.executeQuery();
 
 				while (resultSet.next()) {
-					listOfIds.add(resultSet.getInt("req_id"));
+					listOfIds.add(resultSet.getInt("task_req"));
 				}
 			} while (previousSize != listOfIds.size());
 
@@ -627,7 +627,7 @@ public class DatabaseManager {
 			idString = idString.substring(0, idString.length() - 2);
 
 			preparedStatement = connection
-					.prepareStatement("select * from tasks where task_id not in ("
+					.prepareStatement("select * from tasks where id not in ("
 							+ idString + ")");
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();

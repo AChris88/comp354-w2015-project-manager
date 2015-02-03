@@ -65,5 +65,13 @@ public class TaskTableModel extends AbstractTableModel {
 	public Task getTaskAt(int row) {
 		return data.get(row);
 	}
+	
+	public Task removeTaskAt(int row) {
+		return data.remove(row);
+	}
+	
+	public void addTask(Task t) {
+		data.add(t);
+	}
 
 }
