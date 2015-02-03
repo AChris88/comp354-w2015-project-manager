@@ -6,17 +6,25 @@ package projectEditor;
 import javax.swing.JPanel;
 
 
-import obj.Project;
-import taskEditor.TaskEditorPanel;
 
+
+import obj.Project;
+import obj.Task;
+import taskEditor.TaskEditorPanel;
 import application.ProjectManager;
+
 import java.awt.GridBagLayout;
+
 import javax.swing.JList;
+
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
+
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
@@ -27,6 +35,7 @@ import javax.swing.JTable;
 
 import customComponents.ProjectTableModel;
 import customComponents.TaskTableModel;
+
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
 

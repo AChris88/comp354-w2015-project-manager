@@ -11,6 +11,7 @@ public class TaskEditorModel extends Observable{
 
 	public void setTask(Task t) {
 		this.t = t;
+		setChanged();
 		notifyObservers();
 	}
 

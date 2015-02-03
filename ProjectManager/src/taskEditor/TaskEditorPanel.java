@@ -11,6 +11,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
@@ -26,7 +28,15 @@ import obj.Task;
 import application.ProjectManager;
 import customComponents.TaskTableModel;
 
+import javax.swing.JButton;
+
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ */
 public class TaskEditorPanel extends JPanel implements Observer{
+	private TaskTableModel tableModel;
 	private TaskEditorModel taskModel;
 	private JTable table;
 	private JTextField nameTextField;
@@ -40,6 +50,9 @@ public class TaskEditorPanel extends JPanel implements Observer{
 	private JTextField endTextField;
 	private JTabbedPane tabbedPane;
 	private int tabCtr;
+	private JLabel lblPrerequisites;
+	private JButton btnSave;
+	private JButton btnReset;
 	
 	/**
 	 * @wbp.parser.constructor
@@ -60,7 +73,12 @@ public class TaskEditorPanel extends JPanel implements Observer{
 		
 		tabbedPane = new JTabbedPane();
 		tabCtr = 0;
-        add(tabbedPane);
+        GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+        gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
+        gbc_tabbedPane.gridx = 0;
+        gbc_tabbedPane.gridy = 0;
+        tabbedPane.setVisible(false);
+        add(tabbedPane, gbc_tabbedPane);
 		
 		JLabel lblTakeName = new JLabel("Task Name:");
 		GridBagConstraints gbc_lblTakeName = new GridBagConstraints();
@@ -147,19 +165,43 @@ public class TaskEditorPanel extends JPanel implements Observer{
 		add(endTextField, gbc_endTextField);
 		endTextField.setColumns(10);
 		
-		table = new JTable();
+		btnSave = new JButton("Save");
+		GridBagConstraints gbc_btnSave = new GridBagConstraints();
+		gbc_btnSave.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSave.gridx = 4;
+		gbc_btnSave.gridy = 6;
+		//TODO add button action listener to save record
+		add(btnSave, gbc_btnSave);
+		
+		btnReset = new JButton("Reset");
+		GridBagConstraints gbc_btnReset = new GridBagConstraints();
+		gbc_btnReset.insets = new Insets(0, 0, 5, 0);
+		gbc_btnReset.gridx = 5;
+		gbc_btnReset.gridy = 6;
+		//TODO add button action listener to reset fields
+		add(btnReset, gbc_btnReset);
+		
+		lblPrerequisites = new JLabel("Prerequisites:");
+		GridBagConstraints gbc_lblPrerequisites = new GridBagConstraints();
+		gbc_lblPrerequisites.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPrerequisites.gridx = 3;
+		gbc_lblPrerequisites.gridy = 7;
+		add(lblPrerequisites, gbc_lblPrerequisites);
+		
+		tableModel = new TaskTableModel();
+		tableModel.populateModel(manager.db.getTaskRequirements(task));
+		
+		table = new JTable(tableModel);
+		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
-		gbc_table.gridheight = 2;
 		gbc_table.gridwidth = 6;
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 0;
-		gbc_table.gridy = 7;
+		gbc_table.gridy = 8;
 		add(new JScrollPane(table), gbc_table);
 		
-		TaskTableModel tableModel = new TaskTableModel();
-		tableModel.populateModel(manager.db.getTasks());
-		
-		TaskEditorModel taskModel = new TaskEditorModel();
+		taskModel = new TaskEditorModel();
+		taskModel.addObserver(this);
 		taskModel.setTask(task);
 	}
 	
@@ -191,6 +233,9 @@ public class TaskEditorPanel extends JPanel implements Observer{
         	keyEvent = KeyEvent.VK_6;
         	break;
         }
+        
+        if (tabCtr == 0)
+        	tabbedPane.setVisible(true);
         
         //keyEvent could also be represented as (tabCtr + 49)
         tabbedPane.setMnemonicAt(tabCtr++, keyEvent);
@@ -245,5 +290,37 @@ public class TaskEditorPanel extends JPanel implements Observer{
 					+ calendar.get(Calendar.MONTH) + "-"
 					+ calendar.get(Calendar.DATE));
 		}
+	}
+	
+	private class DoubleClickListener implements MouseListener {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				JTable target = (JTable) e.getSource();
+				int row = target.getSelectedRow();
+				if (tableModel.getTaskAt(row) != null);
+					//TODO create new tab with selected task req
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
 	}
 }

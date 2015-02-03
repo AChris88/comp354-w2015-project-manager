@@ -693,7 +693,7 @@ public class DatabaseManager {
         try {
             connect();
             preparedStatement = connection
-                    .prepareStatement("SELECT * FROM tasks WHERE task_reqs.task_id = ?");
+                    .prepareStatement("SELECT * FROM tasks WHERE  id = (SELECT task_req FROM task_reqs WHERE task_id = ?)");
             preparedStatement.setInt(1, task.getId());
             resultSet = preparedStatement.executeQuery();
             tasks = new ArrayList<Task>();
@@ -707,7 +707,7 @@ public class DatabaseManager {
                         .getInt("project_id"), resultSet.getString("name"),
                         new java.sql.Date(resultSet.getDate("projected_start")
                                 .getTime()), new java.sql.Date(resultSet
-                        .getDate("actuel_start").getTime()),
+                        .getDate("actual_start").getTime()),
                         new java.sql.Date(resultSet.getDate("projected_end")
                                 .getTime()), new java.sql.Date(resultSet
                         .getDate("actual_end").getTime()), toDo));
