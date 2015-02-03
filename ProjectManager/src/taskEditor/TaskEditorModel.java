@@ -49,4 +49,11 @@ public class TaskEditorModel extends Observable{
 	public Date getTaskEndDate() {
 		return t.getEndDate();
 	}
+
+	/**
+	 * @return the model's Task
+	 */
+	public Task getTask() {
+		return t;
+	}
 }
