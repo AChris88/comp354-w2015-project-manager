@@ -435,6 +435,21 @@ public class DatabaseManagerTest {
     public void testGetUsersForTask() throws Exception {
 
         Task taskToAdd = new Task(0,_test_project_delete.getId(),"task",new Date(),new Date(),new Date(),new Date(),null);
+        assumeTrue(_db_mg.insertTask(taskToAdd));
+        ProjectUser pUserToAdd = new ProjectUser(0,_test_project_delete.getId(),_test_user_delete.getId(), 0);
+        assumeTrue(_db_mg.insertProjectUser(pUserToAdd));
+
+        ArrayList<User> users = _db_mg.getUsersForTask(taskToAdd);
+        assertNotNull(users);
+        assertEquals(0,users.size());
+
+        UserTask ut = new UserTask(0,_test_user_delete.getId(),taskToAdd.getId(),pUserToAdd.getProjectId());
+        assumeTrue(_db_mg.insertUserTask(ut));
+
+        users = _db_mg.getUsersForTask(taskToAdd);
+        assertNotNull(users);
+        assertEquals(1,users.size());
+
 
 
     }
@@ -443,22 +458,74 @@ public class DatabaseManagerTest {
     @Test
     public void testUpdateUser() throws Exception {
 
+        _test_user_delete.setFirstName("1");
+        _test_user_delete.setLastName("1");
+        _test_user_delete.setRole(6);
+
+        assertTrue("Updating user", _db_mg.updateUser(_test_user_delete));
+
+        ArrayList<User> users = _db_mg.getUsers();
+        assertNotNull(users);
+        User u = getUserByUsername(users,_test_user_delete.getUsername());
+        assertNotNull(u);
+
+        assertEquals(u.getFirstName(), _test_user_delete.getFirstName());
+        assertEquals(u.getLastName(), _test_user_delete.getLastName());
+        assertEquals(u.getRole(), _test_user_delete.getRole());
+
     }
 
     @Test
     public void testUpdateProject() throws Exception {
+
+        _test_project_delete.setName("lol a name");
+        _test_project_delete.setEndDate(new Date(11111111118L));
+        _test_project_delete.setProjectedEndDate(new Date(11111111119L));
+        _test_project_delete.setStartDate(new Date(111111111110L));
+
+        assertTrue(_db_mg.updateProject(_test_project_delete));
+
+        ArrayList<Project> projects = _db_mg.getProjects();
+        assertNotNull("There should be at least 1 project in the DB", projects);
+        Project p = getProjectByID(projects,_test_project_delete.getId());
+        assertNotNull("The test project should be in the DB",p);
+
+        assertEquals(p.getName(), _test_project_delete.getName());
+        assertEquals(p.getEndDate(), _test_project_delete.getEndDate());
+        assertEquals(p.getStartDate(), _test_project_delete.getStartDate());
+        assertEquals(p.getProjectedEndDate(), _test_project_delete.getProjectedEndDate());
 
     }
 
     @Test
     public void testUpdateTask() throws Exception {
 
+        Task taskToAdd = new Task(0,_test_project_delete.getId(),"task",new Date(),new Date(),new Date(),new Date(),null);
+        assumeTrue(_db_mg.insertTask(taskToAdd));
+
+        taskToAdd.setName("lol");
+        taskToAdd.setStartDate(new Date(1111111111230L));
+        taskToAdd.setProjectedEndDate(new Date(1111111111231L));
+        taskToAdd.setEndDate(new Date(1111111111232L));
+        taskToAdd.setProjectedStartDate(new Date(1111111111233L));
+
+        assertTrue(_db_mg.updateTask(taskToAdd));
+
+        ArrayList<Task> tasks = _db_mg.getTasks();
+        assertNotNull(tasks);
+        Task t = getTaskById(tasks, taskToAdd.getId());
+        assertNotNull(t);
+
+        assertEquals(t.getName(), taskToAdd.getName());
+        assertEquals(t.getEndDate(), new java.sql.Date(taskToAdd.getEndDate().getTime()));
+        assertEquals(t.getProjectedEndDate(), taskToAdd.getProjectedEndDate());
+        assertEquals(t.getStartDate(), taskToAdd.getStartDate());
+        assertEquals(t.getProjectedStartDate(), taskToAdd.getProjectedStartDate());
+
+
+
     }
 
-    @Test
-    public void testUseCaseTest() throws Exception {
-
-    }
 
     public Task getTaskById(ArrayList<Task> tasks, int id){
         for(Task t : tasks){
