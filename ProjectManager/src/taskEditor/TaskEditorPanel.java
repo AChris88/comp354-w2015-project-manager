@@ -198,7 +198,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		tableModel = new TaskTableModel();
 		tableModel.populateModel(manager.db.getTaskRequirements(task));
 
-		table = new JTable(/* tableModel */); // TODO
+		table = new JTable(tableModel);
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 0);

@@ -613,18 +613,18 @@ public class DatabaseManager {
 				idString = idString.substring(0, idString.length() - 2);
 
 				preparedStatement = connection
-						.prepareStatement("select task_req from task_reqs where task_id in ("
+						.prepareStatement("select task_id from task_reqs where task_req in ("
 								+ idString + ")");
 
 				resultSet = preparedStatement.executeQuery();
 
 				while (resultSet.next()) {
-					listOfIds.add(resultSet.getInt("task_req"));
+					listOfIds.add(resultSet.getInt("task_id"));
 				}
 			} while (previousSize != listOfIds.size());
 
 			Iterator<Integer> iterator = listOfIds.iterator();
-
+			idString = "";
 			for (; iterator.hasNext();) {
 				idString += iterator.next() + ", ";
 			}
@@ -633,6 +633,7 @@ public class DatabaseManager {
 			preparedStatement = connection
 					.prepareStatement("select * from tasks where id not in ("
 							+ idString + ")");
+
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();
 			ArrayList<Task> toDo;
@@ -855,14 +856,22 @@ public class DatabaseManager {
 				toDo = gson.fromJson(resultSet.getString("to_do"),
 						new TypeToken<ArrayList<Task>>() {
 						}.getType());
-				tasks.add(new Task(resultSet.getInt("id"), resultSet
-						.getInt("project_id"), resultSet.getString("name"),
-						new java.sql.Date(resultSet.getDate("projected_start")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actual_start").getTime()),
-						new java.sql.Date(resultSet.getDate("projected_end")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actual_end").getTime()), toDo));
+				tasks.add(new Task(
+						resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
+						resultSet.getString("name"),
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, toDo));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
