@@ -52,26 +52,32 @@ public class TaskTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * @param tasks tasks to be displayed in the table
+	 * @param tasks
+	 *            tasks to be displayed in the table
 	 */
 	public void populateModel(ArrayList<Task> tasks) {
 		this.data = tasks;
 	}
 
 	/**
-	 * @param row index of row
+	 * @param row
+	 *            index of row
 	 * @return task at row
 	 */
 	public Task getTaskAt(int row) {
 		return data.get(row);
 	}
-	
+
 	public Task removeTaskAt(int row) {
 		return data.remove(row);
 	}
-	
+
 	public void addTask(Task t) {
 		data.add(t);
+	}
+
+	public ArrayList<Task> getAllTasks() {
+		return data;
 	}
 
 }

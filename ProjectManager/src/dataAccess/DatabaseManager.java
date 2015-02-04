@@ -641,16 +641,22 @@ public class DatabaseManager {
 				toDo = gson.fromJson(resultSet.getString("to_do"),
 						new TypeToken<ArrayList<Task>>() {
 						}.getType());
-				tasks.add(new Task(resultSet.getInt("id"), resultSet
-						.getInt("project_id"), resultSet.getString("name"),
-						new java.sql.Date(resultSet.getDate("projected_start")
-								.getTime()), 
-								new java.sql.Date(resultSet
-								.getDate("actual_start").getTime()),
-						new java.sql.Date(resultSet.getDate("projected_end")
-								.getTime()), 
-								new java.sql.Date(resultSet
-								.getDate("actual_end").getTime()), toDo));
+				tasks.add(new Task(
+						resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
+						resultSet.getString("name"),
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, toDo));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
