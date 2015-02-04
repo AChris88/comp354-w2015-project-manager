@@ -177,6 +177,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnSave.gridx = 4;
 		gbc_btnSave.gridy = 6;
 		// TODO add button action listener to save record
+		btnSave.addActionListener(new ButtonClickListener());
 		add(btnSave, gbc_btnSave);
 
 		btnReset = new JButton("Reset");
@@ -212,12 +213,13 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 		btnChangePrerequisites = new JButton("Change Prerequisites");
 		btnChangePrerequisites.addActionListener(new ButtonClickListener());
-		
+
 		GridBagConstraints gbc_btnChangePrerequisites = new GridBagConstraints();
 		gbc_btnChangePrerequisites.insets = new Insets(0, 0, 5, 5);
 		gbc_btnChangePrerequisites.gridx = 3;
 		gbc_btnChangePrerequisites.gridy = 9;
 		add(btnChangePrerequisites, gbc_btnChangePrerequisites);
+		
 		taskModel.setTask(task);
 	}
 
@@ -369,10 +371,62 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			JButton source = (JButton) e.getSource();
 
 			if (source == btnSave) {
-				// TODO save the task
+				Task t = taskModel.getTask();
+					System.out.println("HELLOOO " + t.getProjectId());
+				t.setName(nameTextField.getText());
+
+				Calendar c = Calendar.getInstance();
+				String[] dateComponents = new String[3];
+
+				if (expectedStartTextField.getText().equals("YYYY-MM-DD")) {
+					t.setStartDate(null);
+				} else {
+					dateComponents = expectedStartTextField.getText()
+							.split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setProjectedStartDate(c.getTime());
+				}
+
+				if (startTextField.getText().equals("YYYY-MM-DD")) {
+					t.setStartDate(null);
+				} else {
+					dateComponents = startTextField.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setStartDate(c.getTime());
+				}
+
+				if (expectedEndTextField.getText().equals("YYYY-MM-DD")) {
+					t.setStartDate(null);
+				} else {
+					dateComponents = expectedEndTextField.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setProjectedEndDate(c.getTime());
+				}
+
+				if (endTextField.getText().equals("YYYY-MM-DD")) {
+					t.setStartDate(null);
+				} else {
+					dateComponents = endTextField.getText().split("-");
+					c.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setEndDate(c.getTime());
+				}
+				manager.db.insertTask(t);
+
+				t = manager.db.getTaskByName(t.getName());
+				taskModel.setTask(t);
+
 			} else if (source == btnChangePrerequisites) {
 				manager.addTab(
-						new AlterPrerequisitesPanel(manager, taskModel.getTask()),
+						new AlterPrerequisitesPanel(manager, taskModel
+								.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
 			}
 		}
