@@ -287,9 +287,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				manager.db.updateProject(p);
 
 			} else if (source == btnAddTask) {
-				System.out.println(projectModel.getProject());
-				Task t = new Task(-1, projectModel.getProject().getId(), null, null, null, null, null, null);
-				manager.addTab(new TaskEditorPanel(manager, new Task()),
+				Task t = new Task(-1, projectModel.getProject().getId(), null,
+						null, null, null, null, null);
+				manager.addTab(new TaskEditorPanel(manager, t),
 						"New Task");
 			}
 		}

@@ -644,10 +644,12 @@ public class DatabaseManager {
 				tasks.add(new Task(resultSet.getInt("id"), resultSet
 						.getInt("project_id"), resultSet.getString("name"),
 						new java.sql.Date(resultSet.getDate("projected_start")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actuel_start").getTime()),
+								.getTime()), 
+								new java.sql.Date(resultSet
+								.getDate("actual_start").getTime()),
 						new java.sql.Date(resultSet.getDate("projected_end")
-								.getTime()), new java.sql.Date(resultSet
+								.getTime()), 
+								new java.sql.Date(resultSet
 								.getDate("actual_end").getTime()), toDo));
 			}
 		} catch (Exception e) {
@@ -683,7 +685,7 @@ public class DatabaseManager {
 						.getInt("project_id"), resultSet.getString("name"),
 						new java.sql.Date(resultSet.getDate("projected_start")
 								.getTime()), new java.sql.Date(resultSet
-								.getDate("actuel_start").getTime()),
+								.getDate("actual_start").getTime()),
 						new java.sql.Date(resultSet.getDate("projected_end")
 								.getTime()), new java.sql.Date(resultSet
 								.getDate("actual_end").getTime()), toDo));
@@ -716,15 +718,22 @@ public class DatabaseManager {
 				toDo = gson.fromJson(resultSet.getString("to_do"),
 						new TypeToken<ArrayList<Task>>() {
 						}.getType());
-				t = new Task(resultSet.getInt("id"),
+				t = new Task(
+						resultSet.getInt("id"),
 						resultSet.getInt("project_id"),
 						resultSet.getString("name"),
-						new java.sql.Date(resultSet.getDate("projected_start")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actuel_start").getTime()),
-						new java.sql.Date(resultSet.getDate("projected_end")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actual_end").getTime()), toDo);
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, toDo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -926,20 +935,28 @@ public class DatabaseManager {
 	public boolean updateTask(Task task) {
 		boolean valid = true;
 		try {
-			String update = "UPDATE tasks SET project_id= "
-					+ task.getProjectId() + ", name = '" + task.getName()
-					+ "', projected_start = "
-					+ new java.sql.Date(task.getProjectedStartDate().getTime())
-					+ ", actual_start = "
-					+ new java.sql.Date(task.getStartDate().getTime())
-					+ ", projected_end = "
-					+ new java.sql.Date(task.getProjectedEndDate().getTime())
-					+ ", actual_end = "
-					+ new java.sql.Date(task.getEndDate().getTime())
-					+ ", to_do = '" + task.getToDo() + "' WHERE id= "
-					+ task.getId();
+			String update = "UPDATE tasks SET project_id= ?" + ", name = ?"
+					+ ", projected_start = ?" + ", actual_start = ?"
+					+ ", projected_end = ?" + ", actual_end = ?" + ", to_do = "
+					+ task.getToDo() + " WHERE id= ?";
 			connect();
 			preparedStatement = connection.prepareStatement(update);
+			preparedStatement.setInt(1, task.getProjectId());
+			preparedStatement.setString(2, task.getName());
+			preparedStatement.setDate(3,
+					(task.getProjectedStartDate() != null ? new java.sql.Date(
+							task.getProjectedStartDate().getTime()) : null));
+			preparedStatement.setDate(4,
+					(task.getStartDate() != null ? new java.sql.Date(task
+							.getStartDate().getTime()) : null));
+			preparedStatement.setDate(5,
+					(task.getProjectedEndDate() != null ? new java.sql.Date(
+							task.getProjectedEndDate().getTime()) : null));
+			preparedStatement.setDate(6,
+					(task.getEndDate() != null ? new java.sql.Date(task
+							.getEndDate().getTime()) : null));
+			preparedStatement.setInt(7, task.getId());
+
 			int records = preparedStatement.executeUpdate();
 			if (records != 1)
 				valid = false;

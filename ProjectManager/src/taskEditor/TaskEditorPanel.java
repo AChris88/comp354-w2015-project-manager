@@ -219,7 +219,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnChangePrerequisites.gridx = 3;
 		gbc_btnChangePrerequisites.gridy = 9;
 		add(btnChangePrerequisites, gbc_btnChangePrerequisites);
-		
+
 		taskModel.setTask(task);
 	}
 
@@ -287,7 +287,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (taskModel.getTaskProjectedStartDate() != null) {
 			calendar.setTime(taskModel.getTaskProjectedStartDate());
 			expectedStartTextField.setText(calendar.get(Calendar.YEAR) + "-"
-					+ calendar.get(Calendar.MONTH) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
 					+ calendar.get(Calendar.DATE));
 		} else {
 			expectedStartTextField.setText("YYYY-MM-DD");
@@ -296,7 +296,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (taskModel.getTaskStartDate() != null) {
 			calendar.setTime(taskModel.getTaskStartDate());
 			startTextField.setText(calendar.get(Calendar.YEAR) + "-"
-					+ calendar.get(Calendar.MONTH) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
 					+ calendar.get(Calendar.DATE));
 		} else {
 			startTextField.setText("YYYY-MM-DD");
@@ -305,7 +305,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (taskModel.getTaskProjectedEndDate() != null) {
 			calendar.setTime(taskModel.getTaskProjectedEndDate());
 			expectedEndTextField.setText(calendar.get(Calendar.YEAR) + "-"
-					+ calendar.get(Calendar.MONTH) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
 					+ calendar.get(Calendar.DATE));
 		} else {
 			expectedEndTextField.setText("YYYY-MM-DD");
@@ -314,7 +314,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (taskModel.getTaskEndDate() != null) {
 			calendar.setTime(taskModel.getTaskEndDate());
 			endTextField.setText(calendar.get(Calendar.YEAR) + "-"
-					+ calendar.get(Calendar.MONTH) + "-"
+					+ (calendar.get(Calendar.MONTH) + 1) + "-"
 					+ calendar.get(Calendar.DATE));
 		} else {
 			endTextField.setText("YYYY-MM-DD");
@@ -372,7 +372,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 			if (source == btnSave) {
 				Task t = taskModel.getTask();
-					System.out.println("HELLOOO " + t.getProjectId());
 				t.setName(nameTextField.getText());
 
 				Calendar c = Calendar.getInstance();
@@ -393,6 +392,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setStartDate(null);
 				} else {
 					dateComponents = startTextField.getText().split("-");
+
 					c.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -418,7 +418,12 @@ public class TaskEditorPanel extends JPanel implements Observer {
 							Integer.parseInt(dateComponents[2]));
 					t.setEndDate(c.getTime());
 				}
-				manager.db.insertTask(t);
+
+				if (t.getId() == -1) {
+					manager.db.insertTask(t);
+				} else {
+					manager.db.updateTask(t);
+				}
 
 				t = manager.db.getTaskByName(t.getName());
 				taskModel.setTask(t);
