@@ -56,8 +56,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JLabel lblTaskList;
 	private JTable table;
 	private TaskTableModel tableModel;
-	private JSplitPane splitPane;
-	private JButton btnCancel;
+	private JButton btnCloseTab;
 	private JButton btnSave;
 	private JButton btnAddTask;
 
@@ -161,10 +160,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		add(lblTaskList, gbc_lblTaskList);
 
 		tableModel = new TaskTableModel();
-		tableModel.populateModel(manager.db.getTasks()); // TODO get tasks for
-															// project
-
-		table = new JTable(tableModel); // TODO
+		tableModel.populateModel(manager.db.getTasksForProject(project));
+		table = new JTable(tableModel);
 
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
@@ -184,11 +181,20 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		btnAddTask = new JButton("Add Task");
 		btnAddTask.addActionListener(new ButtonClickListener());
 
+		btnCloseTab = new JButton("Close Tab");
+		btnCloseTab.addActionListener(new ButtonClickListener());
+		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
+		gbc_btnCloseTab.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCloseTab.gridx = 2;
+		gbc_btnCloseTab.gridy = 8;
+		add(btnCloseTab, gbc_btnCloseTab);
+
 		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
 		gbc_btnAddTask.gridx = 3;
 		gbc_btnAddTask.gridy = 8;
 		add(btnAddTask, gbc_btnAddTask);
+		btnAddTask.setVisible(false);
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
 		gbc_btnSave.gridx = 4;
 		gbc_btnSave.gridy = 8;
@@ -230,6 +236,10 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					+ calendar.get(Calendar.DATE));
 		} else {
 			txtActualEndDate.setText("YYYY-MM-DD");
+		}
+		
+		if ( projectModel.getProject().getId() != -1) {
+			btnAddTask.setVisible(true);
 		}
 	}
 
@@ -284,13 +294,19 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 				projectModel.setProject(p);
 
-				manager.db.updateProject(p);
+				if (p.getId() == -1) {
+					manager.db.insertProject(p, manager.currentUser);
+				} else {
+					manager.db.updateProject(p);
+				}
 
 			} else if (source == btnAddTask) {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
 						null, null, null, null, null);
-				manager.addTab(new TaskEditorPanel(manager, t),
-						"New Task");
+				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
+			} else if (source == btnCloseTab) {
+				manager.setActivePanel(new DashboardPanel(manager),
+						manager.currentUser.getFirstName() + "'s Dashboard");
 			}
 		}
 	}

@@ -210,13 +210,20 @@ public class ProjectManager extends JFrame {
 	 */
 	public void openProject(Project p) {
 		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.add("Project: " + p.getName(), new ProjectEditorPanel(this,
-				p));
+		tabbedPane
+				.add(p.getName() == null ? "New Project" : "Project: "
+						+ p.getName(), new ProjectEditorPanel(this, p));
 		tabbedPane.setBounds(new Rectangle(800, 400));
-		this.setActivePanel(tabbedPane, "Project: " + p.getName());
+		this.setActivePanel(tabbedPane, p.getName() == null ? "New Project"
+				: "Project: " + p.getName());
 	}
 
 	public void addTab(JPanel panel, String title) {
 		((JTabbedPane) activePanel).add(title, panel);
+		((JTabbedPane) activePanel).setSelectedComponent(panel);
+	}
+
+	public void closeTab(JPanel panel) {
+		((JTabbedPane) activePanel).remove(panel);
 	}
 }

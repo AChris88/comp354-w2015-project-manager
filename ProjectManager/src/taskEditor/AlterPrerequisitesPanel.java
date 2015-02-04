@@ -73,7 +73,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 		allTaskTableModel.populateModel(manager.db
 				.getPotentialPrerequisites(task));
 
-		allTasksTable = new JTable(allTaskTableModel );
+		allTasksTable = new JTable(allTaskTableModel);
 		allTasksTable
 				.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
@@ -127,16 +127,15 @@ public class AlterPrerequisitesPanel extends JPanel {
 							task.getId(), allPrereq.get(i).getId()));
 				}
 
-				// TODO delete all task_reqs in the allTasks table model
+				// delete all task_reqs in the allTasks table model
 				ArrayList<Task> allNonPrereq = allTaskTableModel.getAllTasks();
 				for (int i = 0; i < allPrereq.size(); i++) {
-					// TODO mane method manager.db.removeTaskRequirement(new
-					// TaskRequirement(-1, task.getId(),
-					// allNonPrereq.get(i).getId()));
+					manager.db.removeTaskRequirement(new TaskRequirement(-1,
+							task.getId(), allNonPrereq.get(i).getId()));
 				}
 			} else if (source == btnCancel) {
-				// TODO close tab
-			
+				// close tab
+				manager.closeTab(AlterPrerequisitesPanel.this);
 			}
 		}
 

@@ -207,12 +207,15 @@ public class DatabaseManager {
 							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setString(2, project.getName());
-			preparedStatement.setDate(3, new java.sql.Date(project
-					.getStartDate().getTime()));
-			preparedStatement.setDate(4, new java.sql.Date(project
-					.getProjectedEndDate().getTime()));
-			preparedStatement.setDate(5, new java.sql.Date(project.getEndDate()
-					.getTime()));
+			preparedStatement.setDate(3,
+					project.getStartDate() != null ? new java.sql.Date(project
+							.getStartDate().getTime()) : null);
+			preparedStatement.setDate(4,
+					project.getProjectedEndDate() != null ? new java.sql.Date(
+							project.getProjectedEndDate().getTime()) : null);
+			preparedStatement.setDate(5,
+					project.getEndDate() != null ? new java.sql.Date(project
+							.getEndDate().getTime()) : null);
 			int records = preparedStatement.executeUpdate();
 
 			if (records != 0) {
@@ -307,7 +310,7 @@ public class DatabaseManager {
 			preparedStatement.setInt(2, projectUser.getProjectId());
 			preparedStatement.setInt(3, projectUser.getUserId());
 			preparedStatement.setInt(4, projectUser.getProjectRole());
-			System.out.println(projectUser);
+
 			int records = preparedStatement.executeUpdate();
 			if (records != 0) {
 				ResultSet gk = preparedStatement.getGeneratedKeys();
@@ -632,7 +635,10 @@ public class DatabaseManager {
 
 			preparedStatement = connection
 					.prepareStatement("select * from tasks where id not in ("
-							+ idString + ")");
+							+ idString
+							+ ") AND id not in (select task_req from task_reqs where task_id = ?) AND project_id = ?");
+			preparedStatement.setInt(1, t.getId());
+			preparedStatement.setInt(2, t.getProjectId());
 
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();
@@ -688,14 +694,22 @@ public class DatabaseManager {
 				toDo = gson.fromJson(resultSet.getString("to_do"),
 						new TypeToken<ArrayList<Task>>() {
 						}.getType());
-				tasks.add(new Task(resultSet.getInt("id"), resultSet
-						.getInt("project_id"), resultSet.getString("name"),
-						new java.sql.Date(resultSet.getDate("projected_start")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actual_start").getTime()),
-						new java.sql.Date(resultSet.getDate("projected_end")
-								.getTime()), new java.sql.Date(resultSet
-								.getDate("actual_end").getTime()), toDo));
+				tasks.add(new Task(
+						resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
+						resultSet.getString("name"),
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, toDo));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -923,12 +937,15 @@ public class DatabaseManager {
 			connect();
 
 			preparedStatement = connection.prepareStatement(update);
-			preparedStatement.setDate(1, new java.sql.Date(project
-					.getStartDate().getTime()));
-			preparedStatement.setDate(2, new java.sql.Date(project
-					.getProjectedEndDate().getTime()));
-			preparedStatement.setDate(3, new java.sql.Date(project.getEndDate()
-					.getTime()));
+			preparedStatement.setDate(1,
+					project.getStartDate() != null ? new java.sql.Date(project
+							.getStartDate().getTime()) : null);
+			preparedStatement.setDate(2,
+					project.getProjectedEndDate() != null ? new java.sql.Date(
+							project.getProjectedEndDate().getTime()) : null);
+			preparedStatement.setDate(3,
+					project.getEndDate() != null ? new java.sql.Date(project
+							.getEndDate().getTime()) : null);
 			preparedStatement.setInt(4, project.getId());
 
 			int records = preparedStatement.executeUpdate();
@@ -1041,6 +1058,29 @@ public class DatabaseManager {
 			preparedStatement = connection
 					.prepareStatement("DELETE FROM tasks WHERE id = ?");
 			preparedStatement.setInt(1, task.getId());
+			preparedStatement.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			removed = false;
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return removed;
+	}
+
+	public boolean removeTaskRequirement(TaskRequirement tr) {
+		boolean removed = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("DELETE FROM task_reqs WHERE task_id = ? AND task_req = ?");
+			preparedStatement.setInt(1, tr.getTaskId());
+			preparedStatement.setInt(2, tr.getTaskReq());
 			preparedStatement.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();

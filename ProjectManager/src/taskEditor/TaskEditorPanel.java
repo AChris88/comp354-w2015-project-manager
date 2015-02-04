@@ -58,6 +58,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JButton btnReset;
 	private ProjectManager manager;
 	private JButton btnChangePrerequisites;
+	private JButton btnCloseTab;
 
 	/**
 	 * @wbp.parser.constructor
@@ -219,6 +220,16 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnChangePrerequisites.gridx = 3;
 		gbc_btnChangePrerequisites.gridy = 9;
 		add(btnChangePrerequisites, gbc_btnChangePrerequisites);
+		btnChangePrerequisites.setVisible(false);
+
+		btnCloseTab = new JButton("Close Tab");
+		btnCloseTab.addActionListener(new ButtonClickListener());
+
+		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
+		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCloseTab.gridx = 5;
+		gbc_btnCloseTab.gridy = 9;
+		add(btnCloseTab, gbc_btnCloseTab);
 
 		taskModel.setTask(task);
 	}
@@ -318,6 +329,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					+ calendar.get(Calendar.DATE));
 		} else {
 			endTextField.setText("YYYY-MM-DD");
+		}
+		
+		if(taskModel.getTask().getId() != -1 ) {
+			btnChangePrerequisites.setVisible(false);
 		}
 
 	}
@@ -433,6 +448,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						new AlterPrerequisitesPanel(manager, taskModel
 								.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
+			} else if (source == btnCloseTab) {
+				manager.closeTab(TaskEditorPanel.this);
 			}
 		}
 	}

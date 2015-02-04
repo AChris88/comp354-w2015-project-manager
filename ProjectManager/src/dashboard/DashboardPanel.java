@@ -106,7 +106,7 @@ public class DashboardPanel extends JPanel {
 			JButton source = (JButton) e.getSource();
 
 			if (source == btnNewProject) {
-				manager.openProject(new Project());
+				manager.openProject(new Project(-1, null, null, null, null));
 			}
 		}
 
