@@ -59,6 +59,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnCloseTab;
 	private JButton btnSave;
 	private JButton btnAddTask;
+	private JButton btnDeleteProject;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -183,6 +184,16 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(new ButtonClickListener());
+		
+		btnDeleteProject = new JButton("Delete Project");
+		btnDeleteProject.addActionListener(new ButtonClickListener());
+		GridBagConstraints gbc_btnDeleteProject = new GridBagConstraints();
+		gbc_btnDeleteProject.insets = new Insets(0, 0, 0, 5);
+		gbc_btnDeleteProject.gridx = 1;
+		gbc_btnDeleteProject.gridy = 8;
+		add(btnDeleteProject, gbc_btnDeleteProject);
+		btnDeleteProject.setVisible(false);
+		
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 0, 5);
 		gbc_btnCloseTab.gridx = 2;
@@ -240,6 +251,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		
 		if ( projectModel.getProject().getId() != -1) {
 			btnAddTask.setVisible(true);
+			btnDeleteProject.setVisible(true);
 		}
 	}
 
@@ -307,6 +319,13 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnCloseTab) {
 				manager.setActivePanel(new DashboardPanel(manager),
 						manager.currentUser.getFirstName() + "'s Dashboard");
+			} else if (source == btnDeleteProject) {
+				ArrayList<Task> tasks = manager.db.getTasksForProject(projectModel.getProject());
+				for(int i = 0; i < tasks.size(); i++) {
+					manager.db.removeTask(tasks.get(i));
+				}
+				manager.db.removeProject(projectModel.getProject());
+				manager.setActivePanel(new DashboardPanel(manager), manager.currentUser.getFirstName() + "'s Dashboard");
 			}
 		}
 	}
