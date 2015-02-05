@@ -1,5 +1,15 @@
 package dataAccess;
 
+/*
+author : Samuel Beland-Leblanc
+
+Unit test for the DatabaseManager class.
+
+
+ */
+
+
+
 import obj.*;
 import org.junit.Assume;
 import org.junit.Before;
