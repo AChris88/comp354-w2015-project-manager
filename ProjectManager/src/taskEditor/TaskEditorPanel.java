@@ -332,7 +332,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		}
 		
 		if(taskModel.getTask().getId() != -1 ) {
-			btnChangePrerequisites.setVisible(false);
+			btnChangePrerequisites.setVisible(true);
 		}
 
 	}

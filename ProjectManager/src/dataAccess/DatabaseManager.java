@@ -383,7 +383,7 @@ public class DatabaseManager {
 				success = false;
 		} catch (Exception e) {
 			success = false;
-			e.printStackTrace();
+			//e.printStackTrace();
 		} finally {
 			close();
 			try {

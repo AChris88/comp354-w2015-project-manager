@@ -52,9 +52,6 @@ public class ProjectManager extends JFrame {
 	private void initialize() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		// TODO make help menu
-		// makeHelpMenu();
-
 		// TODO set menu bar
 		// setJMenuBar(createMenuBar());
 
@@ -66,33 +63,6 @@ public class ProjectManager extends JFrame {
 		activePanelConstraints.weightx = 1;
 		activePanelConstraints.weighty = 1;
 		activePanelConstraints.fill = GridBagConstraints.BOTH;
-
-		// set constraints and add toolbar
-		/*
-		 * GridBagConstraints constraints = new GridBagConstraints();
-		 * constraints.gridwidth = 2; constraints.fill =
-		 * GridBagConstraints.BOTH; add(createToolBar(), constraints);
-		 */
-
-		// TODO set up panel for folder tree and contact list
-		/*
-		 * JPanel leftPanel = new JPanel(); leftPanel.setLayout(new
-		 * GridBagLayout());
-		 * 
-		 * GridBagConstraints leftPanelConstraints = new GridBagConstraints();
-		 * leftPanelConstraints.fill = GridBagConstraints.BOTH;
-		 * leftPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-		 * 
-		 * this.folderTreeModule = new FolderTreeModule(dbc, this);
-		 * leftPanel.add(folderTreeModule, leftPanelConstraints);
-		 * leftPanelConstraints.gridx++; this.cls = new
-		 * ContactSidebarModule(dbc, this); leftPanel.add(cls,
-		 * leftPanelConstraints);
-		 * 
-		 * constraints = new GridBagConstraints(); constraints.gridx++;
-		 * add(leftPanel, constraints);
-		 */
-
 		setActivePanel(new AuthenticationPanel(this), "Login");
 
 		pack();
@@ -111,6 +81,7 @@ public class ProjectManager extends JFrame {
 		this.setBounds(activePanel.getBounds());
 
 		this.setTitle(title);
+		this.centerScreen();
 	}
 
 	/**
