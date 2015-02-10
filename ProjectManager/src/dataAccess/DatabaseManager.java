@@ -488,19 +488,14 @@ public class DatabaseManager {
 			connect();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM tasks");
-			ArrayList<Task> toDo;
 			tasks = new ArrayList<Task>();
-			Gson gson = new Gson();
 			while (resultSet.next()) {
-				toDo = gson.fromJson(resultSet.getString("to_do"),
-						new TypeToken<ArrayList<Task>>() {
-						}.getType());
 				tasks.add(new Task(resultSet.getInt("id"), resultSet
 						.getInt("project_id"), resultSet.getString("name"),
 						resultSet.getDate("projected_start"), resultSet
 								.getDate("actual_start"), resultSet
 								.getDate("projected_end"), resultSet
-								.getDate("actual_end"), toDo));
+								.getDate("actual_end"), resultSet.getString("to_do")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -648,13 +643,8 @@ public class DatabaseManager {
 
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();
-			ArrayList<Task> toDo;
-			Gson gson = new Gson();
 			while (resultSet.next()) {
-				toDo = gson.fromJson(resultSet.getString("to_do"),
-						new TypeToken<ArrayList<Task>>() {
-						}.getType());
-				tasks.add(new Task(
+						tasks.add(new Task(
 						resultSet.getInt("id"),
 						resultSet.getInt("project_id"),
 						resultSet.getString("name"),
@@ -669,7 +659,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, toDo));
+								: null, resultSet.getString("to_do")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -694,12 +684,7 @@ public class DatabaseManager {
 			preparedStatement.setInt(1, project.getId());
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();
-			ArrayList<Task> toDo;
-			Gson gson = new Gson();
 			while (resultSet.next()) {
-				toDo = gson.fromJson(resultSet.getString("to_do"),
-						new TypeToken<ArrayList<Task>>() {
-						}.getType());
 				tasks.add(new Task(
 						resultSet.getInt("id"),
 						resultSet.getInt("project_id"),
@@ -715,7 +700,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, toDo));
+								: null, resultSet.getString("to_do")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -739,12 +724,6 @@ public class DatabaseManager {
 			preparedStatement.setString(1, taskName);
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
-				ArrayList<Task> toDo;
-				Gson gson = new Gson();
-
-				toDo = gson.fromJson(resultSet.getString("to_do"),
-						new TypeToken<ArrayList<Task>>() {
-						}.getType());
 				t = new Task(
 						resultSet.getInt("id"),
 						resultSet.getInt("project_id"),
@@ -760,7 +739,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, toDo);
+								: null, resultSet.getString("to_do"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -870,12 +849,7 @@ public class DatabaseManager {
 			preparedStatement.setInt(1, task.getId());
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();
-			ArrayList<Task> toDo;
-			Gson gson = new Gson();
 			while (resultSet.next()) {
-				toDo = gson.fromJson(resultSet.getString("to_do"),
-						new TypeToken<ArrayList<Task>>() {
-						}.getType());
 				tasks.add(new Task(
 						resultSet.getInt("id"),
 						resultSet.getInt("project_id"),
@@ -891,7 +865,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, toDo));
+								: null, resultSet.getString("to_do")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1160,7 +1134,7 @@ public class DatabaseManager {
 				new java.sql.Date(2), new java.sql.Date(3));
 		Task task = new Task(0, 1, "Task name", new java.sql.Date(1),
 				new java.sql.Date(2), new java.sql.Date(3),
-				new java.sql.Date(4), new ArrayList<Task>());
+				new java.sql.Date(4), "");
 		try {
 			connect();
 			if (!insertUser(user, "password2") || !insertProject(project, user)

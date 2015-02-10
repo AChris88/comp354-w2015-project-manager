@@ -16,7 +16,7 @@ public class Task {
 	private Date startDate;
 	private Date projectedEndDate;
 	private Date endDate;
-	private ArrayList<Task> toDo;
+	private String toDo;
 
 	public Task() {
 		id = 0;
@@ -31,7 +31,7 @@ public class Task {
 
 	public Task(int id, int projectId, String name, Date projectedStartDate,
 			Date startDate, Date projectedEndDate, Date endDate,
-			ArrayList<Task> toDo) {
+			String toDo) {
 		super();
 		this.id = id;
 		this.projectId = projectId;
@@ -83,11 +83,11 @@ public class Task {
 		this.endDate = endDate;
 	}
 
-	public ArrayList<Task> getToDo() {
+	public String getToDo() {
 		return toDo;
 	}
 
-	public void setToDo(ArrayList<Task> toDo) {
+	public void setToDo(String toDo) {
 		this.toDo = toDo;
 	}
 
