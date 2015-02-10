@@ -59,6 +59,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private ProjectManager manager;
 	private JButton btnChangePrerequisites;
 	private JButton btnCloseTab;
+	private ButtonClickListener clickListener;
 
 	/**
 	 * @wbp.parser.constructor
@@ -177,8 +178,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnSave.insets = new Insets(0, 0, 5, 5);
 		gbc_btnSave.gridx = 4;
 		gbc_btnSave.gridy = 6;
-		// TODO add button action listener to save record
-		btnSave.addActionListener(new ButtonClickListener());
+		
+		clickListener = new ButtonClickListener();
+		
+		btnSave.addActionListener(clickListener);
 		add(btnSave, gbc_btnSave);
 
 		btnReset = new JButton("Reset");
@@ -213,7 +216,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		taskModel.addObserver(this);
 
 		btnChangePrerequisites = new JButton("Change Prerequisites");
-		btnChangePrerequisites.addActionListener(new ButtonClickListener());
+		btnChangePrerequisites.addActionListener(clickListener);
 
 		GridBagConstraints gbc_btnChangePrerequisites = new GridBagConstraints();
 		gbc_btnChangePrerequisites.insets = new Insets(0, 0, 5, 5);
@@ -223,7 +226,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		btnChangePrerequisites.setVisible(false);
 
 		btnCloseTab = new JButton("Close Tab");
-		btnCloseTab.addActionListener(new ButtonClickListener());
+		btnCloseTab.addActionListener(clickListener);
 
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 5);

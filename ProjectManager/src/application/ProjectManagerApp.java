@@ -19,7 +19,8 @@ import dataAccess.DatabaseManager;
 public class ProjectManagerApp {
 
 	public static void main(String[] args) {
-		//test user update
+		//Various test code used to initialy insert users and whatnot
+		
 		/*
 		DatabaseManager dbm = new DatabaseManager();
 		User user = new User(1, "Chris", "Allard", "herp", "salt", 0);

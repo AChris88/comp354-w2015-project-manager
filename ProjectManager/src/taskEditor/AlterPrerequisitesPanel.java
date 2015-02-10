@@ -34,6 +34,7 @@ import javax.swing.JButton;
  * 
  */
 public class AlterPrerequisitesPanel extends JPanel {
+	private static final long serialVersionUID = 6195901282771479175L;
 	private JTable allTasksTable;
 	private JTable prerequisitesTable;
 	private TaskTableModel prereqTableModel;
@@ -42,6 +43,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 	private JButton btnCancel;
 	private Task task;
 	private ProjectManager manager;
+	private ButtonClickListener clickListener;
 
 	public AlterPrerequisitesPanel(ProjectManager manager, Task task) {
 		this.manager = manager;
@@ -96,8 +98,10 @@ public class AlterPrerequisitesPanel extends JPanel {
 		gbc_prerequisitesTable.gridy = 3;
 		add(new JScrollPane(prerequisitesTable), gbc_prerequisitesTable);
 
+		clickListener = new ButtonClickListener();
+		
 		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ButtonClickListener());
+		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
 		gbc_btnCancel.insets = new Insets(0, 0, 5, 5);
 		gbc_btnCancel.gridx = 2;
@@ -105,7 +109,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 		add(btnCancel, gbc_btnCancel);
 
 		btnSave = new JButton("Save");
-		btnSave.addActionListener(new ButtonClickListener());
+		btnSave.addActionListener(clickListener);
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
 		gbc_btnSave.insets = new Insets(0, 0, 5, 0);
 		gbc_btnSave.gridx = 4;
@@ -123,13 +127,17 @@ public class AlterPrerequisitesPanel extends JPanel {
 				// insert all task_reqs in the prerequisites table model
 				ArrayList<Task> allPrereq = prereqTableModel.getAllTasks();
 				for (int i = 0; i < allPrereq.size(); i++) {
+					
+					//potentially does not insert if already exists
 					manager.db.insertTaskRequirement(new TaskRequirement(-1,
 							task.getId(), allPrereq.get(i).getId()));
 				}
 
 				// delete all task_reqs in the allTasks table model
 				ArrayList<Task> allNonPrereq = allTaskTableModel.getAllTasks();
-				for (int i = 0; i < allPrereq.size(); i++) {
+				for (int i = 0; i < allNonPrereq.size(); i++) {
+					
+					//potentially doesn't delete if doesn't already exist
 					manager.db.removeTaskRequirement(new TaskRequirement(-1,
 							task.getId(), allNonPrereq.get(i).getId()));
 				}

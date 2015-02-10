@@ -60,6 +60,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnSave;
 	private JButton btnAddTask;
 	private JButton btnDeleteProject;
+	private ButtonClickListener clickListener;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -176,17 +177,19 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		projectModel = new ProjectEditorModel();
 		projectModel.addObserver(this);
 
+		clickListener = new ButtonClickListener();
+
 		btnSave = new JButton("Save");
-		btnSave.addActionListener(new ButtonClickListener());
+		btnSave.addActionListener(clickListener);
 
 		btnAddTask = new JButton("Add Task");
-		btnAddTask.addActionListener(new ButtonClickListener());
+		btnAddTask.addActionListener(clickListener);
 
 		btnCloseTab = new JButton("Close Tab");
-		btnCloseTab.addActionListener(new ButtonClickListener());
+		btnCloseTab.addActionListener(clickListener);
 		
 		btnDeleteProject = new JButton("Delete Project");
-		btnDeleteProject.addActionListener(new ButtonClickListener());
+		btnDeleteProject.addActionListener(clickListener);
 		GridBagConstraints gbc_btnDeleteProject = new GridBagConstraints();
 		gbc_btnDeleteProject.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDeleteProject.gridx = 1;
@@ -267,6 +270,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
 
+			// save button case
 			if (source == btnSave) {
 				Project p = projectModel.getProject();
 				p.setName(txtProjectName.getText());
@@ -312,13 +316,19 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					manager.db.updateProject(p);
 				}
 
+				//add task button case
 			} else if (source == btnAddTask) {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
 						null, null, null, null, null);
+				//add tab for new task
 				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
+
+				//close tab case
 			} else if (source == btnCloseTab) {
 				manager.setActivePanel(new DashboardPanel(manager),
 						manager.currentUser.getFirstName() + "'s Dashboard");
+				
+				//delete project case
 			} else if (source == btnDeleteProject) {
 				ArrayList<Task> tasks = manager.db.getTasksForProject(projectModel.getProject());
 				for(int i = 0; i < tasks.size(); i++) {

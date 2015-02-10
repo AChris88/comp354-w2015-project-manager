@@ -15,6 +15,7 @@ import obj.Project;
  */
 public class ProjectTableModel extends AbstractTableModel {
 
+	private static final long serialVersionUID = 423434553990284961L;
 	private ArrayList<String> columnNames;
 	private ArrayList<Project> data;
 
@@ -22,6 +23,7 @@ public class ProjectTableModel extends AbstractTableModel {
 		this.columnNames = new ArrayList<String>();
 		columnNames.add("Name");
 		columnNames.add("Projected End Date");
+		data = new ArrayList<Project>();
 	}
 
 	@Override
@@ -51,12 +53,21 @@ public class ProjectTableModel extends AbstractTableModel {
 		}
 	}
 
+	/**
+	 * Method to set the data to be represented in the model
+	 * @param projects the projects to be represented
+	 */
 	public void populateModel(ArrayList<Project> projects) {
 		this.data = projects;
 	}
 
+	/**
+	 * Method to return the project at a given row index
+	 * @param index the index that was selected
+	 * @return The project at that index. Null if an empty row was selected
+	 */
 	public Project getProjectAt(int index) {
-		return data.get(index);
+		return index < data.size() ? data.get(index) : null;
 	}
 
 }

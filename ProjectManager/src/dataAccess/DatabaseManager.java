@@ -389,7 +389,7 @@ public class DatabaseManager {
             }
 		} catch (Exception e) {
 			success = false;
-			//e.printStackTrace();
+			e.printStackTrace();
 		} finally {
 			close();
 			try {

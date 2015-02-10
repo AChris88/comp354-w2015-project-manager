@@ -33,11 +33,13 @@ import customComponents.ProjectTableModel;
  */
 public class DashboardPanel extends JPanel {
 
+	private static final long serialVersionUID = 2351909846353604219L;
 	private ProjectManager manager;
 	private JButton btnNewUser;
 	private JButton btnNewProject;
 	private JTable table;
 	private ProjectTableModel model;
+	private ButtonClickListener clickListener;
 
 	public DashboardPanel(ProjectManager manager) {
 		this.manager = manager;
@@ -60,9 +62,12 @@ public class DashboardPanel extends JPanel {
 			add(btnNewUser, gbc_btnNewUser);
 		}
 
+		// create a click listener object to listen on all buttons in the panel
+		clickListener = new ButtonClickListener();
+
 		btnNewProject = new JButton("New Project");
-		btnNewProject.addActionListener(new ButtonClickListener());
-		
+		btnNewProject.addActionListener(clickListener);
+
 		GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
 		gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewProject.gridx = 6;
@@ -76,16 +81,18 @@ public class DashboardPanel extends JPanel {
 		gbc_lblCurrentProjects.gridy = 6;
 		add(lblCurrentProjects, gbc_lblCurrentProjects);
 
+		// instantiate model for project table and populate it with projects for
+		// the current user.
 		model = new ProjectTableModel();
+		model.populateModel(manager.db.getProjectForUsers(manager.currentUser));
 
-		model.populateModel(manager.db.getProjects());
-
+		// instantiate Project Table using model
 		table = new JTable(model);
 		table.setFillsViewportHeight(true);
-
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setAutoCreateRowSorter(true);
 
+		// set listener on table for double clicks
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 
 		GridBagConstraints gbc_table = new GridBagConstraints();
@@ -93,12 +100,19 @@ public class DashboardPanel extends JPanel {
 		gbc_table.gridx = 6;
 		gbc_table.gridy = 7;
 
+		// place table in scroll pane to make headings visible and to allow for
+		// more projects than what can be displayed given the current size
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane, gbc_table);
 
 		this.setBounds(100, 100, 500, 200);
 	}
 
+	/**
+	 * Class used to listen for clicks on buttons within parent class
+	 * @author George Lambadas 7077076
+	 *
+	 */
 	private class ButtonClickListener implements ActionListener {
 
 		@Override

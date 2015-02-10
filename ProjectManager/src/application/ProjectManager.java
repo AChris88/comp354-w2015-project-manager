@@ -68,10 +68,21 @@ public class ProjectManager extends JFrame {
 		pack();
 	}
 
+	/**
+	 * Method to close the frame from outside the frame object.
+	 */
 	public void exit() {
 		this.dispose();
 	}
 
+	/**
+	 * Change the JPanel currently occupying the frame
+	 * 
+	 * @param activePanel
+	 *            The new panel to be set
+	 * @param title
+	 *            The text to appear on the top of the frame
+	 */
 	public void setActivePanel(Component activePanel, String title) {
 		if (this.activePanel != null) {
 			this.remove(this.activePanel);
@@ -177,18 +188,31 @@ public class ProjectManager extends JFrame {
 	}
 
 	/**
-	 * @param projectAt
+	 * Method to set the frame for project editing
+	 * 
+	 * @param p
+	 *            the project to be edited
 	 */
 	public void openProject(Project p) {
 		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane
-				.add(p.getName() == null ? "New Project" : "Project: "
-						+ p.getName(), new ProjectEditorPanel(this, p));
+
+		// check if the project is a new project or one pulled from the database
+		tabbedPane.add(
+				p.getId() == -1 ? "New Project" : "Project: " + p.getName(),
+				new ProjectEditorPanel(this, p));
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, p.getName() == null ? "New Project"
 				: "Project: " + p.getName());
 	}
 
+	/**
+	 * Add tab to current project editing view
+	 * 
+	 * @param panel
+	 *            JPanel to be contained in the tab
+	 * @param title
+	 *            Text to appear at the top of the tab
+	 */
 	public void addTab(JPanel panel, String title) {
 		((JTabbedPane) activePanel).add(title, panel);
 		((JTabbedPane) activePanel).setSelectedComponent(panel);
