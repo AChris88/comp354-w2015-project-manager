@@ -75,70 +75,70 @@ public class DatabaseManager {
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "first_name TEXT, "
-                                + "last_name TEXT, "
-                                + "username TEXT UNIQUE, "
-                                + "password TEXT, "
-                                + "salt TEXT, " + "role INTEGER(1));");
+								+ "first_name TEXT, "
+								+ "last_name TEXT, "
+								+ "username TEXT UNIQUE, "
+								+ "password TEXT, "
+								+ "salt TEXT, " + "role INTEGER(1));");
 			}
 
 			resultSet = data.getTables(null, null, "projects", null);
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "name TEXT UNIQUE, "
-                                + "start_date DATE, "
-                                + "projected_end DATE, " + "end_date DATE);");
+								+ "name TEXT UNIQUE, "
+								+ "start_date DATE, "
+								+ "projected_end DATE, " + "end_date DATE);");
 			}
 
 			resultSet = data.getTables(null, null, "tasks", null);
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "project_id INTEGER, "
-                                + "name TEXT UNIQUE, "
-                                + "projected_start DATE, "
-                                + "actual_start DATE, "
-                                + "projected_end DATE, "
-                                + "actual_end DATE, "
-                                + "to_do TEXT,"
-                                + "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);");
+								+ "project_id INTEGER, "
+								+ "name TEXT UNIQUE, "
+								+ "projected_start DATE, "
+								+ "actual_start DATE, "
+								+ "projected_end DATE, "
+								+ "actual_end DATE, "
+								+ "to_do TEXT,"
+								+ "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);");
 			}
 
 			resultSet = data.getTables(null, null, "task_reqs", null);
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE task_reqs(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "task_id INTEGER, "
-                                + "task_req INTEGER, "
-                                + "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
-                                + "FOREIGN KEY (task_req) REFERENCES tasks(id) ON DELETE CASCADE, "
-                                + "UNIQUE (task_id,  task_req));");
+								+ "task_id INTEGER, "
+								+ "task_req INTEGER, "
+								+ "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (task_req) REFERENCES tasks(id) ON DELETE CASCADE, "
+								+ "UNIQUE (task_id,  task_req));");
 			}
 
 			resultSet = data.getTables(null, null, "project_users", null);
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE project_users(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "project_id INTEGER, "
-                                + "user_id INTEGER, "
-                                + "project_role INTEGER, "
-                                + "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE, "
-                                + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
-                                + "UNIQUE (project_id,  user_id));");
+								+ "project_id INTEGER, "
+								+ "user_id INTEGER, "
+								+ "project_role INTEGER, "
+								+ "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
+								+ "UNIQUE (project_id,  user_id));");
 			}
 
 			resultSet = data.getTables(null, null, "user_tasks", null);
 			if (!resultSet.next()) {
 				statement
 						.execute("CREATE TABLE user_tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "user_id INTEGER, "
-                                + "task_id INTEGER, "
-                                + "project_users INTEGER, "
-                                + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
-                                + "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
-                                + "FOREIGN KEY (project_users) REFERENCES project_users(id) ON DELETE CASCADE, "
-                                + "UNIQUE(user_id,  task_id));");
+								+ "user_id INTEGER, "
+								+ "task_id INTEGER, "
+								+ "project_users INTEGER, "
+								+ "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, "
+								+ "FOREIGN KEY (project_users) REFERENCES project_users(id) ON DELETE CASCADE, "
+								+ "UNIQUE(user_id,  task_id));");
 			}
 
 		} catch (Exception e) {
@@ -162,8 +162,8 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-                            "INSERT INTO users (id, first_name, last_name, username, password, salt, role) VALUES(?,?,?,?,?,?,?)",
-                            Statement.RETURN_GENERATED_KEYS);
+							"INSERT INTO users (id, first_name, last_name, username, password, salt, role) VALUES(?,?,?,?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setString(2, user.getFirstName());
 			preparedStatement.setString(3, user.getLastName());
@@ -203,8 +203,8 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-                            "INSERT INTO projects (id, name, start_date, projected_end, end_date) VALUES(?,?,?,?,?)",
-                            Statement.RETURN_GENERATED_KEYS);
+							"INSERT INTO projects (id, name, start_date, projected_end, end_date) VALUES(?,?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setString(2, project.getName());
 			preparedStatement.setDate(3,
@@ -253,8 +253,8 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-                            "INSERT INTO tasks (id, project_id, name, projected_start, actual_start, projected_end, actual_end, to_do) VALUES(?,?,?,?,?,?,?,?)",
-                            Statement.RETURN_GENERATED_KEYS);
+							"INSERT INTO tasks (id, project_id, name, projected_start, actual_start, projected_end, actual_end, to_do) VALUES(?,?,?,?,?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, task.getProjectId());
 			preparedStatement.setString(3, task.getName());
@@ -304,8 +304,8 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-                            "INSERT INTO project_users (id, project_id, user_id, project_role) VALUES(?,?,?,?)",
-                            Statement.RETURN_GENERATED_KEYS);
+							"INSERT INTO project_users (id, project_id, user_id, project_role) VALUES(?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, projectUser.getProjectId());
 			preparedStatement.setInt(3, projectUser.getUserId());
@@ -340,8 +340,8 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-                            "INSERT INTO user_tasks (id, user_id, task_id, project_users) VALUES(?,?,?,?)",
-                            Statement.RETURN_GENERATED_KEYS);
+							"INSERT INTO user_tasks (id, user_id, task_id, project_users) VALUES(?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, userTask.getUserId());
 			preparedStatement.setInt(3, userTask.getTaskId());
@@ -374,19 +374,21 @@ public class DatabaseManager {
 		try {
 			connect();
 			preparedStatement = connection
-					.prepareStatement("INSERT INTO task_reqs (id, task_id, task_req) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
+					.prepareStatement(
+							"INSERT INTO task_reqs (id, task_id, task_req) VALUES(?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, taskRequirement.getTaskId());
 			preparedStatement.setInt(3, taskRequirement.getTaskReq());
 			int records = preparedStatement.executeUpdate();
-            if (records != 0) {
-                ResultSet gk = preparedStatement.getGeneratedKeys();
-                if (gk.next()) {
-                    taskRequirement.setId((int) gk.getLong(1));
-                }
-            } else {
-                success = false;
-            }
+			if (records != 0) {
+				ResultSet gk = preparedStatement.getGeneratedKeys();
+				if (gk.next()) {
+					taskRequirement.setId((int) gk.getLong(1));
+				}
+			} else {
+				success = false;
+			}
 		} catch (Exception e) {
 			success = false;
 			e.printStackTrace();
@@ -764,12 +766,17 @@ public class DatabaseManager {
 			resultSet = preparedStatement.executeQuery();
 			projects = new ArrayList<Project>();
 			while (resultSet.next()) {
-				projects.add(new Project(resultSet.getInt("id"), resultSet
-						.getString("name"), new java.sql.Date(resultSet
-						.getDate("start_date").getTime()), new java.sql.Date(
-						resultSet.getDate("projected_end").getTime()),
-						new java.sql.Date(resultSet.getDate("end_date")
-								.getTime())));
+				projects.add(new Project(
+						resultSet.getInt("id"),
+						resultSet.getString("name"),
+						resultSet.getDate("start_date") != null ? new java.sql.Date(
+								resultSet.getDate("start_date").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("end_date") != null ? new java.sql.Date(
+								resultSet.getDate("end_date").getTime()) : null));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
