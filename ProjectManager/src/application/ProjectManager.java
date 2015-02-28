@@ -39,6 +39,7 @@ public class ProjectManager extends JFrame {
 	public DatabaseManager db;
 	public User currentUser;
 
+	// Constructor for the Project Manager Window
 	public ProjectManager() {
 		initialize();
 		db = new DatabaseManager();
