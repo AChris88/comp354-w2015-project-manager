@@ -24,6 +24,7 @@ import obj.Project;
 import obj.Task;
 import obj.User;
 import projectEditor.ProjectEditorPanel;
+import userEditor.UserEditorPanel;
 import dataAccess.DatabaseManager;
 import authentication.AuthenticationPanel;
 
@@ -204,6 +205,22 @@ public class ProjectManager extends JFrame {
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, p.getName() == null ? "New Project"
 				: "Project: " + p.getName());
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public void openUser(User u) {
+		JTabbedPane tabbedPane = new JTabbedPane();
+
+		// check if the project is a new project or one pulled from the database
+		tabbedPane.add(
+				u.getId() == -1 ? "New User" : "User: " + u.getFirstName() + " " + u.getLastName(),
+				new UserEditorPanel(this, u));
+		tabbedPane.setBounds(new Rectangle(800, 400));
+		this.setActivePanel(tabbedPane, u.getFirstName() == null ? "New User"
+				: "User: " + u.getFirstName() + " "  + u.getLastName());
 	}
 
 	/**

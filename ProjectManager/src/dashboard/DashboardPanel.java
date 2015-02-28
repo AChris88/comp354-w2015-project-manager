@@ -6,8 +6,11 @@ package dashboard;
 import javax.swing.JPanel;
 
 import application.ProjectManager;
+
 import java.awt.GridBagLayout;
+
 import javax.swing.JButton;
+
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -23,7 +26,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
 import obj.Project;
-
+import obj.User;
 import projectEditor.ProjectEditorPanel;
 import customComponents.ProjectTableModel;
 
@@ -67,6 +70,8 @@ public class DashboardPanel extends JPanel {
 
 		btnNewProject = new JButton("New Project");
 		btnNewProject.addActionListener(clickListener);
+		
+		btnNewUser.addActionListener(clickListener);
 
 		GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
 		gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
@@ -122,8 +127,10 @@ public class DashboardPanel extends JPanel {
 			if (source == btnNewProject) {
 				manager.openProject(new Project(-1, null, null, null, null));
 			}
+			else if (source == btnNewUser) {
+				manager.openUser(new User(-1, null, null, null, -1));
+			}
 		}
-
 	}
 
 	private class DoubleClickListener implements MouseListener {
