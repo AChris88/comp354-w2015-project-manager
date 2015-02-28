@@ -4,6 +4,10 @@ import java.util.Observable;
 
 import obj.User;
 
+/**
+ * @author Philippe GENOIS 6527426
+ * 
+ */
 public class UserEditorModel extends Observable{
 
 	private User user;

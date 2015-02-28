@@ -1060,6 +1060,30 @@ public class DatabaseManager {
 		return removed;
 	}
 
+	public boolean removeProjectUser(ProjectUser projectUser) {
+		boolean removed = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("DELETE FROM project_users WHERE project_id = ? AND user_id = ?");
+			preparedStatement.setInt(1, projectUser.getProjectId());
+			preparedStatement.setInt(2, projectUser.getUserId());
+			preparedStatement.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			removed = false;
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return removed;
+	}
+
 	public boolean removeTaskRequirement(TaskRequirement tr) {
 		boolean removed = true;
 		try {

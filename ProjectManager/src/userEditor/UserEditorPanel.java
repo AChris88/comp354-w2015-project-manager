@@ -142,7 +142,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 				add(lblRole, gbc_lblRole);
 				
 						txtRole = new JTextField();
-						txtRole.setText("0");
+						txtRole.setText("1");
 						GridBagConstraints gbc_txtRole = new GridBagConstraints();
 						gbc_txtRole.insets = new Insets(0, 0, 5, 5);
 						gbc_txtRole.fill = GridBagConstraints.HORIZONTAL;
