@@ -12,6 +12,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+// Libraries necessary for GANNT chart creation
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.IntervalCategoryDataset;
+import org.jfree.data.gantt.Task;
+import org.jfree.data.gantt.TaskSeries;
+import org.jfree.data.gantt.TaskSeriesCollection;
+import org.jfree.data.time.SimpleTimePeriod;
+
+// Other GANTT-related libraries
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+ 
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
