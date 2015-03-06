@@ -33,6 +33,8 @@ import customComponents.TaskTableModel;
 
 import javax.swing.JButton;
 
+import userEditor.AddUserTaskPanel;
+
 /**
  * 
  * @author Christian Allard 7026188
@@ -60,6 +62,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JButton btnChangePrerequisites;
 	private JButton btnCloseTab;
 	private ButtonClickListener clickListener;
+	private JButton btnAddUser;
 
 	/**
 	 * @wbp.parser.constructor
@@ -183,6 +186,9 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		
 		btnSave.addActionListener(clickListener);
 		add(btnSave, gbc_btnSave);
+		
+		btnAddUser = new JButton("Add Users");
+		btnAddUser.addActionListener(clickListener);
 
 		btnReset = new JButton("Reset");
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
@@ -227,9 +233,15 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(clickListener);
+		
+		GridBagConstraints gbc_btnAddUser = new GridBagConstraints();
+		gbc_btnAddUser.insets = new Insets(0, 0, 5, 5);
+		gbc_btnAddUser.gridx = 4;
+		gbc_btnAddUser.gridy = 9;
+		add(btnAddUser, gbc_btnAddUser);
 
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
-		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 0);
 		gbc_btnCloseTab.gridx = 5;
 		gbc_btnCloseTab.gridy = 9;
 		add(btnCloseTab, gbc_btnCloseTab);
@@ -450,6 +462,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				manager.addTab(
 						new AlterPrerequisitesPanel(manager, taskModel
 								.getTask()),
+						"Prerequisites: " + taskModel.getTaskName());
+			} else if (source == btnAddUser) {
+				manager.addTab(
+						new AddUserTaskPanel(manager, taskModel.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
 			} else if (source == btnCloseTab) {
 				manager.closeTab(TaskEditorPanel.this);

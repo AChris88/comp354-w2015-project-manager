@@ -484,6 +484,34 @@ public class DatabaseManager {
 		return project;
 	}
 
+	public Project getProjectByID(int id) {
+		Project project = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM projects WHERE id = ?");
+			preparedStatement.setInt(1, id);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next())
+				project = new Project(resultSet.getInt("id"),
+						resultSet.getString("name"),
+						resultSet.getDate("start_date"),
+						resultSet.getDate("projected_end"),
+						resultSet.getDate("end_date"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return project;
+	}
+
+
 	public ArrayList<Task> getTasks() {
 		ArrayList<Task> tasks = null;
 		try {
@@ -677,6 +705,47 @@ public class DatabaseManager {
 
 	}
 
+	public ArrayList<Task> getUserTasksForUser(User user, ProjectUser p) {
+		ArrayList<Task> tasks = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM user_tasks WHERE user_id = ? AND project_users = ?");
+			preparedStatement.setInt(1, user.getId());
+			preparedStatement.setInt(2, p.getId());
+			resultSet = preparedStatement.executeQuery();
+			tasks = new ArrayList<Task>();
+			while (resultSet.next()) {
+				tasks.add(new Task(
+						resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
+						resultSet.getString("name"),
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, resultSet.getString("to_do")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return tasks;
+	}
+
 	public ArrayList<Task> getTasksForProject(Project project) {
 		ArrayList<Task> tasks = null;
 		try {
@@ -824,7 +893,7 @@ public class DatabaseManager {
 		try {
 			connect();
 			preparedStatement = connection
-					.prepareStatement("SELECT users.id, users.first_name, users.last_name, users.username, users.role FROM users INNER JOIN user_tasks ON users.id = user_tasks.user_id WHERE user_tasks.user_id = ?");
+					.prepareStatement("SELECT users.id, users.first_name, users.last_name, users.username, users.role FROM users INNER JOIN user_tasks ON users.id = user_tasks.user_id WHERE user_tasks.task_id = ?");
 			preparedStatement.setInt(1, task.getId());
 			resultSet = preparedStatement.executeQuery();
 			users = new ArrayList<User>();
@@ -1092,6 +1161,30 @@ public class DatabaseManager {
 					.prepareStatement("DELETE FROM task_reqs WHERE task_id = ? AND task_req = ?");
 			preparedStatement.setInt(1, tr.getTaskId());
 			preparedStatement.setInt(2, tr.getTaskReq());
+			preparedStatement.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			removed = false;
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return removed;
+	}
+
+	public boolean removeUserTask(UserTask ut) {
+		boolean removed = true;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("DELETE FROM user_tasks WHERE user_id = ? AND task_id = ? AND project_users = ?");
+			preparedStatement.setInt(1, ut.getUserId());
+			preparedStatement.setInt(2, ut.getTaskId());
+			preparedStatement.setInt(3, ut.getProjectUsers());
 			preparedStatement.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
