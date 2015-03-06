@@ -38,7 +38,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import obj.Project;
-import obj.Task;
+//import obj.Task;
 import obj.User;
 import projectEditor.ProjectEditorPanel;
 import userEditor.UserEditorPanel;
