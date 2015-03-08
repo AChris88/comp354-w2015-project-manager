@@ -143,7 +143,7 @@ public class AddProjectUserPanel extends JPanel {
 					ProjectUser pu = getProjectUser(allUserNotInProject.get(i), project);
 					
 					if(pu != null) {
-						ArrayList<Task> tasksForUser = manager.db.getUserTasksForUser(allUserNotInProject.get(i), pu);
+						ArrayList<Task> tasksForUser = manager.db.getTasksForProjectUser(pu);
 	
 						for(int j = 0; j < tasksForUser.size(); ++j) {
 							manager.db.removeUserTask(new UserTask(-1, allUserNotInProject.get(i).getId(), 

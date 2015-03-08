@@ -570,6 +570,36 @@ public class DatabaseManager {
 		}
 		return tasks;
 	}
+	public ArrayList<Task> getTasksForProjectUser(ProjectUser pu) {
+		ArrayList<Task> tasks = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT t.* FROM tasks t INNER JOIN user_tasks ut ON ut.task_id = t.id WHERE ut.project_users = ?");
+			preparedStatement.setInt(1, pu.getId());
+			resultSet = preparedStatement.executeQuery();
+			
+			tasks = new ArrayList<Task>();
+			while (resultSet.next()) {
+				tasks.add(new Task(resultSet.getInt("id"), resultSet
+						.getInt("project_id"), resultSet.getString("name"),
+						resultSet.getDate("projected_start"), resultSet
+								.getDate("actual_start"), resultSet
+								.getDate("projected_end"), resultSet
+								.getDate("actual_end"), resultSet.getString("to_do")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return tasks;
+	}
 
 	public ArrayList<ProjectUser> getProjectUsers() {
 		ArrayList<ProjectUser> projectUsers = null;
@@ -736,8 +766,8 @@ public class DatabaseManager {
 
 	}
 
-	public ArrayList<Task> getUserTasksForUser(User user, ProjectUser p) {
-		ArrayList<Task> tasks = null;
+	public ArrayList<UserTask> getUserTasksForUser(User user, ProjectUser p) {
+		ArrayList<UserTask> userTasks = null;
 		try {
 			connect();
 			preparedStatement = connection
@@ -745,24 +775,12 @@ public class DatabaseManager {
 			preparedStatement.setInt(1, user.getId());
 			preparedStatement.setInt(2, p.getId());
 			resultSet = preparedStatement.executeQuery();
-			tasks = new ArrayList<Task>();
+			userTasks = new ArrayList<UserTask>();
+			
 			while (resultSet.next()) {
-				tasks.add(new Task(
-						resultSet.getInt("id"),
-						resultSet.getInt("project_id"),
-						resultSet.getString("name"),
-						resultSet.getDate("projected_start") != null ? new java.sql.Date(
-								resultSet.getDate("projected_start").getTime())
-								: null,
-						resultSet.getDate("actual_start") != null ? new java.sql.Date(
-								resultSet.getDate("actual_start").getTime())
-								: null,
-						resultSet.getDate("projected_end") != null ? new java.sql.Date(
-								resultSet.getDate("projected_end").getTime())
-								: null,
-						resultSet.getDate("actual_end") != null ? new java.sql.Date(
-								resultSet.getDate("actual_end").getTime())
-								: null, resultSet.getString("to_do")));
+				userTasks.add(new UserTask(resultSet.getInt("id"), resultSet
+						.getInt("user_id"), resultSet.getInt("task_id"),
+						resultSet.getInt("project_users")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -774,7 +792,7 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
-		return tasks;
+		return userTasks;
 	}
 
 	public ArrayList<Task> getTasksForProject(Project project) {
