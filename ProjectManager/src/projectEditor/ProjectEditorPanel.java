@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import obj.Project;
 import obj.Task;
 import taskEditor.TaskEditorPanel;
+import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
 import application.ProjectManager;
 
@@ -63,6 +64,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnDeleteProject;
 	private ButtonClickListener clickListener;
 	private JButton btnAddUser;
+	private JButton btnViewTask;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -74,9 +76,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	public ProjectEditorPanel(ProjectManager manager, Project project) {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0,
 				Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, 0.0, Double.MIN_VALUE };
@@ -95,7 +97,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_txtProjectName = new GridBagConstraints();
 		gbc_txtProjectName.insets = new Insets(0, 0, 5, 0);
 		gbc_txtProjectName.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtProjectName.gridx = 5;
+		gbc_txtProjectName.gridx = 6;
 		gbc_txtProjectName.gridy = 1;
 		add(txtProjectName, gbc_txtProjectName);
 		txtProjectName.setColumns(10);
@@ -113,7 +115,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_txtYyyymmdd = new GridBagConstraints();
 		gbc_txtYyyymmdd.insets = new Insets(0, 0, 5, 0);
 		gbc_txtYyyymmdd.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtYyyymmdd.gridx = 5;
+		gbc_txtYyyymmdd.gridx = 6;
 		gbc_txtYyyymmdd.gridy = 3;
 		add(txtStartDate, gbc_txtYyyymmdd);
 		txtStartDate.setColumns(10);
@@ -131,7 +133,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_txtYyyymmdd_1 = new GridBagConstraints();
 		gbc_txtYyyymmdd_1.insets = new Insets(0, 0, 5, 0);
 		gbc_txtYyyymmdd_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtYyyymmdd_1.gridx = 5;
+		gbc_txtYyyymmdd_1.gridx = 6;
 		gbc_txtYyyymmdd_1.gridy = 4;
 		add(txtProjectedEndDate, gbc_txtYyyymmdd_1);
 		txtProjectedEndDate.setColumns(10);
@@ -149,7 +151,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_txtYyyymmdd_2 = new GridBagConstraints();
 		gbc_txtYyyymmdd_2.insets = new Insets(0, 0, 5, 0);
 		gbc_txtYyyymmdd_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtYyyymmdd_2.gridx = 5;
+		gbc_txtYyyymmdd_2.gridx = 6;
 		gbc_txtYyyymmdd_2.gridy = 5;
 		add(txtActualEndDate, gbc_txtYyyymmdd_2);
 		txtActualEndDate.setColumns(10);
@@ -170,7 +172,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 0);
-		gbc_table.gridwidth = 4;
+		gbc_table.gridwidth = 5;
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 2;
 		gbc_table.gridy = 7;
@@ -192,6 +194,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(clickListener);
+		
+		btnViewTask = new JButton("View my tasks");
+		btnViewTask.addActionListener(clickListener);
 		
 		btnDeleteProject = new JButton("Delete Project");
 		btnDeleteProject.addActionListener(clickListener);
@@ -220,8 +225,14 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnAddTask.gridy = 8;
 		add(btnAddTask, gbc_btnAddTask);
 		btnAddTask.setVisible(false);
+		
+		GridBagConstraints gbc_btnViewTask = new GridBagConstraints();
+		gbc_btnViewTask.insets = new Insets(0, 0, 0, 5);
+		gbc_btnViewTask.gridx = 5;
+		gbc_btnViewTask.gridy = 8;
+		add(btnViewTask, gbc_btnViewTask);
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
-		gbc_btnSave.gridx = 5;
+		gbc_btnSave.gridx = 6;
 		gbc_btnSave.gridy = 8;
 		add(btnSave, gbc_btnSave);
 
@@ -352,6 +363,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				}
 				manager.db.removeProject(projectModel.getProject());
 				manager.setActivePanel(new DashboardPanel(manager), manager.currentUser.getFirstName() + "'s Dashboard");
+			} else if (source == btnViewTask) {
+				manager.addTab(new ViewTaskPanel(manager, manager.currentUser), "Assigned tasks");
 			}
 		}
 	}

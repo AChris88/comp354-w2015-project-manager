@@ -127,12 +127,17 @@ public class AddProjectUserPanel extends JPanel {
 
 			if (source == btnSave) {
 				ArrayList<User> allUserInProject = projectUsersTableModel.getAllUsers();
-				for (int i = 0; i < allUserInProject.size(); i++) {
-					
-					//potentially does not insert if already exists
-					manager.db.insertProjectUser(new ProjectUser(-1, project.getId(), allUserInProject.get(i).getId(), 0));
-				}
 				
+				for (int i = 0; i < allUserInProject.size(); i++) 
+				{
+					ArrayList<User> alreadyInTheDB = manager.db.getUsersForProject(project);
+					
+					if(!findUserIn(alreadyInTheDB, allUserInProject.get(i))) 
+					{
+						manager.db.insertProjectUser(new ProjectUser(-1, project.getId(), allUserInProject.get(i).getId(), 0));
+					}
+				}
+					
 				ArrayList<User> allUserNotInProject = allUsersTableModel.getAllUsers();
 				for (int i = 0; i < allUserNotInProject.size(); i++) {
 					ProjectUser pu = getProjectUser(allUserNotInProject.get(i), project);

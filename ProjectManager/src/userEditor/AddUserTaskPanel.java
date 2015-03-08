@@ -130,12 +130,17 @@ public class AddUserTaskPanel extends JPanel {
 
 			if (source == btnSave) {
 				ArrayList<User> usersToTask = usersToTaskTableModel.getAllUsers();
-				for (int i = 0; i < usersToTask.size(); i++) {
+				
+				for (int i = 0; i < usersToTask.size(); i++) 
+				{	
+					ArrayList<User> alreadyInTheDB = manager.db.getUsersForTask(task);
 					
-					//potentially does not insert if already exists
-					manager.db.insertUserTask(new UserTask(-1, 
+					if(!findUserIn(alreadyInTheDB, usersToTask.get(i))) 
+					{
+						manager.db.insertUserTask(new UserTask(-1, 
 							usersToTask.get(i).getId(), 
 							task.getId(), getProjectUser(usersToTask.get(i), project).getId()));
+					}					
 				}
 				
 				ArrayList<User> allUsers = allUsersTableModel.getAllUsers();

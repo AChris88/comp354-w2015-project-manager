@@ -540,6 +540,37 @@ public class DatabaseManager {
 		return tasks;
 	}
 
+	public ArrayList<Task> getTasksForUser(User u) {
+		ArrayList<Task> tasks = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("SELECT t.* FROM tasks t INNER JOIN user_tasks ut ON ut.task_id = t.id  WHERE ut.user_id = ?");
+			preparedStatement.setInt(1, u.getId());
+			resultSet = preparedStatement.executeQuery();
+			
+			tasks = new ArrayList<Task>();
+			while (resultSet.next()) {
+				tasks.add(new Task(resultSet.getInt("id"), resultSet
+						.getInt("project_id"), resultSet.getString("name"),
+						resultSet.getDate("projected_start"), resultSet
+								.getDate("actual_start"), resultSet
+								.getDate("projected_end"), resultSet
+								.getDate("actual_end"), resultSet.getString("to_do")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return tasks;
+	}
+
 	public ArrayList<ProjectUser> getProjectUsers() {
 		ArrayList<ProjectUser> projectUsers = null;
 		try {
