@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
@@ -403,61 +405,76 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			if (source == btnSave) {
 				Task t = taskModel.getTask();
 				t.setName(nameTextField.getText());
-
-				Calendar c = Calendar.getInstance();
-				String[] dateComponents = new String[3];
-
-				if (expectedStartTextField.getText().equals("YYYY-MM-DD")) {
-					t.setStartDate(null);
-				} else {
-					dateComponents = expectedStartTextField.getText()
-							.split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
-							Integer.parseInt(dateComponents[1]) - 1,
-							Integer.parseInt(dateComponents[2]));
-					t.setProjectedStartDate(c.getTime());
+				
+				Project p = new Project(taskModel.getTask().getProjectId(), "", new Date(0), new Date(0), new Date(0));
+				ArrayList<Task> allTasks = manager.db.getTasksForProject(p);
+				
+				boolean taskNameFound = false;
+				for(int i = 0; i < allTasks.size(); ++i)
+				{
+					if(allTasks.get(i).getName().equals(t.getName()))
+					{
+						taskNameFound = true;
+					}
 				}
+				
+				if(!taskNameFound)
+				{
+					Calendar c = Calendar.getInstance();
+					String[] dateComponents = new String[3];
+	
+					if (expectedStartTextField.getText().equals("YYYY-MM-DD")) {
+						t.setStartDate(null);
+					} else {
+						dateComponents = expectedStartTextField.getText()
+								.split("-");
+						c.set(Integer.parseInt(dateComponents[0]),
+								Integer.parseInt(dateComponents[1]) - 1,
+								Integer.parseInt(dateComponents[2]));
+						t.setProjectedStartDate(c.getTime());
+					}
+	
+					if (startTextField.getText().equals("YYYY-MM-DD")) {
+						t.setStartDate(null);
+					} else {
+						dateComponents = startTextField.getText().split("-");
+	
+						c.set(Integer.parseInt(dateComponents[0]),
+								Integer.parseInt(dateComponents[1]) - 1,
+								Integer.parseInt(dateComponents[2]));
+						t.setStartDate(c.getTime());
+					}
+	
+					if (expectedEndTextField.getText().equals("YYYY-MM-DD")) {
+						t.setStartDate(null);
+					} else {
+						dateComponents = expectedEndTextField.getText().split("-");
+						c.set(Integer.parseInt(dateComponents[0]),
+								Integer.parseInt(dateComponents[1]) - 1,
+								Integer.parseInt(dateComponents[2]));
+						t.setProjectedEndDate(c.getTime());
+					}
+	
+					if (endTextField.getText().equals("YYYY-MM-DD")) {
+						t.setStartDate(null);
+					} else {
+						dateComponents = endTextField.getText().split("-");
+						c.set(Integer.parseInt(dateComponents[0]),
+								Integer.parseInt(dateComponents[1]) - 1,
+								Integer.parseInt(dateComponents[2]));
+						t.setEndDate(c.getTime());
+					}
+	
+					if (t.getId() == -1) {
+						manager.db.insertTask(t);
+					} else {
+						manager.db.updateTask(t);
+					}
+	
+					t = manager.db.getTaskByName(t.getName());
+					taskModel.setTask(t);
 
-				if (startTextField.getText().equals("YYYY-MM-DD")) {
-					t.setStartDate(null);
-				} else {
-					dateComponents = startTextField.getText().split("-");
-
-					c.set(Integer.parseInt(dateComponents[0]),
-							Integer.parseInt(dateComponents[1]) - 1,
-							Integer.parseInt(dateComponents[2]));
-					t.setStartDate(c.getTime());
 				}
-
-				if (expectedEndTextField.getText().equals("YYYY-MM-DD")) {
-					t.setStartDate(null);
-				} else {
-					dateComponents = expectedEndTextField.getText().split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
-							Integer.parseInt(dateComponents[1]) - 1,
-							Integer.parseInt(dateComponents[2]));
-					t.setProjectedEndDate(c.getTime());
-				}
-
-				if (endTextField.getText().equals("YYYY-MM-DD")) {
-					t.setStartDate(null);
-				} else {
-					dateComponents = endTextField.getText().split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
-							Integer.parseInt(dateComponents[1]) - 1,
-							Integer.parseInt(dateComponents[2]));
-					t.setEndDate(c.getTime());
-				}
-
-				if (t.getId() == -1) {
-					manager.db.insertTask(t);
-				} else {
-					manager.db.updateTask(t);
-				}
-
-				t = manager.db.getTaskByName(t.getName());
-				taskModel.setTask(t);
-
 			} else if (source == btnChangePrerequisites) {
 				manager.addTab(
 						new AlterPrerequisitesPanel(manager, taskModel

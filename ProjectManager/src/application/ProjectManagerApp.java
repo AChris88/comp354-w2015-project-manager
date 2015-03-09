@@ -71,14 +71,12 @@ public class ProjectManagerApp {
 		//test user login
 		/*
 		DatabaseManager dbm = new DatabaseManager();
-		dbm.insertUser(new User(0, "Chris", "Allard", "slaiy", "salt", 0), "password");
-		System.out.println("Login successful: " + dbm.login("slaiy", "password"));
+		dbm.insertUser(new User(0, "Philippe", "GENOIS", "testuser", 1), "password");
 		*/
 		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new ProjectManager();
-				
 			}
 		});
 	}

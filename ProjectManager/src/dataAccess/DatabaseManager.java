@@ -96,7 +96,7 @@ public class DatabaseManager {
 				statement
 						.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 								+ "project_id INTEGER, "
-								+ "name TEXT UNIQUE, "
+								+ "name TEXT, "
 								+ "projected_start DATE, "
 								+ "actual_start DATE, "
 								+ "projected_end DATE, "
