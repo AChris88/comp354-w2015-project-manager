@@ -67,18 +67,20 @@ public class DashboardPanel extends JPanel {
 			add(btnNewUser, gbc_btnNewUser);
 			
 			btnNewUser.addActionListener(clickListener);
+			
+			btnNewProject = new JButton("New Project");
+			GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
+			gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
+			gbc_btnNewProject.gridx = 6;
+			gbc_btnNewProject.gridy = 4;
+			add(btnNewProject, gbc_btnNewProject);
+			
+			btnNewProject.addActionListener(clickListener);
 		}
 
 		// create a click listener object to listen on all buttons in the panel
 
-		btnNewProject = new JButton("New Project");
-		btnNewProject.addActionListener(clickListener);
 
-		GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
-		gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewProject.gridx = 6;
-		gbc_btnNewProject.gridy = 4;
-		add(btnNewProject, gbc_btnNewProject);
 
 		JLabel lblCurrentProjects = new JLabel("Current Projects: ");
 		GridBagConstraints gbc_lblCurrentProjects = new GridBagConstraints();
