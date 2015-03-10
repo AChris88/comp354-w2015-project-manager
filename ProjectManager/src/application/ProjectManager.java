@@ -49,7 +49,7 @@ import authentication.AuthenticationPanel;
  * @author George Lambadas 7077076
  * 
  */
-public class ProjectManager extends JFrame {
+public class ProjectManager extends JFrame implements Runnable{
 
 	private static final long serialVersionUID = 8535188348113824366L;
 	private GridBagConstraints activePanelConstraints;
@@ -255,5 +255,11 @@ public class ProjectManager extends JFrame {
 
 	public void closeTab(JPanel panel) {
 		((JTabbedPane) activePanel).remove(panel);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }

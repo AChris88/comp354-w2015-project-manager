@@ -110,7 +110,7 @@ public class DashboardPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane, gbc_table);
 
-		this.setBounds(100, 100, 500, 200);
+		this.setBounds(100, 100, 500, 277);
 	}
 
 	/**
