@@ -78,7 +78,7 @@ public class UIRobot implements Runnable {
 	}
 
 	public void selectProject() {
-		bot.mouseMove(300,315);
+		bot.mouseMove(projectX, projectY);
 
 		bot.mousePress(InputEvent.BUTTON1_MASK);
 		System.out.println("click press 1");

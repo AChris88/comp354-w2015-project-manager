@@ -17,11 +17,9 @@ public class GanttTest {
 		Thread appThread = new Thread(app);
 
 		try {
-			// instantiate bot and set action delay
-
 			appThread.start();
-			
 			botThread.start();
+			
 			bot.login();
 			
 			Thread.sleep(1500);
