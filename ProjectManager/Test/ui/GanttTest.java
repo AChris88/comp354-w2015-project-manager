@@ -10,7 +10,7 @@ import application.ProjectManager;
  */
 public class GanttTest {
 	public static void main(String[] args) throws AWTException {
-		UIRobot bot = new UIRobot(1920, 1080);
+		UIRobot bot = new UIRobot();
 		Runnable app = (Runnable) new ProjectManager();
 
 		Thread botThread = new Thread(bot);

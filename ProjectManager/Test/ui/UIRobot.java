@@ -1,6 +1,9 @@
 package ui;
 
+import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -10,44 +13,24 @@ import java.awt.event.KeyEvent;
  *
  */
 public class UIRobot implements Runnable {
-
 	private Robot bot = null;
-	private int projectX = 0;
-	private int projectY = 0;
-
-	private int ganttX = 0;
-	private int ganttY = 0;
-
-	public UIRobot(int x, int y) {
-		if (x == 1366 && y == 768) {
-			projectX = 500;
-			projectY = 400;
-		} else if (x == 800 && y == 600) {
-			projectX = 300;
-			projectY = 315;
-		} else if (x == 1920 && y == 1080) {
-			projectX = 900;
-			projectY = 560;
-		} else if (x == 1600 && y == 900){
-			projectX = 600;
-			projectY = 470;
-		} else if (x == 1280 && y == 720){
-			projectX = 500;
-			projectY = 375;
-		}
-		
-		run();
+	private double height, width;
+	
+	public UIRobot() throws AWTException {
+		bot = new Robot();
+		setMonitorDimensions();
 	}
 
 	@Override
 	public void run() {
-		try {
-			bot = new Robot();
-		} catch (Exception e) {
-
-		}
 	}
 
+	private void setMonitorDimensions(){
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		height = screenSize.getHeight();
+		width = screenSize.getWidth();
+	}
+	
 	public void login() {
 		bot.keyPress(KeyEvent.VK_T);
 		bot.keyPress(KeyEvent.VK_E);
@@ -78,15 +61,58 @@ public class UIRobot implements Runnable {
 	}
 
 	public void selectProject() {
+		int projectX = 0, projectY = 0;
+		
+		if (width == 1366 && height == 768) {
+			projectX = 500;
+			projectY = 400;
+		} else if (width == 800 && height == 600) {
+			projectX = 300;
+			projectY = 315;
+		} else if (width == 1920 && height == 1080) {
+			projectX = 900;
+			projectY = 560;
+		} else if (width == 1600 && height == 900){
+			projectX = 600;
+			projectY = 470;
+		} else if (width == 1280 && height == 720){
+			projectX = 500;
+			projectY = 375;
+		}
+	
 		bot.mouseMove(projectX, projectY);
 
 		bot.mousePress(InputEvent.BUTTON1_MASK);
-		System.out.println("click press 1");
 		bot.mouseRelease(InputEvent.BUTTON1_MASK);
-		System.out.println("click release 1");
 		bot.mousePress(InputEvent.BUTTON1_MASK);
-		System.out.println("click press 2");
 		bot.mouseRelease(InputEvent.BUTTON1_MASK);
-		System.out.println("click release 2");
+	}
+	
+	public void clickGanttButton(){
+		int ganttX = 0, ganttY = 0;
+		
+		if (width == 1366 && height == 768) {
+			ganttX = 500;
+			ganttY = 400;
+		} else if (width == 800 && height == 600) {
+			ganttX = 300;
+			ganttY = 315;
+		} else if (width == 1920 && height == 1080) {
+			ganttX = 900;
+			ganttY = 560;
+		} else if (width == 1600 && height == 900){
+			ganttX = 600;
+			ganttY = 470;
+		} else if (width == 1280 && height == 720){
+			ganttX = 500;
+			ganttY = 375;
+		}
+		
+		bot.mouseMove(ganttX, ganttY);
+
+		bot.mousePress(InputEvent.BUTTON1_MASK);
+		bot.mouseRelease(InputEvent.BUTTON1_MASK);
+		bot.mousePress(InputEvent.BUTTON1_MASK);
+		bot.mouseRelease(InputEvent.BUTTON1_MASK);
 	}
 }
