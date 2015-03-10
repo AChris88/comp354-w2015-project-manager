@@ -54,6 +54,8 @@ public class DashboardPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
+		
+		clickListener = new ButtonClickListener();
 
 		// only allow managers to add new users
 		if (this.manager.currentUser.getRole() == 1) {
@@ -63,15 +65,14 @@ public class DashboardPanel extends JPanel {
 			gbc_btnNewUser.gridx = 6;
 			gbc_btnNewUser.gridy = 2;
 			add(btnNewUser, gbc_btnNewUser);
+			
+			btnNewUser.addActionListener(clickListener);
 		}
 
 		// create a click listener object to listen on all buttons in the panel
-		clickListener = new ButtonClickListener();
 
 		btnNewProject = new JButton("New Project");
 		btnNewProject.addActionListener(clickListener);
-		
-		btnNewUser.addActionListener(clickListener);
 
 		GridBagConstraints gbc_btnNewProject = new GridBagConstraints();
 		gbc_btnNewProject.insets = new Insets(0, 0, 5, 0);
