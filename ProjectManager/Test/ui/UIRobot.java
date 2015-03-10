@@ -4,25 +4,38 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+/**
+ * 
+ * @author Christian Allard 27026188
+ *
+ */
 public class UIRobot implements Runnable {
 
 	private Robot bot = null;
 	private int projectX = 0;
 	private int projectY = 0;
-	
+
 	private int ganttX = 0;
 	private int ganttY = 0;
-	
-	public UIRobot() {
-		// 1366 x 768
-//		projectX = 500;
-//		projectY = 400;
+
+	public UIRobot(int x, int y) {
+		if (x == 1366 && y == 768) {
+			projectX = 500;
+			projectY = 400;
+		} else if (x == 800 && y == 600) {
+			projectX = 300;
+			projectY = 315;
+		} else if (x == 1920 && y == 1080) {
+			projectX = 900;
+			projectY = 560;
+		} else if (x == 1600 && y == 900){
+			projectX = 600;
+			projectY = 470;
+		} else if (x == 1280 && y == 720){
+			projectX = 500;
+			projectY = 375;
+		}
 		
-		// 800 x 600
-		
-		
-		
-		// 1920 X 1080
 		run();
 	}
 
@@ -63,10 +76,10 @@ public class UIRobot implements Runnable {
 		bot.keyPress(KeyEvent.VK_SPACE);
 		bot.keyRelease(KeyEvent.VK_SPACE);
 	}
-	
-	public void selectProject(){
-		bot.mouseMove(500, 400);
-		
+
+	public void selectProject() {
+		bot.mouseMove(300,315);
+
 		bot.mousePress(InputEvent.BUTTON1_MASK);
 		System.out.println("click press 1");
 		bot.mouseRelease(InputEvent.BUTTON1_MASK);

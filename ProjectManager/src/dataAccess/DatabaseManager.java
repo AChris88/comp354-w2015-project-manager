@@ -23,7 +23,7 @@ import obj.UserTask;
 import util.PasswordUtil;
 
 /**
- * @author Christian Allard 7026188
+ * @author Christian Allard 27026188
  */
 public class DatabaseManager {
 	private Connection connection;
