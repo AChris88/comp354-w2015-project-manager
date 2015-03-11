@@ -6,12 +6,14 @@ package projectEditor;
 import javax.swing.JPanel;
 
 import obj.Project;
+import obj.ProjectUser;
 import obj.Task;
 import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
 import application.ProjectManager;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 
 import javax.swing.JList;
@@ -90,8 +92,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0,
-				Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0,
+				0.0, 1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
@@ -200,19 +202,19 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		btnAddTask = new JButton("Add Task");
 		btnAddTask.addActionListener(clickListener);
-		
+
 		btnAddUser = new JButton("Add Users");
 		btnAddUser.addActionListener(clickListener);
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(clickListener);
-		
+
 		btnViewTask = new JButton("View my tasks");
 		btnViewTask.addActionListener(clickListener);
-		
-		btnCreateGANTTChart= new JButton("Create GANTT chart");
+
+		btnCreateGANTTChart = new JButton("Create GANTT chart");
 		btnCreateGANTTChart.addActionListener(clickListener);
-		
+
 		btnDeleteProject = new JButton("Delete Project");
 		btnDeleteProject.addActionListener(clickListener);
 		GridBagConstraints gbc_btnDeleteProject = new GridBagConstraints();
@@ -221,13 +223,13 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnDeleteProject.gridy = 8;
 		add(btnDeleteProject, gbc_btnDeleteProject);
 		btnDeleteProject.setVisible(false);
-		
+
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 0, 5);
 		gbc_btnCloseTab.gridx = 2;
 		gbc_btnCloseTab.gridy = 8;
 		add(btnCloseTab, gbc_btnCloseTab);
-		
+
 		GridBagConstraints gbc_btnAddUser = new GridBagConstraints();
 		gbc_btnAddUser.insets = new Insets(0, 0, 0, 5);
 		gbc_btnAddUser.gridx = 3;
@@ -240,19 +242,19 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnAddTask.gridy = 8;
 		add(btnAddTask, gbc_btnAddTask);
 		btnAddTask.setVisible(false);
-		
+
 		GridBagConstraints gbc_btnViewTask = new GridBagConstraints();
 		gbc_btnViewTask.insets = new Insets(0, 0, 0, 5);
 		gbc_btnViewTask.gridx = 5;
 		gbc_btnViewTask.gridy = 8;
 		add(btnViewTask, gbc_btnViewTask);
-		
+
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
 		gbc_btnSave.gridx = 6;
 		gbc_btnSave.gridy = 8;
 		add(btnSave, gbc_btnSave);
-		
-		GridBagConstraints gbc_btnCreateGANTTChart= new GridBagConstraints();
+
+		GridBagConstraints gbc_btnCreateGANTTChart = new GridBagConstraints();
 		gbc_btnCreateGANTTChart.insets = new Insets(0, 0, 0, 5);
 		gbc_btnCreateGANTTChart.gridx = 1;
 		gbc_btnCreateGANTTChart.gridy = 0;
@@ -296,10 +298,21 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		} else {
 			txtActualEndDate.setText("YYYY-MM-DD");
 		}
-		
-		if ( projectModel.getProject().getId() != -1) {
+
+		if (projectModel.getProject().getId() != -1) {
 			btnAddTask.setVisible(true);
 			btnDeleteProject.setVisible(true);
+		}
+
+		ProjectUser pu = null;
+		ArrayList<ProjectUser> pus = manager.db.getProjectUsers();
+		for (ProjectUser projUser : pus) {
+			if (projUser.getProjectId() == projectModel.getProject().getId()
+					&& projUser.getUserId() == manager.currentUser.getId()
+					&& projUser.getProjectRole() == 1) {
+				btnCreateGANTTChart.setVisible(true);
+				break;
+			}
 		}
 	}
 
@@ -361,139 +374,138 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					manager.db.updateProject(p);
 				}
 
-				//add task button case
+				// add task button case
 			} else if (source == btnAddTask) {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
 						null, null, null, null, null);
-				//add tab for new task
+				// add tab for new task
 				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
 
-				//close tab case
+				// close tab case
 			} else if (source == btnAddUser) {
-				manager.addTab(new AddProjectUserPanel(manager, projectModel.getProject()), 
-													  "Add User to Project " + projectModel.getProject().getName());
+				manager.addTab(
+						new AddProjectUserPanel(manager, projectModel
+								.getProject()), "Add User to Project "
+								+ projectModel.getProject().getName());
 
-				//close tab case
+				// close tab case
 			} else if (source == btnCloseTab) {
 				manager.setActivePanel(new DashboardPanel(manager),
 						manager.currentUser.getFirstName() + "'s Dashboard");
-				
-				//delete project case
+
+				// delete project case
 			} else if (source == btnDeleteProject) {
-				ArrayList<Task> tasks = manager.db.getTasksForProject(projectModel.getProject());
-				for(int i = 0; i < tasks.size(); i++) {
+				ArrayList<Task> tasks = manager.db
+						.getTasksForProject(projectModel.getProject());
+				for (int i = 0; i < tasks.size(); i++) {
 					manager.db.removeTask(tasks.get(i));
 				}
 				manager.db.removeProject(projectModel.getProject());
-				manager.setActivePanel(new DashboardPanel(manager), manager.currentUser.getFirstName() + "'s Dashboard");
+				manager.setActivePanel(new DashboardPanel(manager),
+						manager.currentUser.getFirstName() + "'s Dashboard");
 			} else if (source == btnViewTask) {
-				manager.addTab(new ViewTaskPanel(manager, manager.currentUser), "Assigned tasks");
-			} else if (source == btnCreateGANTTChart)
-			{
-				// Retrieve tasks, assign them to GANTT tasks, and compile them into a data set
+				manager.addTab(new ViewTaskPanel(manager, manager.currentUser),
+						"Assigned tasks");
+			} else if (source == btnCreateGANTTChart) {
 				final IntervalCategoryDataset dataSet = createDataset();
-				
-				// Create the GANTT chart
+
 				createGANTTChart(dataSet);
-				
-				final ProjectEditorPanel chartCreator = new ProjectEditorPanel(manager);
-				System.out.println("...Creating Dataset");
 				IntervalCategoryDataset dataset = createDataset();
-				 
-				System.out.println("...Creating Chart");
-				JFreeChart chart = chartCreator.createGANTTChart(dataset);
-				 
-				String fileName = "C:/temp/myGantChartDemo.jpg";
-				 
-				System.out.println("...Saving the Chart");
-				chartCreator.saveChart(chart, fileName);
-				 
-				System.out.println("...Chart Created Successfully and Saved");
-				System.out.println("Output Chart File Location: " + fileName);
+				JFreeChart chart = createGANTTChart(dataset);
+
+				JPanel ganttPanel = new JPanel();
+				ganttPanel.setLayout(new java.awt.BorderLayout());
+				ChartPanel CP = new ChartPanel(chart);
+				ganttPanel.add(btnCloseTab);
+				ganttPanel.add(CP);
+				ganttPanel.validate();
 				
+				manager.addTab(ganttPanel, "GANTT Chart");
 			}
 		}
 	}
-	
-	// This method is related to the creation of a dataset used for GANTT chart creation
-	public IntervalCategoryDataset createDataset() 
-	{
-	
-		//A task series with the planned tasks dates on the series.
+
+	// This method is related to the creation of a dataset used for GANTT chart
+	// creation
+	public IntervalCategoryDataset createDataset() {
+
+		// A task series with the planned tasks dates on the series.
 		TaskSeries plannedSeries = new TaskSeries("Planned Implementation");
-				
+
 		// Gain access to the project's tasks in order to iterate through it
-		ArrayList<obj.Task> currentTasks = manager.db.getTasksForProject(projectModel.getProject());
-		for(int i = 0; i < currentTasks.size(); i++) 
-		{
+		ArrayList<Task> currentTasks = manager.db
+				.getTasksForProject(projectModel.getProject());
+		Task currentTask = null;
+		for (int i = 0; i < currentTasks.size(); i++) {
 			// Access the current task
-			obj.Task currentTask= manager.db.getTaskByName(currentTasks.get(i).getName());
-			 
-			// Add each individual task with its name, projected start date and end date 
-			
-			//int id, int projectId, String name, Date projectedStartDate,
-			//Date startDate, Date projectedEndDate, Date endDate,
-			//String toDo
-			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask.getName(),
-					 currentTask.getStartDate(),
-					 currentTask.getEndDate())
-					 );
+			currentTask = manager.db.getTaskByName(currentTasks.get(i)
+					.getName());
+
+			// Add each individual task with its name, projected start date and
+			// end date
+
+			// int id, int projectId, String name, Date projectedStartDate,
+			// Date startDate, Date projectedEndDate, Date endDate,
+			// String toDo
+
+			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask
+					.getName(), (currentTask.getProjectedStartDate() == null ? new Date()
+					: currentTask.getProjectedStartDate()),
+					(currentTask.getProjectedEndDate() == null ? new Date() : currentTask
+							.getProjectedEndDate())));
 		}
-		
-		//A task series with the actual tasks dates on the series.
+
+		// A task series with the actual tasks dates on the series.
 		TaskSeries actualSeries = new TaskSeries("Actual Implementation");
-		for(int i = 0; i < currentTasks.size(); i++) 
-		{
+		for (int i = 0; i < currentTasks.size(); i++) {
 			// Access the current task
-			obj.Task currentTask= manager.db.getTaskByName(currentTasks.get(i).getName());
-			 
-			// Add each individual task with its name, projected start date and end date 
-			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask.getName(),
-					 currentTask.getStartDate(),
-					 currentTask.getEndDate())
-					 );	
+			currentTask = manager.db.getTaskByName(currentTasks.get(i)
+					.getName());
+
+			// Add each individual task with its name, projected start date and
+			// end date
+			actualSeries.add(new org.jfree.data.gantt.Task(currentTask
+					.getName(), (currentTask.getStartDate() == null ? new Date()
+					: currentTask.getStartDate()),
+					(currentTask.getEndDate() == null ? new Date() : currentTask
+							.getEndDate())));
 		}
-		
+
 		// Create a final object of type task series collection
 		final TaskSeriesCollection collection = new TaskSeriesCollection();
-		 
+
 		// Add both series to the collection
 		collection.add(plannedSeries);
 		collection.add(actualSeries);
-		 
-		return collection;	
-	}
-	
-	// Creates a GANTT chart based on both the planned and actual series
-	private JFreeChart createGANTTChart(final IntervalCategoryDataset dataset) 
-	{
-		final JFreeChart chart = ChartFactory.createGanttChart(
-		"Gantt Chart for Project" , // chart title
-		"Task", // domain axis label
-		"Date", // range axis label
-		dataset, // data
-		true, // include legend
-		true, // tooltips
-		false // urls
-		);
-		
-		return chart;
-	 
+
+		return collection;
 	}
 
-	// This utility saves the JFreeChart as a JPEG First Parameter:FileName, 
-	// Second Parameter: Chart To Save, Third Parameter: Height Of Picture, 
+	// Creates a GANTT chart based on both the planned and actual series
+	private JFreeChart createGANTTChart(final IntervalCategoryDataset dataset) {
+		final JFreeChart chart = ChartFactory.createGanttChart(
+				"Gantt Chart for Project", // chart title
+				"Task", // domain axis label
+				"Date", // range axis label
+				dataset, // data
+				true, // include legend
+				true, // tooltips
+				false // urls
+				);
+
+		return chart;
+
+	}
+
+	// This utility saves the JFreeChart as a JPEG First Parameter:FileName,
+	// Second Parameter: Chart To Save, Third Parameter: Height Of Picture,
 	// Fourth Parameter: Width Of Picture
-	public void saveChart(JFreeChart chart, String fileLocation) 
-	{
+	public void saveChart(JFreeChart chart, String fileLocation) {
 		String fileName = fileLocation;
-		
-		try 
-		{
+
+		try {
 			ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 800, 600);
-		} 
-		catch (IOException e) 
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Problem occurred creating chart.");
 		}
