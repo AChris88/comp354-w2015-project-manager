@@ -25,6 +25,10 @@ public class GanttTest {
 			Thread.sleep(1500);
 			
 			bot.selectProject();
+			
+			Thread.sleep(500);
+			
+			bot.clickGanttButton();
 		} catch (Exception e){
 			e.printStackTrace();
 		}

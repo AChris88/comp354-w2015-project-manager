@@ -92,8 +92,8 @@ public class UIRobot implements Runnable {
 		int ganttX = 0, ganttY = 0;
 		
 		if (width == 1366 && height == 768) {
-			ganttX = 500;
-			ganttY = 400;
+			ganttX = 325;
+			ganttY = 250;
 		} else if (width == 800 && height == 600) {
 			ganttX = 300;
 			ganttY = 315;

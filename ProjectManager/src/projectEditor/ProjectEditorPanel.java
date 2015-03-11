@@ -544,6 +544,5 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		public void mouseReleased(MouseEvent arg0) {
 			// TODO Auto-generated method stub
 		}
-
 	}
 }
