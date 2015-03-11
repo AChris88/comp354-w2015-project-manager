@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +44,15 @@ import javax.swing.JSplitPane;
 import javax.swing.JButton;
 
 import dashboard.DashboardPanel;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.IntervalCategoryDataset;
+import org.jfree.data.gantt.TaskSeries;
+import org.jfree.data.gantt.TaskSeriesCollection;
+import org.jfree.data.time.SimpleTimePeriod;
 
 /**
  * @author George Lambadas 7077076
@@ -65,6 +76,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private ButtonClickListener clickListener;
 	private JButton btnAddUser;
 	private JButton btnViewTask;
+	private JButton btnCreateGANTTChart;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -198,6 +210,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		btnViewTask = new JButton("View my tasks");
 		btnViewTask.addActionListener(clickListener);
 		
+		btnCreateGANTTChart= new JButton("Create GANTT chart");
+		btnCreateGANTTChart.addActionListener(clickListener);
+		
 		btnDeleteProject = new JButton("Delete Project");
 		btnDeleteProject.addActionListener(clickListener);
 		GridBagConstraints gbc_btnDeleteProject = new GridBagConstraints();
@@ -231,10 +246,18 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnViewTask.gridx = 5;
 		gbc_btnViewTask.gridy = 8;
 		add(btnViewTask, gbc_btnViewTask);
+		
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
 		gbc_btnSave.gridx = 6;
 		gbc_btnSave.gridy = 8;
 		add(btnSave, gbc_btnSave);
+		
+		GridBagConstraints gbc_btnCreateGANTTChart= new GridBagConstraints();
+		gbc_btnCreateGANTTChart.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCreateGANTTChart.gridx = 1;
+		gbc_btnCreateGANTTChart.gridy = 0;
+		add(btnCreateGANTTChart, gbc_btnCreateGANTTChart);
+		btnCreateGANTTChart.setVisible(false);
 
 		projectModel.setProject(project);
 	}
@@ -365,7 +388,114 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				manager.setActivePanel(new DashboardPanel(manager), manager.currentUser.getFirstName() + "'s Dashboard");
 			} else if (source == btnViewTask) {
 				manager.addTab(new ViewTaskPanel(manager, manager.currentUser), "Assigned tasks");
+			} else if (source == btnCreateGANTTChart)
+			{
+				// Retrieve tasks, assign them to GANTT tasks, and compile them into a data set
+				final IntervalCategoryDataset dataSet = createDataset();
+				
+				// Create the GANTT chart
+				createGANTTChart(dataSet);
+				
+				final ProjectEditorPanel chartCreator = new ProjectEditorPanel(manager);
+				System.out.println("...Creating Dataset");
+				IntervalCategoryDataset dataset = createDataset();
+				 
+				System.out.println("...Creating Chart");
+				JFreeChart chart = chartCreator.createGANTTChart(dataset);
+				 
+				String fileName = "C:/temp/myGantChartDemo.jpg";
+				 
+				System.out.println("...Saving the Chart");
+				chartCreator.saveChart(chart, fileName);
+				 
+				System.out.println("...Chart Created Successfully and Saved");
+				System.out.println("Output Chart File Location: " + fileName);
+				
 			}
+		}
+	}
+	
+	// This method is related to the creation of a dataset used for GANTT chart creation
+	public IntervalCategoryDataset createDataset() 
+	{
+	
+		//A task series with the planned tasks dates on the series.
+		TaskSeries plannedSeries = new TaskSeries("Planned Implementation");
+				
+		// Gain access to the project's tasks in order to iterate through it
+		ArrayList<obj.Task> currentTasks = manager.db.getTasksForProject(projectModel.getProject());
+		for(int i = 0; i < currentTasks.size(); i++) 
+		{
+			// Access the current task
+			obj.Task currentTask= manager.db.getTaskByName(currentTasks.get(i).getName());
+			 
+			// Add each individual task with its name, projected start date and end date 
+			
+			//int id, int projectId, String name, Date projectedStartDate,
+			//Date startDate, Date projectedEndDate, Date endDate,
+			//String toDo
+			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask.getName(),
+					 currentTask.getStartDate(),
+					 currentTask.getEndDate())
+					 );
+		}
+		
+		//A task series with the actual tasks dates on the series.
+		TaskSeries actualSeries = new TaskSeries("Actual Implementation");
+		for(int i = 0; i < currentTasks.size(); i++) 
+		{
+			// Access the current task
+			obj.Task currentTask= manager.db.getTaskByName(currentTasks.get(i).getName());
+			 
+			// Add each individual task with its name, projected start date and end date 
+			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask.getName(),
+					 currentTask.getStartDate(),
+					 currentTask.getEndDate())
+					 );	
+		}
+		
+		// Create a final object of type task series collection
+		final TaskSeriesCollection collection = new TaskSeriesCollection();
+		 
+		// Add both series to the collection
+		collection.add(plannedSeries);
+		collection.add(actualSeries);
+		 
+		return collection;	
+	}
+	
+	// Creates a GANTT chart based on both the planned and actual series
+	private JFreeChart createGANTTChart(final IntervalCategoryDataset dataset) 
+	{
+		final JFreeChart chart = ChartFactory.createGanttChart(
+		"Gantt Chart for Project" , // chart title
+		"Task", // domain axis label
+		"Date", // range axis label
+		dataset, // data
+		true, // include legend
+		true, // tooltips
+		false // urls
+		);
+		
+		return chart;
+	 
+	}
+
+	// This utility saves the JFreeChart as a JPEG First Parameter:FileName, 
+	// Second Parameter: Chart To Save, Third Parameter: Height Of Picture, 
+	// Fourth Parameter: Width Of Picture
+	public void saveChart(JFreeChart chart, String fileLocation) 
+	{
+		String fileName = fileLocation;
+		
+		try 
+		{
+			ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 800, 600);
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+			System.err.println("Problem occurred creating chart.");
 		}
 	}
 
