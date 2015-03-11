@@ -281,9 +281,6 @@ public class DatabaseManager {
 			} else {
 				success = false;
 			}
-
-			// if (records != 1)
-			// success = false;
 		} catch (Exception e) {
 			success = false;
 			e.printStackTrace();

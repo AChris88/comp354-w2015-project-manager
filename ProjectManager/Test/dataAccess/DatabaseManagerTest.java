@@ -244,7 +244,6 @@ public class DatabaseManagerTest {
 
 	@Test
 	public void testRemoveTask() throws Exception {
-
 		Task taskToDelete = new Task(0, _test_project_delete.getId(), "task",
 				new Date(), new Date(), new Date(), new Date(), null);
 		assumeTrue(_db_mg.insertTask(taskToDelete));
@@ -261,6 +260,74 @@ public class DatabaseManagerTest {
 		assertNull("The task should not be in the DB anymore", tTemp);
 	}
 
+	@Test
+	public void removeProjectUser() throws Exception {
+		ProjectUser projectUserToDelete = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
+		assumeTrue(_db_mg.insertProjectUser(projectUserToDelete));
+
+		ArrayList<ProjectUser> projectUsers = _db_mg.getProjectUsers();
+		ProjectUser puTemp = getPUById(projectUsers, projectUserToDelete.getId());
+		assumeNotNull(puTemp);
+
+		assertTrue("Deleting ProjectUser", _db_mg.removeProjectUser(projectUserToDelete));
+
+		projectUsers = _db_mg.getProjectUsers();
+		puTemp = getPUById(projectUsers, projectUserToDelete.getId());
+
+		assertNull("The project user should not be in the DB anymore", puTemp);
+	}
+	
+	@Test
+	public void removeTaskRequirement() throws Exception {
+		Task t1 = new Task(0, _test_project_delete.getId(), "task1",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assumeTrue(_db_mg.insertTask(t1));
+		
+		Task t2 = new Task(0, _test_project_delete.getId(), "task2",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assumeTrue(_db_mg.insertTask(t2));
+		
+		TaskRequirement taskRequirementToDelete = new TaskRequirement(0, t1.getId(), t2.getId());
+		assumeTrue(_db_mg.insertTaskRequirement(taskRequirementToDelete));
+
+		ArrayList<TaskRequirement> taskRequirements = _db_mg.getTaskRequirements();
+		TaskRequirement trTemp = getTRById(taskRequirements, taskRequirementToDelete.getId());
+		assumeNotNull(trTemp);
+
+		assertTrue("Deleting TaskRequirement", _db_mg.removeTaskRequirement(taskRequirementToDelete));
+
+		taskRequirements = _db_mg.getTaskRequirements();
+		trTemp = getTRById(taskRequirements, taskRequirementToDelete.getId());
+
+		assertNull("The task requirement should not be in the DB anymore", trTemp);
+	}
+	
+	@Test
+	public void removeUserTask() throws Exception {
+		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assumeTrue(_db_mg.insertTask(taskToAdd));
+		
+		ProjectUser projectUserToAdd = new ProjectUser(0,
+				_test_project_delete.getId(), _test_user_delete.getId(), 0);
+		assumeTrue(_db_mg.insertProjectUser(projectUserToAdd));
+
+		UserTask userTaskToDelete = new UserTask(0, _test_user_delete.getId(),
+				taskToAdd.getId(), projectUserToAdd.getProjectId());
+		assumeTrue(_db_mg.insertUserTask(userTaskToDelete));
+		
+		ArrayList<UserTask> userTasks = _db_mg.getUserTasks();
+		UserTask utTemp = getUTById(userTasks, userTaskToDelete.getId());
+		assumeNotNull(utTemp);
+		
+		assertTrue("Deleting UserTask", _db_mg.removeUserTask(userTaskToDelete));
+
+		userTasks = _db_mg.getUserTasks();
+		utTemp = getUTById(userTasks, userTaskToDelete.getId());
+
+		assertNull("The user task should not be in the DB anymore", utTemp);
+	}
+	
 	@Test
 	public void testGetUsers() throws Exception {
 
@@ -541,6 +608,71 @@ public class DatabaseManagerTest {
 	}
 
 	@Test
+	public void	testGetTasksForUser() throws Exception {
+		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assertTrue(_db_mg.insertTask(taskToAdd));
+		
+		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
+		assertTrue(_db_mg.insertProjectUser(projectUserToAdd));
+		
+		UserTask userTaskToAdd = new UserTask(0, _test_user_delete.getId(), _test_project_delete.getId(), projectUserToAdd.getId());
+		assertTrue(_db_mg.insertUserTask(userTaskToAdd));
+		
+		ArrayList<Task> tasks = _db_mg.getTasksForUser(_test_user_insert);
+		assertNotNull(tasks);
+		assertEquals("There should be 1 task for the user", 1,
+				tasks.size());
+	}
+	
+	@Test
+	public void testGetTasksForProjectUser() throws Exception {
+		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assertTrue(_db_mg.insertTask(taskToAdd));
+		
+		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
+		assertTrue(_db_mg.insertProjectUser(projectUserToAdd));
+		
+		UserTask userTask = new UserTask(0, _test_user_delete.getId(), taskToAdd.getId(), projectUserToAdd.getId());
+		assertTrue(_db_mg.insertUserTask(userTask));
+		
+		ArrayList<Task> userTasks = _db_mg.getTasksForProjectUser(projectUserToAdd);
+		assertNotNull(userTasks);
+		assertEquals("There should be 1 task for the project user", 1,
+				userTasks.size());
+	}
+	
+	@Test
+	public void testGetUserTasksForUser() throws Exception {
+		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assertTrue(_db_mg.insertTask(taskToAdd));
+		
+		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
+		assertTrue(_db_mg.insertProjectUser(projectUserToAdd));
+		
+		UserTask userTaskToAdd = new UserTask(0, _test_user_delete.getId(), taskToAdd.getId(), projectUserToAdd.getId());
+		assertTrue(_db_mg.insertUserTask(userTaskToAdd));
+			
+		ArrayList<UserTask> userTasks = _db_mg.getUserTasksForUser(_test_user_delete, projectUserToAdd);
+		assertNotNull(userTasks);
+		assertEquals("There should be 1 user task for the user", 1,
+					userTasks.size());
+	}
+	
+	@Test
+	public void testGetTaskByName() throws Exception {
+		Task taskToAdd = new Task(0, _test_project_delete.getId(), "A Task Name",
+				new Date(), new Date(), new Date(), new Date(), null);
+		assertTrue(_db_mg.insertTask(taskToAdd));
+		
+		Task task = _db_mg.getTaskByName("A Task Name");
+		assertNotNull(task);
+		assertTrue("Task's name should be 'A Task Name'", task.getName().equals("A Task Name"));
+	}
+	
+	@Test
 	public void testUpdateUser() throws Exception {
 
 		_test_user_delete.setFirstName("1");
@@ -655,7 +787,13 @@ public class DatabaseManagerTest {
 		assertEquals(1, potentialReqs.size());
 		assertEquals("task 4", task4.getName());
 	}
-
+	
+	
+//	@Test
+//	public void testGanttRobot(){
+//		
+//	}
+	
 	public Task getTaskById(ArrayList<Task> tasks, int id) {
 		for (Task t : tasks) {
 			if (t.getId() == id) {

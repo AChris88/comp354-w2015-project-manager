@@ -108,5 +108,4 @@ public class Task {
 				+ startDate + ", projectedEndDate=" + projectedEndDate
 				+ ", endDate=" + endDate + ", toDo=" + toDo + "]";
 	}
-
 }
