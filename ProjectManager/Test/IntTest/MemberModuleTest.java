@@ -6,16 +6,25 @@ package IntTest;
 
 import application.ProjectManager;
 import authentication.AuthenticationPanel;
+
 import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+
 import dashboard.DashboardPanel;
 import dataAccess.DatabaseManager;
 import obj.Project;
+import obj.ProjectUser;
+import obj.Task;
 import obj.User;
+import obj.UserTask;
+
 import org.junit.*;
+
 import projectEditor.ProjectEditorPanel;
+import taskEditor.ViewTaskPanel;
 import ui.UIRobot;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.Field;
@@ -23,7 +32,6 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assume.*;
-
 import static org.junit.Assert.*;
 
 public class MemberModuleTest {
@@ -48,7 +56,16 @@ String dbFile="ITtestdb.db";
 
         Project p = new Project(0,"testp",new Date(),new Date(),new Date());
         dbm.insertProject(p,u);
-
+        
+        ProjectUser pu = dbm.getProjectUsers().get(0);
+        
+        Task taskToAdd = new Task(0, p.getId(), "task", new Date(),
+				new Date(), new Date(), new Date(), null);
+        
+        dbm.insertTask(taskToAdd);
+        
+        UserTask ut = new UserTask(0,u.getId(), taskToAdd.getId(), pu.getId());
+        dbm.insertUserTask(ut);
 
 _pm = (ProjectManager)app;
 
@@ -146,6 +163,58 @@ _pm = (ProjectManager)app;
 
 
 
+
+    }
+    
+    @Test
+    public void LimitedTaskViewer() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
+        Class temp = AuthenticationPanel.class;
+
+        getTF(temp,"usernameField").setText("test");
+        getPF(temp,"passwordField").setText("test");
+
+        getButton(AuthenticationPanel.class,"loginButton").doClick();
+
+        temp = DashboardPanel.class;
+
+        JTable jt = getTable(temp,"table");
+
+        jt.setRowSelectionInterval(0,0);
+
+        ((DashboardPanel)_pm.getActivePanel()).openCurrentSelectedProject();
+
+
+
+//        JButton btnAddU = getButton(ProjectEditorPanel.class,"btnAddUser");
+
+        
+
+        getButton(ProjectEditorPanel.class, "btnViewTask").doClick();
+        
+        
+//        Thread.sleep(15000);
+        
+        JTable jt2 = getTable2(ViewTaskPanel.class,"table",1);
+
+        jt2.setRowSelectionInterval(0,0);
+        
+        assertEquals(0,jt2.getSelectedRow());
+
+
+    }
+    
+    private JTable getTable2(Class c, String t, int i) throws NoSuchFieldException, IllegalAccessException {
+
+        Field f = c.getDeclaredField(t);
+        f.setAccessible(true);
+        JTable test;
+        if (_pm.getActivePanel() instanceof JTabbedPane){
+            test = (JTable) f.get(((JTabbedPane)_pm.getActivePanel()).getComponent(i));
+        }else{
+            test = (JTable) f.get(_pm.getActivePanel());
+
+        }
+        return test;
 
     }
 
