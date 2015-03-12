@@ -10,10 +10,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -48,7 +45,7 @@ public class JFreeChartTest {
     private JFrame _frame;
 
     @Before
-    public void testSetup(){
+    public void testSetup() {
 
         File testDbFile = new File("itTest.db");
         if (testDbFile.exists()) {
@@ -66,86 +63,105 @@ public class JFreeChartTest {
 
         Calendar test = Calendar.getInstance();
 
-        test.set(2015,Calendar.MARCH,8);
+        test.set(2015, Calendar.MARCH, 8);
         Date test2 = test.getTime();
         test.set(Calendar.MONTH, Calendar.MAY);
         Date test3 = test.getTime();
 
-        obj.Task t1 = new obj.Task(0,_project.getId(),"Do the first thing",date(9,Calendar.MARCH,2015),date(9,Calendar.MARCH,2015), date(17,Calendar.MARCH,2015),date(10,Calendar.MARCH,2015),"Work Mofo");
-        _dbm.insertTask(t1);
 
-        obj.Task t2 = new obj.Task(0,_project.getId(),"Proceed to test this",date(16,Calendar.MARCH,2015),date(9,Calendar.MARCH,2015), date(24,Calendar.MARCH,2015),date(10,Calendar.MARCH,2015),"Work Mofo");
-        _dbm.insertTask(t2);
-
-        obj.Task t3 = new obj.Task(0,_project.getId(),"Integration tests",date(23,Calendar.MARCH,2015),date(9,Calendar.MARCH,2015), date(31,Calendar.MARCH,2015),date(10,Calendar.MARCH,2015),"Work Mofo");
-        _dbm.insertTask(t3);
-
-        obj.Task t4 = new obj.Task(0,_project.getId(),"Unit tests",date(9,Calendar.MARCH,2015),date(9,Calendar.MARCH,2015), date(30,Calendar.MARCH,2015),date(10,Calendar.MARCH,2015),"Work Mofo");
-        _dbm.insertTask(t4);
-
-        obj.Task t5 = new obj.Task(0,_project.getId(),"Documentation",date(30,Calendar.MARCH,2015),date(1,Calendar.MARCH,2015), date(10,Calendar.APRIL,2015),date(1,Calendar.APRIL,2015),"Work Mofo");
-        _dbm.insertTask(t5);
-
-        _frame = new JFrame("Charts");
-
-        _frame.setSize(600, 400);
-        _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//                Runnable r = new Runnable() {
+//            public void run() {
+//                _frame = new JFrame("Charts");
+//
+//                _frame.setSize(600, 400);
+//                _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                _frame.setVisible(true);
+//            }
+//        };
+//
+//        SwingUtilities.invokeLater(r);
     }
 
 
 
+    @Test(expected = IllegalArgumentException.class)
+    public void ErrorHandlingTest() {
+        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t1));
 
+        ArrayList<obj.Task> tasks = _dbm.getTasksForProject(_project);
+        assumeTrue(tasks.size() == 1);
+
+        IntervalCategoryDataset data = createDataset(tasks);
+
+    }
 
     @Test
-    public void testing() throws InterruptedException {
-        Runnable r = new Runnable() {
-            public void run() {
-                IntervalCategoryDataset data = createDataset(_dbm.getTasksForProject(_project));
-                JFreeChart chart = createChart(data);
+    public void InterpretationTest() throws InterruptedException {
 
 
-                ChartPanel cp = new ChartPanel(chart);
+        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(17, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t1));
 
-                _frame.getContentPane().add(cp);
-                _frame.setVisible(true);
-            }
-        };
+        obj.Task t2 = new obj.Task(0, _project.getId(), "Proceed to test this", date(16, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(24, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t2));
 
-        Thread t = new Thread(r);
+        obj.Task t3 = new obj.Task(0, _project.getId(), "Integration tests", date(23, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(31, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t3));
 
-        SwingUtilities.invokeLater(t);
+        obj.Task t4 = new obj.Task(0, _project.getId(), "Unit tests", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(30, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t4));
 
+        obj.Task t5 = new obj.Task(0, _project.getId(), "Documentation", date(30, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.APRIL, 2015), date(1, Calendar.APRIL, 2015), "Work Mofo");
+        assumeTrue(_dbm.insertTask(t5));
 
-        Thread.sleep(50000);
+        ArrayList<obj.Task> tasks = _dbm.getTasksForProject(_project);
+        assumeTrue(tasks.size() == 5);
+
+        IntervalCategoryDataset data = createDataset(tasks);
+
+        TaskSeries ts = ((TaskSeriesCollection) data).getSeries(0);
+
+        assertEquals(5, ts.getItemCount());
+
+        JFreeChart chart = createChart(data);
+
+        assertNotNull(chart);
+
+        ChartPanel cp = new ChartPanel(chart);
+
+//        _frame.getContentPane().add(cp);
+//        _frame.setVisible(true);
+
+        JComponent[] comp = new JComponent[]{new JLabel("Is this chart the expected result?"), cp};
+        int res = JOptionPane.showConfirmDialog(null, comp, "Integration test : Interpretation of Data", JOptionPane.OK_OPTION);
+
+        assertEquals("The user should agree on the correctness of the chart tested", 0, res);
 
 
     }
-
 
 
     public static IntervalCategoryDataset createDataset(ArrayList<obj.Task> tasks) {
 
         final TaskSeries s1 = new TaskSeries("Scheduled");
-        final TaskSeries s2 = new TaskSeries("Actual");
+//        final TaskSeries s2 = new TaskSeries("Actual");
 
-        for(obj.Task t : tasks){
-            System.out.println(t.getProjectedStartDate());
-            System.out.println(t.getProjectedEndDate());
+        for (obj.Task t : tasks) {
             s1.add(new Task(t.getName(),
-                    new SimpleTimePeriod(t.getProjectedStartDate(),t.getProjectedEndDate())));
+                    new SimpleTimePeriod(t.getProjectedStartDate(), t.getProjectedEndDate())));
         }
 
-        for(obj.Task t : tasks){
-            System.out.println(t.getStartDate());
-            System.out.println(t.getEndDate());
-            s2.add(new Task(t.getName(),
-                    new SimpleTimePeriod(t.getStartDate(),t.getEndDate())));
-        }
+//        for (obj.Task t : tasks) {
+//            s2.add(new Task(t.getName(),
+//                    new SimpleTimePeriod(t.getStartDate(), t.getEndDate())));
+//        }
 
 
         final TaskSeriesCollection collection = new TaskSeriesCollection();
         collection.add(s1);
-        collection.add(s2);
+//        collection.add(s2);
 
         return collection;
     }
@@ -153,10 +169,9 @@ public class JFreeChartTest {
     /**
      * Utility method for creating <code>Date</code> objects.
      *
-     * @param day  the date.
-     * @param month  the month.
+     * @param day   the date.
+     * @param month the month.
      * @param year  the year.
-     *
      * @return a date.
      */
     private static Date date(final int day, final int month, final int year) {
@@ -171,8 +186,7 @@ public class JFreeChartTest {
     /**
      * Creates a chart.
      *
-     * @param dataset  the dataset.
-     *
+     * @param dataset the dataset.
      * @return The chart.
      */
     private JFreeChart createChart(final IntervalCategoryDataset dataset) {

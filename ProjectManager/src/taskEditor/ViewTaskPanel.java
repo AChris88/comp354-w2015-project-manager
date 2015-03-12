@@ -82,7 +82,10 @@ public class ViewTaskPanel extends JPanel implements Observer {
 		tableModel.populateModel(manager.db.getTasksForUser(u));
 
 		table = new JTable(tableModel);
-		table.addMouseListener(((MouseListener) new DoubleClickListener()));
+
+        if(manager.currentUser.getRole() == 1) {
+            table.addMouseListener(((MouseListener) new DoubleClickListener()));
+        }
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 0);
 		gbc_table.gridwidth = 6;

@@ -262,6 +262,24 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		btnCreateGANTTChart.setVisible(false);
 
 		projectModel.setProject(project);
+
+        if(manager.currentUser.getRole() == 0 ){
+            btnAddTask.setVisible(false);
+            btnAddUser.setVisible(false);
+            btnCreateGANTTChart.setVisible(false);
+            btnDeleteProject.setVisible(false);
+            btnSave.setVisible(false);
+            table.setVisible(false);
+            lblEndDate.setVisible(false);
+            lblName.setVisible(false);
+            lblTaskList.setVisible(false);
+            lblProjectedEndDate.setVisible(false);
+            lblStartDate.setVisible(false);
+            txtActualEndDate.setVisible(false);
+            txtProjectedEndDate.setVisible(false);
+            txtProjectName.setVisible(false);
+            txtStartDate.setVisible(false);
+        }
 	}
 
 	@Override

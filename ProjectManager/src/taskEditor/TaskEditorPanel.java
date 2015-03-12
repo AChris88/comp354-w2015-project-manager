@@ -242,6 +242,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnAddUser.gridy = 9;
 		add(btnAddUser, gbc_btnAddUser);
 
+
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 0);
 		gbc_btnCloseTab.gridx = 5;
@@ -409,17 +410,17 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				Project p = new Project(taskModel.getTask().getProjectId(), "", new Date(0), new Date(0), new Date(0));
 				ArrayList<Task> allTasks = manager.db.getTasksForProject(p);
 				
-				boolean taskNameFound = false;
-				for(int i = 0; i < allTasks.size(); ++i)
-				{
-					if(allTasks.get(i).getName().equals(t.getName()))
-					{
-						taskNameFound = true;
-					}
-				}
+//				boolean taskNameFound = false;
+//				for(int i = 0; i < allTasks.size(); ++i)
+//				{
+//					if(allTasks.get(i).getName().equals(t.getName()))
+//					{
+//						taskNameFound = true;
+//					}
+//				}
 				
-				if(!taskNameFound)
-				{
+//				if(!taskNameFound)
+//				{
 					Calendar c = Calendar.getInstance();
 					String[] dateComponents = new String[3];
 	
@@ -474,7 +475,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t = manager.db.getTaskByName(t.getName());
 					taskModel.setTask(t);
 
-				}
+//				}
 			} else if (source == btnChangePrerequisites) {
 				manager.addTab(
 						new AlterPrerequisitesPanel(manager, taskModel

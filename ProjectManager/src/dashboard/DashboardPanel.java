@@ -54,7 +54,9 @@ public class DashboardPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-		
+
+
+
 		clickListener = new ButtonClickListener();
 
 		// only allow managers to add new users
@@ -100,6 +102,8 @@ public class DashboardPanel extends JPanel {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setAutoCreateRowSorter(true);
 
+//        table.setRowSelec
+
 		// set listener on table for double clicks
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 
@@ -115,6 +119,12 @@ public class DashboardPanel extends JPanel {
 
 		this.setBounds(100, 100, 500, 277);
 	}
+    //Method used for testing purpose only
+    public void openCurrentSelectedProject(){
+        int row = table.getSelectedRow();
+        if (model.getProjectAt(row) != null)
+            manager.openProject(model.getProjectAt(row));
+    }
 
 	/**
 	 * Class used to listen for clicks on buttons within parent class
@@ -145,6 +155,8 @@ public class DashboardPanel extends JPanel {
 					manager.openProject(model.getProjectAt(row));
 			}
 		}
+
+
 
 		@Override
 		public void mouseEntered(MouseEvent arg0) {

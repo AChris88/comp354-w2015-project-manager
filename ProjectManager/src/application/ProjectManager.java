@@ -57,6 +57,10 @@ public class ProjectManager extends JFrame implements Runnable{
 	public DatabaseManager db;
 	public User currentUser;
 
+    public Component getActivePanel(){
+        return activePanel;
+    }
+
 	// Constructor for the Project Manager Window
 	public ProjectManager() {
 		initialize();
@@ -64,6 +68,13 @@ public class ProjectManager extends JFrame implements Runnable{
 		setVisible(true);
 		centerScreen();
 	}
+
+    public ProjectManager(String dbFile) {
+        initialize();
+        db = new DatabaseManager(dbFile);
+        setVisible(true);
+        centerScreen();
+    }
 
 	/**
 	 * Sets layout for frame.
@@ -109,6 +120,8 @@ public class ProjectManager extends JFrame implements Runnable{
 		this.activePanel = activePanel;
 		this.add(activePanel);
 		this.setBounds(activePanel.getBounds());
+
+
 
 		this.setTitle(title);
 		this.centerScreen();
@@ -230,6 +243,7 @@ public class ProjectManager extends JFrame implements Runnable{
 	 */
 	public void openUser(User u) {
 		JTabbedPane tabbedPane = new JTabbedPane();
+
 
 		// check if the project is a new project or one pulled from the database
 		tabbedPane.add(
