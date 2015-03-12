@@ -7,8 +7,6 @@ package IntTest;
 import application.ProjectManager;
 import authentication.AuthenticationPanel;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
-
 import dashboard.DashboardPanel;
 import dataAccess.DatabaseManager;
 import obj.Project;
