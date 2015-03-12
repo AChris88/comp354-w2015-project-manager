@@ -2,6 +2,8 @@
  * Created by Samuel on 3/8/2015.
  */
 
+package IntTest;
+
 import application.ProjectManager;
 import dataAccess.DatabaseManager;
 import obj.Project;

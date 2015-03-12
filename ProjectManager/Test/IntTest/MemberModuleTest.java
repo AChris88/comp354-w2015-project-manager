@@ -2,6 +2,8 @@
  * Created by Sam on 2015-03-11.
  */
 
+package IntTest;
+
 import application.ProjectManager;
 import authentication.AuthenticationPanel;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
