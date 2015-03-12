@@ -95,17 +95,17 @@ public class UIRobot implements Runnable {
 			ganttX = 325;
 			ganttY = 250;
 		} else if (width == 800 && height == 600) {
-			ganttX = 300;
-			ganttY = 315;
+			ganttX = 25;
+			ganttY = 175;
 		} else if (width == 1920 && height == 1080) {
-			ganttX = 900;
-			ganttY = 560;
-		} else if (width == 1600 && height == 900){
 			ganttX = 600;
-			ganttY = 470;
-		} else if (width == 1280 && height == 720){
+			ganttY = 400;
+		} else if (width == 1600 && height == 900){
 			ganttX = 500;
-			ganttY = 375;
+			ganttY = 325;
+		} else if (width == 1280 && height == 720){
+			ganttX = 300;
+			ganttY = 225;
 		}
 		
 		bot.mouseMove(ganttX, ganttY);

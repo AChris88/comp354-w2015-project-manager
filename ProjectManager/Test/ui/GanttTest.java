@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.AWTException;
+
 import application.ProjectManager;
 
 /**
@@ -26,7 +27,7 @@ public class GanttTest {
 			
 			bot.selectProject();
 			
-			Thread.sleep(500);
+			Thread.sleep(1500);
 			
 			bot.clickGanttButton();
 		} catch (Exception e){
