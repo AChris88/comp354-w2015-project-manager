@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import obj.Project;
 import obj.ProjectUser;
 import obj.Task;
+import obj.User;
 import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
@@ -35,9 +36,11 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 import customComponents.ProjectTableModel;
 import customComponents.TaskTableModel;
@@ -55,6 +58,10 @@ import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
+
+import javax.swing.JTree;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * @author George Lambadas 7077076
@@ -79,6 +86,11 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnAddUser;
 	private JButton btnViewTask;
 	private JButton btnCreateGANTTChart;
+	private JButton btnRemoveUser;
+	private JList list;
+	
+	private ListSelectionModel listSelectionModel;
+	private DefaultListModel listModel;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -92,11 +104,35 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0,
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 1.0,
 				0.0, 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
+		
+	    listModel = new DefaultListModel();
+	    
+	    ArrayList<User> temp = manager.db.getUsersForProject(project);
+	    
+	    for(int i = 0; i < temp.size(); ++i)
+	    {
+	    	if(temp.get(i).getId() != manager.currentUser.getId())
+	    	{
+	    		listModel.addElement(temp.get(i).getId() + "-" + temp.get(i).getFirstName() + " " + temp.get(i).getLastName());
+	    	}
+	    }
+
+		list = new JList(listModel);
+		JScrollPane listScroller = new JScrollPane(list);
+		
+
+		GridBagConstraints gbc_list = new GridBagConstraints();
+		gbc_list.gridheight = 5;
+		gbc_list.insets = new Insets(0, 0, 5, 5);
+		gbc_list.fill = GridBagConstraints.BOTH;
+		gbc_list.gridx = 1;
+		gbc_list.gridy = 1;
+		add(list, gbc_list);
 
 		JLabel lblName = new JLabel("Name");
 		GridBagConstraints gbc_lblName = new GridBagConstraints();
@@ -172,6 +208,13 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		this.setBounds(100, 100, 500, 450);
 
+		btnRemoveUser = new JButton("Remove user");
+		GridBagConstraints gbc_btnRemoveUser = new GridBagConstraints();
+		gbc_btnRemoveUser.insets = new Insets(0, 0, 5, 5);
+		gbc_btnRemoveUser.gridx = 1;
+		gbc_btnRemoveUser.gridy = 6;
+		add(btnRemoveUser, gbc_btnRemoveUser);
+
 		lblTaskList = new JLabel("Task List:");
 		GridBagConstraints gbc_lblTaskList = new GridBagConstraints();
 		gbc_lblTaskList.insets = new Insets(0, 0, 5, 5);
@@ -211,6 +254,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		btnViewTask = new JButton("View my tasks");
 		btnViewTask.addActionListener(clickListener);
+		
+		btnRemoveUser.addActionListener(clickListener);
 
 		btnCreateGANTTChart = new JButton("Create GANTT chart");
 		btnCreateGANTTChart.addActionListener(clickListener);
@@ -255,13 +300,18 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		add(btnSave, gbc_btnSave);
 
 		GridBagConstraints gbc_btnCreateGANTTChart = new GridBagConstraints();
-		gbc_btnCreateGANTTChart.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCreateGANTTChart.insets = new Insets(0, 0, 5, 5);
 		gbc_btnCreateGANTTChart.gridx = 1;
 		gbc_btnCreateGANTTChart.gridy = 0;
 		add(btnCreateGANTTChart, gbc_btnCreateGANTTChart);
-		btnCreateGANTTChart.setVisible(false);
+		btnCreateGANTTChart.setVisible(true);
 
 		projectModel.setProject(project);
+	    
+	    if (listModel.getSize() == 0) 
+	    {
+	        btnRemoveUser.setEnabled(false);
+	    }
 
         if(manager.currentUser.getRole() == 0 ){
             btnAddTask.setVisible(false);
@@ -279,6 +329,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
             txtProjectedEndDate.setVisible(false);
             txtProjectName.setVisible(false);
             txtStartDate.setVisible(false);
+            btnRemoveUser.setVisible(false);
         }
 	}
 
@@ -424,6 +475,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnViewTask) {
 				manager.addTab(new ViewTaskPanel(manager, manager.currentUser),
 						"Assigned tasks");
+			} else if (source == btnRemoveUser) {
+				removeUser();
 			} else if (source == btnCreateGANTTChart) {
 				final IntervalCategoryDataset dataSet = createDataset();
 
@@ -441,7 +494,45 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				manager.addTab(ganttPanel, "GANTT Chart");
 			}
 		}
+		
+		private void removeUser()
+		{
+			int index = list.getSelectedIndex();
+			
+			String name = listModel.get(index).toString();
+			
+			String split = new String();
+			
+			// manual split to character '-'
+			int i = 0;
+			while(name.charAt(i) != '-')
+			{
+				split += name.charAt(i++);
+			}
+			
+		    listModel.remove(index);
+		    
+		    // only need ID to remove user
+		   	ProjectUser projectUser = new ProjectUser(-1, projectModel.getProject().getId(), Integer.parseInt(split), 0);
+		    manager.db.removeProjectUser(projectUser);
+
+		    int size = listModel.getSize();
+
+		    if (size == 0) { //Nobody's left, disable firing.
+		        btnRemoveUser.setEnabled(false);
+
+		    } else { //Select an index.
+		        if (index == listModel.getSize()) {
+		            //removed item in last position
+		            index--;
+		        }
+
+		        list.setSelectedIndex(index);
+		        list.ensureIndexIsVisible(index);
+		    }
+		}
 	}
+
 
 	// This method is related to the creation of a dataset used for GANTT chart
 	// creation

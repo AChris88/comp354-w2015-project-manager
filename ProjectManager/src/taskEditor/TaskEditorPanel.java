@@ -21,21 +21,29 @@ import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import obj.Project;
+import obj.ProjectUser;
 import obj.Task;
+import obj.User;
+import obj.UserTask;
 import application.ProjectManager;
 import customComponents.TaskTableModel;
 
 import javax.swing.JButton;
 
 import userEditor.AddUserTaskPanel;
+
+import javax.swing.JList;
+
 
 /**
  * 
@@ -65,6 +73,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JButton btnCloseTab;
 	private ButtonClickListener clickListener;
 	private JButton btnAddUser;
+	private JList list;
+	private JButton btnRemoveUser;
+	private DefaultListModel listModel;
+	private ListSelectionModel listSelectionModel;
 
 	/**
 	 * @wbp.parser.constructor
@@ -78,9 +90,9 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0,
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0,
 				1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
@@ -92,6 +104,28 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_tabbedPane.gridy = 0;
 		tabbedPane.setVisible(false);
 		add(tabbedPane, gbc_tabbedPane);
+		
+
+	    listModel = new DefaultListModel();
+	    
+	    ArrayList<User> temp = manager.db.getUsersForTask(task);
+	    
+	    for(int i = 0; i < temp.size(); ++i)
+	    {
+	    	listModel.addElement(temp.get(i).getId() + "-" + temp.get(i).getFirstName() + " " + temp.get(i).getLastName());
+	    }
+
+		list = new JList(listModel);
+		JScrollPane listScroller = new JScrollPane(list);
+		
+		GridBagConstraints gbc_list = new GridBagConstraints();
+		gbc_list.gridheight = 6;
+		gbc_list.gridwidth = 2;
+		gbc_list.insets = new Insets(0, 0, 5, 5);
+		gbc_list.fill = GridBagConstraints.BOTH;
+		gbc_list.gridx = 1;
+		gbc_list.gridy = 1;
+		add(list, gbc_list);
 
 		JLabel lblTakeName = new JLabel("Task Name:");
 		GridBagConstraints gbc_lblTakeName = new GridBagConstraints();
@@ -199,6 +233,16 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnReset.gridy = 6;
 		// TODO add button action listener to reset fields
 		add(btnReset, gbc_btnReset);
+		
+		btnRemoveUser = new JButton("Remove user");
+		GridBagConstraints gbc_btnRemoveUser = new GridBagConstraints();
+		gbc_btnRemoveUser.gridwidth = 2;
+		gbc_btnRemoveUser.insets = new Insets(0, 0, 5, 5);
+		gbc_btnRemoveUser.gridx = 1;
+		gbc_btnRemoveUser.gridy = 7;
+		add(btnRemoveUser, gbc_btnRemoveUser);
+		
+		btnRemoveUser.addActionListener(clickListener);
 
 		lblPrerequisites = new JLabel("Prerequisites:");
 		GridBagConstraints gbc_lblPrerequisites = new GridBagConstraints();
@@ -481,6 +525,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						new AlterPrerequisitesPanel(manager, taskModel
 								.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
+			} else if (source == btnRemoveUser) {
+				removeUser();
 			} else if (source == btnAddUser) {
 				manager.addTab(
 						new AddUserTaskPanel(manager, taskModel.getTask()),
@@ -488,6 +534,55 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			} else if (source == btnCloseTab) {
 				manager.closeTab(TaskEditorPanel.this);
 			}
+		}
+		
+		private void removeUser()
+		{
+int index = list.getSelectedIndex();
+			
+			String name = listModel.get(index).toString();
+			
+			String split = new String();
+			
+			// manual split to character '-'
+			int i = 0;
+			while(name.charAt(i) != '-')
+			{
+				split += name.charAt(i++);
+			}
+			
+		    listModel.remove(index);
+		    
+		    ArrayList<ProjectUser> temp = manager.db.getProjectUsers();
+		    ProjectUser pu = new ProjectUser();
+
+		    for(int j = 0; j < temp.size(); ++j)
+		    {
+		    	if(temp.get(j).getUserId() == Integer.parseInt(split) && temp.get(j).getProjectId() == taskModel.getTask().getProjectId())
+		    	{
+		    		pu = temp.get(j);
+		    		break;
+		    	}
+		    }
+		    
+		    // need user id, task id, project_user id
+		    UserTask ut = new UserTask(0, Integer.parseInt(split), taskModel.getTask().getId(), pu.getId());
+		    manager.db.removeUserTask(ut);
+
+		    int size = listModel.getSize();
+
+		    if (size == 0) { //Nobody's left, disable firing.
+		        btnRemoveUser.setEnabled(false);
+
+		    } else { //Select an index.
+		        if (index == listModel.getSize()) {
+		            //removed item in last position
+		            index--;
+		        }
+
+		        list.setSelectedIndex(index);
+		        list.ensureIndexIsVisible(index);
+		    }
 		}
 	}
 }
