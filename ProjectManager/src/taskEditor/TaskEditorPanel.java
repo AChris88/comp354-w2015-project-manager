@@ -530,7 +530,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			} else if (source == btnAddUser) {
 				manager.addTab(
 						new AddUserTaskPanel(manager, taskModel.getTask()),
-						"Prerequisites: " + taskModel.getTaskName());
+						"Users: " + taskModel.getTaskName());
 			} else if (source == btnCloseTab) {
 				manager.closeTab(TaskEditorPanel.this);
 			}
