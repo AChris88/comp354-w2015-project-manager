@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
@@ -41,6 +42,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JButton;
 
 import dashboard.DashboardPanel;
+
 import javax.swing.SwingConstants;
 
 /**
@@ -263,36 +265,45 @@ public class UserEditorPanel extends JPanel implements Observer {
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
 
-			// save button case
-			if (source == btnSave) {
+			if (source == btnSave) 
+			{
 				User u = userModel.getUser();
 				u.setFirstName(txtFirstName.getText());
 				u.setLastName(txtLastName.getText());
 				u.setUsername(txtUserName.getText());
 				
-				try {
+				try 
+				{
 					u.setRole(Integer.parseInt(txtRole.getText()));
 				}
-				catch(Exception ex) {
+				catch(Exception ex) 
+				{
 					u.setRole(0);
 				}
 
 				userModel.setUser(u);
 
-				if (u.getId() == -1) {
+				if (u.getId() == -1) 
+				{
 					manager.db.insertUser(u, txtPassword.getText());
-				} else {
+				} else 
+				{
 					manager.db.updateUser(u);
 				}
-
-				//add task button case
-			} else if (source == btnCloseTab) {
+				
+				JOptionPane.showMessageDialog(null, "User was added with success.");
+				
 				manager.setActivePanel(new DashboardPanel(manager),
 						manager.currentUser.getFirstName() + "'s Dashboard");
+			} 
+			else if (source == btnCloseTab) 
+			{
+				manager.setActivePanel(new DashboardPanel(manager),
+						manager.currentUser.getFirstName() + "'s Dashboard");
+			} 
+			else if (source == btnDeleteUser) 
+			{
 				
-				//delete project case
-			} else if (source == btnDeleteUser) {
-				// TO DO
 			}
 		}
 	}
