@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -99,7 +100,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 		add(new JScrollPane(prerequisitesTable), gbc_prerequisitesTable);
 
 		clickListener = new ButtonClickListener();
-		
+
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
@@ -127,19 +128,19 @@ public class AlterPrerequisitesPanel extends JPanel {
 				// insert all task_reqs in the prerequisites table model
 				ArrayList<Task> allPrereq = prereqTableModel.getAllTasks();
 				for (int i = 0; i < allPrereq.size(); i++) {
-					
-					//potentially does not insert if already exists
+					// potentially does not insert if already exists
 					manager.db.insertTaskRequirement(new TaskRequirement(-1,
 							task.getId(), allPrereq.get(i).getId()));
+
 				}
 
 				// delete all task_reqs in the allTasks table model
 				ArrayList<Task> allNonPrereq = allTaskTableModel.getAllTasks();
 				for (int i = 0; i < allNonPrereq.size(); i++) {
-					
-					//potentially doesn't delete if doesn't already exist
+					// potentially doesn't delete if doesn't already exist
 					manager.db.removeTaskRequirement(new TaskRequirement(-1,
 							task.getId(), allNonPrereq.get(i).getId()));
+
 				}
 			} else if (source == btnCancel) {
 				// close tab

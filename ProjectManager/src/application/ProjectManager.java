@@ -38,6 +38,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import obj.Project;
+import obj.ProjectUser;
 //import obj.Task;
 import obj.User;
 import projectEditor.ProjectEditorPanel;
@@ -56,6 +57,7 @@ public class ProjectManager extends JFrame implements Runnable{
 	private Component activePanel;
 	public DatabaseManager db;
 	public User currentUser;
+	public ProjectUser projectUser;
 
     public Component getActivePanel(){
         return activePanel;
@@ -229,9 +231,16 @@ public class ProjectManager extends JFrame implements Runnable{
 		JTabbedPane tabbedPane = new JTabbedPane();
 
 		// check if the project is a new project or one pulled from the database
-		tabbedPane.add(
-				p.getId() == -1 ? "New Project" : "Project: " + p.getName(),
-				new ProjectEditorPanel(this, p));
+		String tabName;
+		if (p.getId() == -1) {
+			tabName = "New Project";
+		} else {
+			tabName = "Project: " + p.getName();
+			projectUser = db.getProjectUser(p, currentUser);
+		}
+		
+		tabbedPane.add(tabName,	new ProjectEditorPanel(this, p));
+		
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, p.getName() == null ? "New Project"
 				: "Project: " + p.getName());

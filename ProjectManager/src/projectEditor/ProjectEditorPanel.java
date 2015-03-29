@@ -6,18 +6,14 @@ package projectEditor;
 import javax.swing.JPanel;
 
 import obj.Project;
-import obj.ProjectUser;
 import obj.Task;
-import obj.User;
 import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
 import application.ProjectManager;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagLayout;
-
-import javax.swing.JList;
 
 import java.awt.GridBagConstraints;
 
@@ -36,16 +32,13 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 
-import customComponents.ProjectTableModel;
 import customComponents.TaskTableModel;
+import customComponents.UserListModel;
 
-import javax.swing.JSplitPane;
 import javax.swing.JButton;
 
 import dashboard.DashboardPanel;
@@ -57,11 +50,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
-import org.jfree.data.time.SimpleTimePeriod;
-
-import javax.swing.JTree;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * @author George Lambadas 7077076
@@ -69,6 +57,7 @@ import javax.swing.event.ListSelectionListener;
  */
 public class ProjectEditorPanel extends JPanel implements Observer {
 
+	private static final long serialVersionUID = 4103549863558485657L;
 	private ProjectManager manager;
 	private ProjectEditorModel projectModel;
 	private JTextField txtProjectName;
@@ -83,14 +72,13 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnAddTask;
 	private JButton btnDeleteProject;
 	private ButtonClickListener clickListener;
-	private JButton btnAddUser;
+	private JButton btnAddRemoveUser;
 	private JButton btnViewTask;
 	private JButton btnCreateGANTTChart;
-	private JButton btnRemoveUser;
-	private JList list;
-	
-	private ListSelectionModel listSelectionModel;
-	private DefaultListModel listModel;
+	private JTable list;
+
+	private UserListModel listModel;
+	public JLabel errorMessageLabel;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -109,22 +97,12 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-		
-	    listModel = new DefaultListModel();
-	    
-	    ArrayList<User> temp = manager.db.getUsersForProject(project);
-	    
-	    for(int i = 0; i < temp.size(); ++i)
-	    {
-	    	if(temp.get(i).getId() != manager.currentUser.getId())
-	    	{
-	    		listModel.addElement(temp.get(i).getId() + "-" + temp.get(i).getFirstName() + " " + temp.get(i).getLastName());
-	    	}
-	    }
 
-		list = new JList(listModel);
-		JScrollPane listScroller = new JScrollPane(list);
-		
+		listModel = new UserListModel();
+
+		listModel.populateModel(manager.db.getUsersForProject(project));
+
+		list = new JTable(listModel);
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.gridheight = 5;
@@ -132,7 +110,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_list.fill = GridBagConstraints.BOTH;
 		gbc_list.gridx = 1;
 		gbc_list.gridy = 1;
-		add(list, gbc_list);
+		add(new JScrollPane(list), gbc_list);
 
 		JLabel lblName = new JLabel("Name");
 		GridBagConstraints gbc_lblName = new GridBagConstraints();
@@ -208,13 +186,6 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		this.setBounds(100, 100, 500, 450);
 
-		btnRemoveUser = new JButton("Remove user");
-		GridBagConstraints gbc_btnRemoveUser = new GridBagConstraints();
-		gbc_btnRemoveUser.insets = new Insets(0, 0, 5, 5);
-		gbc_btnRemoveUser.gridx = 1;
-		gbc_btnRemoveUser.gridy = 6;
-		add(btnRemoveUser, gbc_btnRemoveUser);
-
 		lblTaskList = new JLabel("Task List:");
 		GridBagConstraints gbc_lblTaskList = new GridBagConstraints();
 		gbc_lblTaskList.insets = new Insets(0, 0, 5, 5);
@@ -246,16 +217,14 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		btnAddTask = new JButton("Add Task");
 		btnAddTask.addActionListener(clickListener);
 
-		btnAddUser = new JButton("Add Users");
-		btnAddUser.addActionListener(clickListener);
+		btnAddRemoveUser = new JButton("Add/Remove Users");
+		btnAddRemoveUser.addActionListener(clickListener);
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(clickListener);
 
 		btnViewTask = new JButton("View my tasks");
 		btnViewTask.addActionListener(clickListener);
-		
-		btnRemoveUser.addActionListener(clickListener);
 
 		btnCreateGANTTChart = new JButton("Create GANTT chart");
 		btnCreateGANTTChart.addActionListener(clickListener);
@@ -279,7 +248,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnAddUser.insets = new Insets(0, 0, 0, 5);
 		gbc_btnAddUser.gridx = 3;
 		gbc_btnAddUser.gridy = 8;
-		add(btnAddUser, gbc_btnAddUser);
+		add(btnAddRemoveUser, gbc_btnAddUser);
 
 		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
@@ -305,32 +274,32 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnCreateGANTTChart.gridy = 0;
 		add(btnCreateGANTTChart, gbc_btnCreateGANTTChart);
 		btnCreateGANTTChart.setVisible(true);
+		
+		errorMessageLabel = new JLabel();
+		errorMessageLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_errorMessageLabel = new GridBagConstraints();
+		gbc_errorMessageLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_errorMessageLabel.gridwidth = 3;
+		gbc_errorMessageLabel.gridx = 2;
+		gbc_errorMessageLabel.gridy = 0;
+		add(errorMessageLabel, gbc_errorMessageLabel);
 
 		projectModel.setProject(project);
-	    
-	    if (listModel.getSize() == 0) 
-	    {
-	        btnRemoveUser.setEnabled(false);
-	    }
 
-        if(manager.currentUser.getRole() == 0 ){
-            btnAddTask.setVisible(false);
-            btnAddUser.setVisible(false);
-            btnCreateGANTTChart.setVisible(false);
-            btnDeleteProject.setVisible(false);
-            btnSave.setVisible(false);
-            table.setVisible(false);
-            lblEndDate.setVisible(false);
-            lblName.setVisible(false);
-            lblTaskList.setVisible(false);
-            lblProjectedEndDate.setVisible(false);
-            lblStartDate.setVisible(false);
-            txtActualEndDate.setVisible(false);
-            txtProjectedEndDate.setVisible(false);
-            txtProjectName.setVisible(false);
-            txtStartDate.setVisible(false);
-            btnRemoveUser.setVisible(false);
-        }
+		if (project.getId() != -1 && manager.projectUser.getProjectRole() != 1) {
+			btnAddTask.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
+			btnCreateGANTTChart.setVisible(false);
+			btnDeleteProject.setVisible(false);
+			btnSave.setVisible(false);
+			table.setEnabled(false);
+			txtActualEndDate.setEditable(false);
+			txtProjectedEndDate.setEditable(false);
+			txtProjectName.setEditable(false);
+			txtStartDate.setEditable(false);
+			btnCreateGANTTChart.setVisible(false);
+			list.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -372,17 +341,6 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			btnAddTask.setVisible(true);
 			btnDeleteProject.setVisible(true);
 		}
-
-		ProjectUser pu = null;
-		ArrayList<ProjectUser> pus = manager.db.getProjectUsers();
-		for (ProjectUser projUser : pus) {
-			if (projUser.getProjectId() == projectModel.getProject().getId()
-					&& projUser.getUserId() == manager.currentUser.getId()
-					&& projUser.getProjectRole() == 1) {
-				btnCreateGANTTChart.setVisible(true);
-				break;
-			}
-		}
 	}
 
 	/**
@@ -402,47 +360,52 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				Project p = projectModel.getProject();
 				p.setName(txtProjectName.getText());
 
-				Calendar c = Calendar.getInstance();
+				Calendar start = Calendar.getInstance(), projectedEnd = Calendar
+						.getInstance(), end = Calendar.getInstance();
+
 				String[] dateComponents = new String[3];
 
-				if (txtStartDate.getText().equals("YYYY-MM-DD")) {
+				if (txtStartDate.getText().equals("YYYY-MM-DD") || txtStartDate.getText().equals("") ) {
 					p.setStartDate(null);
 				} else {
 					dateComponents = txtStartDate.getText().split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
+					start.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
-					p.setStartDate(c.getTime());
+					p.setStartDate(start.getTime());
 				}
 
-				if (txtProjectedEndDate.getText().equals("YYYY-MM-DD")) {
+				if (txtProjectedEndDate.getText().equals("YYYY-MM-DD") || txtProjectedEndDate.getText().equals("")) {
 					p.setProjectedEndDate(null);
 				} else {
 					dateComponents = txtProjectedEndDate.getText().split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
+					projectedEnd.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
-					p.setProjectedEndDate(c.getTime());
+					p.setProjectedEndDate(projectedEnd.getTime());
 				}
 
-				if (txtActualEndDate.getText().equals("YYYY-MM-DD")) {
+				if (txtActualEndDate.getText().equals("YYYY-MM-DD") || txtActualEndDate.getText().equals("")) {
 					p.setEndDate(null);
 				} else {
 					dateComponents = txtActualEndDate.getText().split("-");
-					c.set(Integer.parseInt(dateComponents[0]),
+					end.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
-					p.setEndDate(c.getTime());
+					p.setEndDate(end.getTime());
 				}
 
 				projectModel.setProject(p);
-
-				if (p.getId() == -1) {
-					manager.db.insertProject(p, manager.currentUser);
+				if (validDates(start, projectedEnd, end)) {
+					errorMessageLabel.setText("");
+					if (p.getId() == -1) {
+						manager.db.insertProject(p, manager.currentUser);
+					} else {
+						manager.db.updateProject(p);
+					}
 				} else {
-					manager.db.updateProject(p);
+					errorMessageLabel.setText("Date conflict exists. Project not saved.");
 				}
-
 				// add task button case
 			} else if (source == btnAddTask) {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
@@ -451,7 +414,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
 
 				// close tab case
-			} else if (source == btnAddUser) {
+			} else if (source == btnAddRemoveUser) {
 				manager.addTab(
 						new AddProjectUserPanel(manager, projectModel
 								.getProject()), "Add User to Project "
@@ -475,8 +438,6 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnViewTask) {
 				manager.addTab(new ViewTaskPanel(manager, manager.currentUser),
 						"Assigned tasks");
-			} else if (source == btnRemoveUser) {
-				removeUser();
 			} else if (source == btnCreateGANTTChart) {
 				final IntervalCategoryDataset dataSet = createDataset();
 
@@ -490,49 +451,43 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				ganttPanel.add(btnCloseTab);
 				ganttPanel.add(CP);
 				ganttPanel.validate();
-				
+
 				manager.addTab(ganttPanel, "GANTT Chart");
 			}
 		}
-		
-		private void removeUser()
-		{
-			int index = list.getSelectedIndex();
-			
-			String name = listModel.get(index).toString();
-			
-			String split = new String();
-			
-			// manual split to character '-'
-			int i = 0;
-			while(name.charAt(i) != '-')
-			{
-				split += name.charAt(i++);
+
+		/**
+		 * @param end
+		 * @param projectedEnd
+		 * @param start
+		 * @return
+		 */
+		private boolean validDates(Calendar start, Calendar projectedEnd,
+				Calendar end) {
+			boolean valid = true;
+
+			// start date is set
+			if (start != Calendar.getInstance()) {
+				// projectedEnd date is set
+				if (projectedEnd != Calendar.getInstance()) {
+					// start date must be before projectedEnd
+					valid &= (start.getTimeInMillis() < projectedEnd
+							.getTimeInMillis());
+				}
+				// end date is set
+				if (end != Calendar.getInstance()) {
+					// projectedEnd must be set and start must be before end
+					valid &= (projectedEnd != Calendar.getInstance() && start
+							.getTimeInMillis() < end.getTimeInMillis());
+				}
+			} else {
+				// no other dates should be set
+				valid &= (projectedEnd == Calendar.getInstance() && projectedEnd == end);
 			}
-			
-		    listModel.remove(index);
-		    
-		    // only need ID to remove user
-		   	ProjectUser projectUser = new ProjectUser(-1, projectModel.getProject().getId(), Integer.parseInt(split), 0);
-		    manager.db.removeProjectUser(projectUser);
 
-		    int size = listModel.getSize();
-
-		    if (size == 0) { //Nobody's left, disable firing.
-		        btnRemoveUser.setEnabled(false);
-
-		    } else { //Select an index.
-		        if (index == listModel.getSize()) {
-		            //removed item in last position
-		            index--;
-		        }
-
-		        list.setSelectedIndex(index);
-		        list.ensureIndexIsVisible(index);
-		    }
+			return valid;
 		}
 	}
-
 
 	// This method is related to the creation of a dataset used for GANTT chart
 	// creation
@@ -558,10 +513,11 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			// String toDo
 
 			plannedSeries.add(new org.jfree.data.gantt.Task(currentTask
-					.getName(), (currentTask.getProjectedStartDate() == null ? new Date()
-					: currentTask.getProjectedStartDate()),
-					(currentTask.getProjectedEndDate() == null ? new Date() : currentTask
-							.getProjectedEndDate())));
+					.getName(),
+					(currentTask.getProjectedStartDate() == null ? new Date()
+							: currentTask.getProjectedStartDate()),
+					(currentTask.getProjectedEndDate() == null ? new Date()
+							: currentTask.getProjectedEndDate())));
 		}
 
 		// A task series with the actual tasks dates on the series.
@@ -574,9 +530,10 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			// Add each individual task with its name, projected start date and
 			// end date
 			actualSeries.add(new org.jfree.data.gantt.Task(currentTask
-					.getName(), (currentTask.getStartDate() == null ? new Date()
-					: currentTask.getStartDate()),
-					(currentTask.getEndDate() == null ? new Date() : currentTask
+					.getName(),
+					(currentTask.getStartDate() == null ? new Date()
+							: currentTask.getStartDate()), (currentTask
+							.getEndDate() == null ? new Date() : currentTask
 							.getEndDate())));
 		}
 
@@ -625,7 +582,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			if (e.getClickCount() == 2) {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
-				if (tableModel.getTaskAt(row) != null)
+				if (table.isEnabled() && tableModel.getTaskAt(row) != null)
 					manager.addTab(
 							new TaskEditorPanel(manager, tableModel
 									.getTaskAt(row)), "Task: "

@@ -1340,4 +1340,39 @@ public class DatabaseManager {
 		}
 		return success;
 	}
+
+	/**
+	 * @param p project
+	 * @param currentUser user
+	 * 
+	 * @return project-user relationship
+	 */
+	public ProjectUser getProjectUser(Project p, User u) {
+		ProjectUser projectUser = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("select * FROM project_users WHERE project_id = ? AND user_id = ?");
+			preparedStatement.setInt(1, p.getId());
+			preparedStatement.setInt(2, u.getId());
+			resultSet = preparedStatement.executeQuery();
+			if(resultSet.next()) {
+				projectUser = new ProjectUser(resultSet.getInt("id"),
+						resultSet.getInt("project_id"), resultSet
+								.getInt("user_id"), resultSet
+								.getInt("project_role"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return projectUser;
+	}
 }

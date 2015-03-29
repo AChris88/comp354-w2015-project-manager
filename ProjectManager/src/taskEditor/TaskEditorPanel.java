@@ -37,6 +37,7 @@ import obj.User;
 import obj.UserTask;
 import application.ProjectManager;
 import customComponents.TaskTableModel;
+import customComponents.UserListModel;
 
 import javax.swing.JButton;
 
@@ -73,9 +74,9 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JButton btnCloseTab;
 	private ButtonClickListener clickListener;
 	private JButton btnAddUser;
-	private JList list;
+	private JTable list;
 	private JButton btnRemoveUser;
-	private DefaultListModel listModel;
+	private UserListModel listModel;
 	private ListSelectionModel listSelectionModel;
 
 	/**
@@ -105,18 +106,12 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		tabbedPane.setVisible(false);
 		add(tabbedPane, gbc_tabbedPane);
 		
+		listModel = new UserListModel();
 
-	    listModel = new DefaultListModel();
-	    
-	    ArrayList<User> temp = manager.db.getUsersForTask(task);
-	    
-	    for(int i = 0; i < temp.size(); ++i)
-	    {
-	    	listModel.addElement(temp.get(i).getId() + "-" + temp.get(i).getFirstName() + " " + temp.get(i).getLastName());
-	    }
+		listModel.populateModel(manager.db.getUsersForTask(task));
 
-		list = new JList(listModel);
-		JScrollPane listScroller = new JScrollPane(list);
+		list = new JTable(listModel);
+
 		
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.gridheight = 6;
@@ -125,7 +120,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_list.fill = GridBagConstraints.BOTH;
 		gbc_list.gridx = 1;
 		gbc_list.gridy = 1;
-		add(list, gbc_list);
+		add(new JScrollPane(list), gbc_list);
 
 		JLabel lblTakeName = new JLabel("Task Name:");
 		GridBagConstraints gbc_lblTakeName = new GridBagConstraints();
@@ -255,7 +250,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		tableModel.populateModel(manager.db.getTaskRequirements(task));
 
 		table = new JTable(tableModel);
-		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 0);
 		gbc_table.gridwidth = 6;
@@ -294,6 +288,23 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		add(btnCloseTab, gbc_btnCloseTab);
 
 		taskModel.setTask(task);
+
+		if (manager.projectUser.getProjectRole() != 1) {
+			btnRemoveUser.setVisible(false);
+			btnChangePrerequisites.setVisible(false);
+			btnAddUser.setVisible(false);
+			btnSave.setVisible(false);
+			btnReset.setVisible(false);
+			nameTextField.setEditable(false);
+			endTextField.setEditable(false);
+			startTextField.setEditable(false);
+			expectedEndTextField.setEditable(false);
+			expectedStartTextField.setEditable(false);
+			list.setEnabled(false);
+			
+		} else {
+			table.addMouseListener(((MouseListener) new DoubleClickListener()));
+		}
 	}
 
 	private void addTab(Task task) {
@@ -526,7 +537,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 								.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
 			} else if (source == btnRemoveUser) {
-				removeUser();
+				//TODO removeUser();
 			} else if (source == btnAddUser) {
 				manager.addTab(
 						new AddUserTaskPanel(manager, taskModel.getTask()),
@@ -536,7 +547,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			}
 		}
 		
-		private void removeUser()
+		/*private void removeUser()
 		{
 int index = list.getSelectedIndex();
 			
@@ -583,6 +594,6 @@ int index = list.getSelectedIndex();
 		        list.setSelectedIndex(index);
 		        list.ensureIndexIsVisible(index);
 		    }
-		}
+		}*/
 	}
 }
