@@ -14,7 +14,7 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 
-import customComponents.UserTableModel;
+import customComponents.UserListModel;
 import application.ProjectManager;
 import obj.Project;
 import obj.ProjectUser;
@@ -39,18 +39,19 @@ public class AddProjectUserPanel extends JPanel {
 	private static final long serialVersionUID = 6195901282771479175L;
 	private JTable allUsersTable;
 	private JTable projectUsersTable;
-	
-	private UserTableModel allUsersTableModel;
-	private UserTableModel projectUsersTableModel;
-	
+
+	private UserListModel allUsersTableModel;
+	private UserListModel projectUsersTableModel;
+
 	private JButton btnSave;
 	private JButton btnCancel;
-	
+
 	private Project project;
 	private ProjectManager manager;
 	private ButtonClickListener clickListener;
 
-	public AddProjectUserPanel(ProjectManager manager, Project p) {
+	public AddProjectUserPanel(ProjectManager manager, Project p,
+			UserListModel projectUserModel) {
 		this.manager = manager;
 		this.project = p;
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -76,11 +77,12 @@ public class AddProjectUserPanel extends JPanel {
 		gbc_lblPrerequisiteTasks.gridy = 2;
 		add(lblPrerequisiteTasks, gbc_lblPrerequisiteTasks);
 
-		allUsersTableModel = new UserTableModel();
+		allUsersTableModel = new UserListModel();
 		allUsersTableModel.populateModel(usersNotInCurrentProject());
 
 		allUsersTable = new JTable(allUsersTableModel);
-		allUsersTable.addMouseListener(((MouseListener) new DoubleClickListener()));
+		allUsersTable
+				.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 5);
 		gbc_table.fill = GridBagConstraints.BOTH;
@@ -88,11 +90,11 @@ public class AddProjectUserPanel extends JPanel {
 		gbc_table.gridy = 3;
 		add(new JScrollPane(allUsersTable), gbc_table);
 
-		projectUsersTableModel = new UserTableModel();
-		projectUsersTableModel.populateModel(allUserInProjectExceptCurrent());
+		projectUsersTableModel = projectUserModel;
 
 		projectUsersTable = new JTable(projectUsersTableModel);
-		projectUsersTable.addMouseListener(((MouseListener) new DoubleClickListener()));
+		projectUsersTable
+				.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_prerequisitesTable = new GridBagConstraints();
 		gbc_prerequisitesTable.insets = new Insets(0, 0, 5, 0);
 		gbc_prerequisitesTable.fill = GridBagConstraints.BOTH;
@@ -101,7 +103,7 @@ public class AddProjectUserPanel extends JPanel {
 		add(new JScrollPane(projectUsersTable), gbc_prerequisitesTable);
 
 		clickListener = new ButtonClickListener();
-		
+
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
@@ -126,35 +128,43 @@ public class AddProjectUserPanel extends JPanel {
 			JButton source = (JButton) e.getSource();
 
 			if (source == btnSave) {
-				ArrayList<User> allUserInProject = projectUsersTableModel.getAllUsers();
-				
-				for (int i = 0; i < allUserInProject.size(); i++) 
-				{
-					ArrayList<User> alreadyInTheDB = manager.db.getUsersForProject(project);
-					
-					if(!findUserIn(alreadyInTheDB, allUserInProject.get(i))) 
-					{
-						manager.db.insertProjectUser(new ProjectUser(-1, project.getId(), allUserInProject.get(i).getId(), 0));
+				ArrayList<User> allUserInProject = projectUsersTableModel
+						.getAllUsers();
+
+				for (int i = 0; i < allUserInProject.size(); i++) {
+					ArrayList<User> alreadyInTheDB = manager.db
+							.getUsersForProject(project);
+
+					if (!findUserIn(alreadyInTheDB, allUserInProject.get(i))) {
+						manager.db.insertProjectUser(new ProjectUser(-1,
+								project.getId(), allUserInProject.get(i)
+										.getId(), 0));
 					}
 				}
-					
-				ArrayList<User> allUserNotInProject = allUsersTableModel.getAllUsers();
+
+				ArrayList<User> allUserNotInProject = allUsersTableModel
+						.getAllUsers();
 				for (int i = 0; i < allUserNotInProject.size(); i++) {
-					ProjectUser pu = getProjectUser(allUserNotInProject.get(i), project);
-					
-					if(pu != null) {
-						ArrayList<Task> tasksForUser = manager.db.getTasksForProjectUser(pu);
-	
-						for(int j = 0; j < tasksForUser.size(); ++j) {
-							manager.db.removeUserTask(new UserTask(-1, allUserNotInProject.get(i).getId(), 
+					ProjectUser pu = getProjectUser(allUserNotInProject.get(i),
+							project);
+
+					if (pu != null) {
+						ArrayList<Task> tasksForUser = manager.db
+								.getTasksForProjectUser(pu);
+
+						for (int j = 0; j < tasksForUser.size(); ++j) {
+							manager.db.removeUserTask(new UserTask(-1,
+									allUserNotInProject.get(i).getId(),
 									tasksForUser.get(j).getId(), pu.getId()));
 						}
 					}
-					
-					//potentially doesn't delete if doesn't already exist
-					manager.db.removeProjectUser(new ProjectUser(-1, project.getId(), allUserNotInProject.get(i).getId(), 0));
+
+					// potentially doesn't delete if doesn't already exist
+					manager.db.removeProjectUser(new ProjectUser(-1, project
+							.getId(), allUserNotInProject.get(i).getId(), 0));
 				}
 			} else if (source == btnCancel) {
+				projectUsersTableModel.populateModel(manager.db.getUsersForProject(manager.currentProject));
 				manager.closeTab(AddProjectUserPanel.this);
 			}
 		}
@@ -177,75 +187,84 @@ public class AddProjectUserPanel extends JPanel {
 							projectUsersTableModel.getRowCount() - 2);
 				} else if (target == projectUsersTable) {
 					int row = target.getSelectedRow();
-					User toMove = projectUsersTableModel.removeUserAt(row);
+					if (manager.currentUser.getId() != projectUsersTableModel
+							.getUserAt(row).getId()) {
+						User toMove = projectUsersTableModel.removeUserAt(row);
 
-					projectUsersTableModel.fireTableRowsDeleted(row, row);
-					allUsersTableModel.addUser(toMove);
-					allUsersTableModel.fireTableRowsInserted(
-							allUsersTableModel.getRowCount() - 2,
-							allUsersTableModel.getRowCount() - 2);
+						projectUsersTableModel.fireTableRowsDeleted(row, row);
+						allUsersTableModel.addUser(toMove);
+						allUsersTableModel.fireTableRowsInserted(
+								allUsersTableModel.getRowCount() - 2,
+								allUsersTableModel.getRowCount() - 2);
+					}
 				}
 			}
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent arg0) { }
+		public void mouseEntered(MouseEvent arg0) {
+		}
 
 		@Override
-		public void mouseExited(MouseEvent arg0) { }
+		public void mouseExited(MouseEvent arg0) {
+		}
 
 		@Override
-		public void mousePressed(MouseEvent arg0) { }
+		public void mousePressed(MouseEvent arg0) {
+		}
 
 		@Override
-		public void mouseReleased(MouseEvent arg0) { }
+		public void mouseReleased(MouseEvent arg0) {
+		}
 	}
-	
+
 	private ArrayList<User> allUserInProjectExceptCurrent() {
 		ArrayList<User> alreadyThere = manager.db.getUsersForProject(project);
-		
-		for(int i = 0; i < alreadyThere.size(); i++) {
-			if(alreadyThere.get(i).getId() == manager.currentUser.getId()) {
+
+		for (int i = 0; i < alreadyThere.size(); i++) {
+			if (alreadyThere.get(i).getId() == manager.currentUser.getId()) {
 				alreadyThere.remove(i);
 			}
 		}
-		
+
 		return alreadyThere;
 	}
-	
+
 	private ArrayList<User> usersNotInCurrentProject() {
 		ArrayList<User> allUsers = manager.db.getUsers();
 		ArrayList<User> alreadyThere = manager.db.getUsersForProject(project);
 		ArrayList<User> temp = new ArrayList<User>();
-		
-		for(int i = 0; i < allUsers.size(); i++) {
-			if(!findUserIn(alreadyThere, allUsers.get(i))) {
+
+		for (int i = 0; i < allUsers.size(); i++) {
+			if (!findUserIn(alreadyThere, allUsers.get(i))) {
 				temp.add(allUsers.get(i));
 			}
 		}
-		
+
 		return temp;
 	}
-	
+
 	private boolean findUserIn(ArrayList<User> array, User u) {
-		for(int i = 0; i < array.size(); ++i) {
-			if(array.get(i).getId() == u.getId()) {
+		for (int i = 0; i < array.size(); ++i) {
+			if (array.get(i).getId() == u.getId()) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	private ProjectUser getProjectUser(User u, Project p) {
 		ArrayList<ProjectUser> pu = manager.db.getProjectUsers();
-		
-		for(int i = 0; i < pu.size(); ++i) {
-			if(pu.get(i).getProjectId() == p.getId() && pu.get(i).getUserId() == u.getId()) {
+
+		for (int i = 0; i < pu.size(); ++i) {
+			if (pu.get(i).getProjectId() == p.getId()
+					&& pu.get(i).getUserId() == u.getId()) {
 				return pu.get(i);
 			}
 		}
-		
-		return null; // Shouldn't be possible if we made till this panel... but better be careful
+
+		return null; // Shouldn't be possible if we made till this panel... but
+						// better be careful
 	}
 }

@@ -33,7 +33,27 @@ public class UserListModel extends AbstractTableModel {
 	public int getSize() {
 		return data.size();
 	}
+	
+	public ArrayList<User> getAllUsers() {
+		return data;
+	}
 
+	/**
+	 * @param index of row
+	 * @return user at row
+	 */
+	public User getUserAt(int row) {
+		return row < data.size() ? data.get(row) : null;
+	}
+
+	/**
+	 * Method to remove an user at a specified row
+	 * @param row the row from which to remove an user
+	 * @return the user that was removed. Null if empty row selected.
+	 */
+	public User removeUserAt(int row) {
+		return data.size() > row? data.remove(row) : null;
+	}
 	@Override
 	public int getColumnCount() {
 		return columnNames.size();
@@ -63,5 +83,14 @@ public class UserListModel extends AbstractTableModel {
 	
 	public void populateModel(ArrayList<User> users) {
 		this.data = users;
+		this.fireTableDataChanged();
+	}
+
+	/**
+	 * Method to add a users to the data being represented
+	 * @param u the users to be added
+	 */
+	public void addUser(User u) {
+		data.add(u);
 	}
 }

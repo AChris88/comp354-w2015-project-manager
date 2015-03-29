@@ -58,6 +58,7 @@ public class ProjectManager extends JFrame implements Runnable{
 	public DatabaseManager db;
 	public User currentUser;
 	public ProjectUser projectUser;
+	public Project currentProject;
 
     public Component getActivePanel(){
         return activePanel;
@@ -230,6 +231,7 @@ public class ProjectManager extends JFrame implements Runnable{
 	public void openProject(Project p) {
 		JTabbedPane tabbedPane = new JTabbedPane();
 
+		currentProject = p;
 		// check if the project is a new project or one pulled from the database
 		String tabName;
 		if (p.getId() == -1) {

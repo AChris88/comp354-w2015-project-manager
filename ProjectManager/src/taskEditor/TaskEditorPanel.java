@@ -45,7 +45,6 @@ import userEditor.AddUserTaskPanel;
 
 import javax.swing.JList;
 
-
 /**
  * 
  * @author Christian Allard 7026188
@@ -73,7 +72,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JButton btnChangePrerequisites;
 	private JButton btnCloseTab;
 	private ButtonClickListener clickListener;
-	private JButton btnAddUser;
+	private JButton btnAddRemoveUser;
 	private JTable list;
 	private JButton btnRemoveUser;
 	private UserListModel listModel;
@@ -105,14 +104,13 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_tabbedPane.gridy = 0;
 		tabbedPane.setVisible(false);
 		add(tabbedPane, gbc_tabbedPane);
-		
+
 		listModel = new UserListModel();
 
 		listModel.populateModel(manager.db.getUsersForTask(task));
 
 		list = new JTable(listModel);
 
-		
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.gridheight = 6;
 		gbc_list.gridwidth = 2;
@@ -212,14 +210,14 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnSave.insets = new Insets(0, 0, 5, 5);
 		gbc_btnSave.gridx = 4;
 		gbc_btnSave.gridy = 6;
-		
+
 		clickListener = new ButtonClickListener();
-		
+
 		btnSave.addActionListener(clickListener);
 		add(btnSave, gbc_btnSave);
-		
-		btnAddUser = new JButton("Add Users");
-		btnAddUser.addActionListener(clickListener);
+
+		btnAddRemoveUser = new JButton("Add/Remove Users");
+		btnAddRemoveUser.addActionListener(clickListener);
 
 		btnReset = new JButton("Reset");
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
@@ -228,16 +226,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_btnReset.gridy = 6;
 		// TODO add button action listener to reset fields
 		add(btnReset, gbc_btnReset);
-		
-		btnRemoveUser = new JButton("Remove user");
-		GridBagConstraints gbc_btnRemoveUser = new GridBagConstraints();
-		gbc_btnRemoveUser.gridwidth = 2;
-		gbc_btnRemoveUser.insets = new Insets(0, 0, 5, 5);
-		gbc_btnRemoveUser.gridx = 1;
-		gbc_btnRemoveUser.gridy = 7;
-		add(btnRemoveUser, gbc_btnRemoveUser);
-		
-		btnRemoveUser.addActionListener(clickListener);
 
 		lblPrerequisites = new JLabel("Prerequisites:");
 		GridBagConstraints gbc_lblPrerequisites = new GridBagConstraints();
@@ -273,13 +261,12 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 		btnCloseTab = new JButton("Close Tab");
 		btnCloseTab.addActionListener(clickListener);
-		
+
 		GridBagConstraints gbc_btnAddUser = new GridBagConstraints();
 		gbc_btnAddUser.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAddUser.gridx = 4;
 		gbc_btnAddUser.gridy = 9;
-		add(btnAddUser, gbc_btnAddUser);
-
+		add(btnAddRemoveUser, gbc_btnAddUser);
 
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 0);
@@ -292,7 +279,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (manager.projectUser.getProjectRole() != 1) {
 			btnRemoveUser.setVisible(false);
 			btnChangePrerequisites.setVisible(false);
-			btnAddUser.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
 			btnSave.setVisible(false);
 			btnReset.setVisible(false);
 			nameTextField.setEditable(false);
@@ -301,46 +288,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			expectedEndTextField.setEditable(false);
 			expectedStartTextField.setEditable(false);
 			list.setEnabled(false);
-			
+
 		} else {
 			table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		}
-	}
-
-	private void addTab(Task task) {
-		// ImageIcon icon = createImageIcon("images/middle.gif");
-
-		JComponent panel1 = makeTextPanel(task.getName());
-		tabbedPane.addTab(task.getName(), null, panel1, task.getName());
-
-		int keyEvent = 0;
-
-		switch (tabCtr) {
-		case 0:
-			keyEvent = KeyEvent.VK_1;
-			break;
-		case 1:
-			keyEvent = KeyEvent.VK_2;
-			break;
-		case 2:
-			keyEvent = KeyEvent.VK_3;
-			break;
-		case 3:
-			keyEvent = KeyEvent.VK_4;
-			break;
-		case 4:
-			keyEvent = KeyEvent.VK_5;
-			break;
-		case 5:
-			keyEvent = KeyEvent.VK_6;
-			break;
-		}
-
-		if (tabCtr == 0)
-			tabbedPane.setVisible(true);
-
-		// keyEvent could also be represented as (tabCtr + 49)
-		tabbedPane.setMnemonicAt(tabCtr++, keyEvent);
 	}
 
 	private JComponent makeTextPanel(String text) {
@@ -403,8 +354,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		} else {
 			endTextField.setText("YYYY-MM-DD");
 		}
-		
-		if(taskModel.getTask().getId() != -1 ) {
+
+		if (taskModel.getTask().getId() != -1) {
 			btnChangePrerequisites.setVisible(true);
 		}
 
@@ -461,139 +412,94 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			if (source == btnSave) {
 				Task t = taskModel.getTask();
 				t.setName(nameTextField.getText());
-				
-				Project p = new Project(taskModel.getTask().getProjectId(), "", new Date(0), new Date(0), new Date(0));
-				ArrayList<Task> allTasks = manager.db.getTasksForProject(p);
-				
-//				boolean taskNameFound = false;
-//				for(int i = 0; i < allTasks.size(); ++i)
-//				{
-//					if(allTasks.get(i).getName().equals(t.getName()))
-//					{
-//						taskNameFound = true;
-//					}
-//				}
-				
-//				if(!taskNameFound)
-//				{
-					Calendar c = Calendar.getInstance();
-					String[] dateComponents = new String[3];
-	
-					if (expectedStartTextField.getText().equals("YYYY-MM-DD")) {
-						t.setStartDate(null);
-					} else {
-						dateComponents = expectedStartTextField.getText()
-								.split("-");
-						c.set(Integer.parseInt(dateComponents[0]),
-								Integer.parseInt(dateComponents[1]) - 1,
-								Integer.parseInt(dateComponents[2]));
-						t.setProjectedStartDate(c.getTime());
-					}
-	
-					if (startTextField.getText().equals("YYYY-MM-DD")) {
-						t.setStartDate(null);
-					} else {
-						dateComponents = startTextField.getText().split("-");
-	
-						c.set(Integer.parseInt(dateComponents[0]),
-								Integer.parseInt(dateComponents[1]) - 1,
-								Integer.parseInt(dateComponents[2]));
-						t.setStartDate(c.getTime());
-					}
-	
-					if (expectedEndTextField.getText().equals("YYYY-MM-DD")) {
-						t.setStartDate(null);
-					} else {
-						dateComponents = expectedEndTextField.getText().split("-");
-						c.set(Integer.parseInt(dateComponents[0]),
-								Integer.parseInt(dateComponents[1]) - 1,
-								Integer.parseInt(dateComponents[2]));
-						t.setProjectedEndDate(c.getTime());
-					}
-	
-					if (endTextField.getText().equals("YYYY-MM-DD")) {
-						t.setStartDate(null);
-					} else {
-						dateComponents = endTextField.getText().split("-");
-						c.set(Integer.parseInt(dateComponents[0]),
-								Integer.parseInt(dateComponents[1]) - 1,
-								Integer.parseInt(dateComponents[2]));
-						t.setEndDate(c.getTime());
-					}
-	
+
+				Project p = new Project(taskModel.getTask().getProjectId(), "",
+						new Date(0), new Date(0), new Date(0));
+
+				Calendar c = Calendar.getInstance();
+				Calendar expectedStart = Calendar.getInstance(), start = Calendar
+						.getInstance(), expectedEnd = Calendar.getInstance(), end = Calendar
+						.getInstance();
+				String[] dateComponents = new String[3];
+
+				if (expectedStartTextField.getText().equals("YYYY-MM-DD") || expectedStartTextField.getText().equals("")) {
+					t.setProjectedStartDate(null);
+				} else {
+					dateComponents = expectedStartTextField.getText()
+							.split("-");
+					expectedStart.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setProjectedStartDate(expectedStart.getTime());
+				}
+
+				if (startTextField.getText().equals("YYYY-MM-DD") || startTextField.getText().equals("")) {
+					t.setStartDate(null);
+				} else {
+					dateComponents = startTextField.getText().split("-");
+
+					start.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setStartDate(start.getTime());
+				}
+
+				if (expectedEndTextField.getText().equals("YYYY-MM-DD") || expectedEndTextField.getText().equals("")) {
+					t.setProjectedEndDate(null);
+				} else {
+					dateComponents = expectedEndTextField.getText().split("-");
+					expectedEnd.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setProjectedEndDate(expectedEnd.getTime());
+				}
+
+				if (endTextField.getText().equals("YYYY-MM-DD") || endTextField.getText().equals("")) {
+					t.setEndDate(null);
+				} else {
+					dateComponents = endTextField.getText().split("-");
+					end.set(Integer.parseInt(dateComponents[0]),
+							Integer.parseInt(dateComponents[1]) - 1,
+							Integer.parseInt(dateComponents[2]));
+					t.setEndDate(end.getTime());
+				}
+
+				if (validDates(expectedStart, start, expectedEnd, end)) {
 					if (t.getId() == -1) {
 						manager.db.insertTask(t);
 					} else {
 						manager.db.updateTask(t);
 					}
-	
-					t = manager.db.getTaskByName(t.getName());
-					taskModel.setTask(t);
+				} else {
+					// TODO add the error message
+				}
 
-//				}
+				t = manager.db.getTaskByName(t.getName());
+				taskModel.setTask(t);
+
 			} else if (source == btnChangePrerequisites) {
 				manager.addTab(
 						new AlterPrerequisitesPanel(manager, taskModel
 								.getTask()),
 						"Prerequisites: " + taskModel.getTaskName());
-			} else if (source == btnRemoveUser) {
-				//TODO removeUser();
-			} else if (source == btnAddUser) {
+			} else if (source == btnAddRemoveUser) {
 				manager.addTab(
-						new AddUserTaskPanel(manager, taskModel.getTask()),
+						new AddUserTaskPanel(manager, taskModel.getTask(), listModel),
 						"Users: " + taskModel.getTaskName());
 			} else if (source == btnCloseTab) {
 				manager.closeTab(TaskEditorPanel.this);
 			}
 		}
-		
-		/*private void removeUser()
-		{
-int index = list.getSelectedIndex();
-			
-			String name = listModel.get(index).toString();
-			
-			String split = new String();
-			
-			// manual split to character '-'
-			int i = 0;
-			while(name.charAt(i) != '-')
-			{
-				split += name.charAt(i++);
-			}
-			
-		    listModel.remove(index);
-		    
-		    ArrayList<ProjectUser> temp = manager.db.getProjectUsers();
-		    ProjectUser pu = new ProjectUser();
 
-		    for(int j = 0; j < temp.size(); ++j)
-		    {
-		    	if(temp.get(j).getUserId() == Integer.parseInt(split) && temp.get(j).getProjectId() == taskModel.getTask().getProjectId())
-		    	{
-		    		pu = temp.get(j);
-		    		break;
-		    	}
-		    }
-		    
-		    // need user id, task id, project_user id
-		    UserTask ut = new UserTask(0, Integer.parseInt(split), taskModel.getTask().getId(), pu.getId());
-		    manager.db.removeUserTask(ut);
-
-		    int size = listModel.getSize();
-
-		    if (size == 0) { //Nobody's left, disable firing.
-		        btnRemoveUser.setEnabled(false);
-
-		    } else { //Select an index.
-		        if (index == listModel.getSize()) {
-		            //removed item in last position
-		            index--;
-		        }
-
-		        list.setSelectedIndex(index);
-		        list.ensureIndexIsVisible(index);
-		    }
-		}*/
+		/**
+		 * @param end 
+		 * @param expectedEnd 
+		 * @param start 
+		 * @param expectedStart 
+		 * @return
+		 */
+		private boolean validDates(Calendar expectedStart, Calendar start, Calendar expectedEnd, Calendar end) {
+			return false;
+		}
 	}
 }

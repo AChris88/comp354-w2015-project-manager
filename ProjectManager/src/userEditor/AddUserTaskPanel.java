@@ -14,6 +14,7 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 
+import customComponents.UserListModel;
 import customComponents.UserTableModel;
 import application.ProjectManager;
 import obj.Project;
@@ -40,8 +41,8 @@ public class AddUserTaskPanel extends JPanel {
 	private JTable allUsersTable;
 	private JTable usersToTaskTable;
 	
-	private UserTableModel allUsersTableModel;
-	private UserTableModel usersToTaskTableModel;
+	private UserListModel allUsersTableModel;
+	private UserListModel usersToTaskTableModel;
 	
 	private JButton btnSave;
 	private JButton btnCancel;
@@ -51,7 +52,7 @@ public class AddUserTaskPanel extends JPanel {
 	private ProjectManager manager;
 	private ButtonClickListener clickListener;
 
-	public AddUserTaskPanel(ProjectManager manager, Task t) {
+	public AddUserTaskPanel(ProjectManager manager, Task t, UserListModel taskUsers) {
 		this.manager = manager;
 		this.task = t;
 		this.project = manager.db.getProjectByID(t.getProjectId());
@@ -79,7 +80,7 @@ public class AddUserTaskPanel extends JPanel {
 		gbc_lblPrerequisiteTasks.gridy = 2;
 		add(lblPrerequisiteTasks, gbc_lblPrerequisiteTasks);
 
-		allUsersTableModel = new UserTableModel();
+		allUsersTableModel = new UserListModel();
 		allUsersTableModel.populateModel(allUserInProjectButNotInCurrentTask());
 
 		allUsersTable = new JTable(allUsersTableModel);
@@ -91,8 +92,7 @@ public class AddUserTaskPanel extends JPanel {
 		gbc_table.gridy = 3;
 		add(new JScrollPane(allUsersTable), gbc_table);
 
-		usersToTaskTableModel = new UserTableModel();
-		usersToTaskTableModel.populateModel(usersInCurrentTask());
+		usersToTaskTableModel = taskUsers;
 
 		usersToTaskTable = new JTable(usersToTaskTableModel);
 		usersToTaskTable.addMouseListener(((MouseListener) new DoubleClickListener()));
@@ -152,6 +152,7 @@ public class AddUserTaskPanel extends JPanel {
 							task.getId(), getProjectUser(allUsers.get(i), project).getId()));
 				}
 			} else if (source == btnCancel) {
+				usersToTaskTableModel.populateModel(manager.db.getUsersForTask(task));
 				manager.closeTab(AddUserTaskPanel.this);
 			}
 		}

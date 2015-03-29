@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import obj.Project;
 import obj.Task;
+import obj.User;
 import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
@@ -76,6 +77,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnViewTask;
 	private JButton btnCreateGANTTChart;
 	private JTable list;
+	private ArrayList<User> projectUsers;
 
 	private UserListModel listModel;
 	public JLabel errorMessageLabel;
@@ -99,9 +101,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		setLayout(gridBagLayout);
 
 		listModel = new UserListModel();
-
-		listModel.populateModel(manager.db.getUsersForProject(project));
-
+		projectUsers = manager.db.getUsersForProject(project);
+		listModel.populateModel(projectUsers);
+		
 		list = new JTable(listModel);
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
@@ -417,7 +419,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnAddRemoveUser) {
 				manager.addTab(
 						new AddProjectUserPanel(manager, projectModel
-								.getProject()), "Add User to Project "
+								.getProject(), listModel), "Add User to Project "
 								+ projectModel.getProject().getName());
 
 				// close tab case
