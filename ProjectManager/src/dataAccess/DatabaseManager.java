@@ -454,6 +454,41 @@ public class DatabaseManager {
 		return projects;
 	}
 
+	/**
+	 * @param p project
+	 * @param currentUser user
+	 * 
+	 * @return project-user relationship
+	 */
+	public ProjectUser getProjectUser(Project p, User u) {
+		ProjectUser projectUser = null;
+		try {
+			connect();
+			preparedStatement = connection
+					.prepareStatement("select * FROM project_users WHERE project_id = ? AND user_id = ?");
+			preparedStatement.setInt(1, p.getId());
+			preparedStatement.setInt(2, u.getId());
+			resultSet = preparedStatement.executeQuery();
+			if(resultSet.next()) {
+				projectUser = new ProjectUser(resultSet.getInt("id"),
+						resultSet.getInt("project_id"), resultSet
+								.getInt("user_id"), resultSet
+								.getInt("project_role"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return projectUser;
+	}
+	
 	public Project getProjectByName(String name) {
 		Project project = null;
 		try {
@@ -674,6 +709,36 @@ public class DatabaseManager {
 		return taskReqs;
 	}
 
+	public Task getTaskPrereq(Task task) {
+		Task req = null;
+		try {
+			connect();
+			preparedStatement = connection.prepareStatement("SELECT * FROM tasks where tasks.id = task_reqs.task_id AND tasks.id = ?");
+			preparedStatement.setInt(1, task.getId());
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				req = new Task(resultSet.getInt("id"),
+						resultSet.getInt("project_id"), resultSet
+								.getString("name"),
+								resultSet.getDate("projected_start"),
+								resultSet.getDate("sctual_start"),
+								resultSet.getDate("projected_end"),
+								resultSet.getDate("actual_end"),
+								resultSet.getString("to_do"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return req;
+	}
+	
 	/**
 	 * Method that returns all potential prerequisites for a given task. That
 	 * is, all tasks that can be made prerequisites without causing circular
@@ -1287,92 +1352,5 @@ public class DatabaseManager {
 			}
 		}
 		return user;
-	}
-
-	public void useCaseTest() {
-		User user = new User(0, "Chris", "Allard", "slaiy", 1);
-		insertUser(user, "password");
-		System.out.println("Data insert success: " + dataInsert());
-		System.out.println("Manager search and update success: "
-				+ managerSearch(user.getUsername(), "password"));
-	}
-
-	private boolean dataInsert() {
-		boolean success = true;
-		User user = new User(0, "fName", "lName", "username", 0);
-		Project project = new Project(0, "Project name", new java.sql.Date(1),
-				new java.sql.Date(2), new java.sql.Date(3));
-		Task task = new Task(0, 1, "Task name", new java.sql.Date(1),
-				new java.sql.Date(2), new java.sql.Date(3),
-				new java.sql.Date(4), "");
-		try {
-			connect();
-			if (!insertUser(user, "password2") || !insertProject(project, user)
-					|| !insertTask(task))
-				success = false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			close();
-		}
-
-		return success;
-	}
-
-	private boolean managerSearch(String username, String password) {
-		boolean success = true;
-		User user = login(username, password);
-		ArrayList<User> users = null;
-		ArrayList<Project> projects = null;
-		ArrayList<Task> tasks = null;
-		if (user.getRole() == 1) {
-			users = getUsers();
-			projects = getProjects();
-			tasks = getTasks();
-
-			users.get(0).setUsername("new username");
-			projects.get(0).setName("new project name");
-			tasks.get(0).setName("new task name");
-
-			if (!updateUser(users.get(0)) || !updateProject(projects.get(0))
-					|| !updateTask(tasks.get(0)))
-				success = false;
-		}
-		return success;
-	}
-
-	/**
-	 * @param p project
-	 * @param currentUser user
-	 * 
-	 * @return project-user relationship
-	 */
-	public ProjectUser getProjectUser(Project p, User u) {
-		ProjectUser projectUser = null;
-		try {
-			connect();
-			preparedStatement = connection
-					.prepareStatement("select * FROM project_users WHERE project_id = ? AND user_id = ?");
-			preparedStatement.setInt(1, p.getId());
-			preparedStatement.setInt(2, u.getId());
-			resultSet = preparedStatement.executeQuery();
-			if(resultSet.next()) {
-				projectUser = new ProjectUser(resultSet.getInt("id"),
-						resultSet.getInt("project_id"), resultSet
-								.getInt("user_id"), resultSet
-								.getInt("project_role"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			close();
-			try {
-				statement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return projectUser;
 	}
 }
