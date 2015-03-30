@@ -1160,6 +1160,7 @@ public class DatabaseManager {
 			if (records != 1)
 				valid = false;
 		} catch (Exception e) {
+			valid = false;
 			e.printStackTrace();
 		} finally {
 			close();

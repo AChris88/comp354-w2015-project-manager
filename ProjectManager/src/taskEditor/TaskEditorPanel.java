@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JTable;
 
+import java.awt.Color;
 import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
@@ -74,9 +75,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private ButtonClickListener clickListener;
 	private JButton btnAddRemoveUser;
 	private JTable list;
-	private JButton btnRemoveUser;
 	private UserListModel listModel;
-	private ListSelectionModel listSelectionModel;
+	private JLabel errorMessageLabel;
 
 	/**
 	 * @wbp.parser.constructor
@@ -119,6 +119,15 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_list.gridx = 1;
 		gbc_list.gridy = 1;
 		add(new JScrollPane(list), gbc_list);
+
+		errorMessageLabel = new JLabel("");
+		errorMessageLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_errorMessageLabel = new GridBagConstraints();
+		gbc_errorMessageLabel.anchor = GridBagConstraints.EAST;
+		gbc_errorMessageLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_errorMessageLabel.gridx = 3;
+		gbc_errorMessageLabel.gridy = 1;
+		add(errorMessageLabel, gbc_errorMessageLabel);
 
 		JLabel lblTakeName = new JLabel("Task Name:");
 		GridBagConstraints gbc_lblTakeName = new GridBagConstraints();
@@ -277,7 +286,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		taskModel.setTask(task);
 
 		if (manager.projectUser.getProjectRole() != 1) {
-			btnRemoveUser.setVisible(false);
 			btnChangePrerequisites.setVisible(false);
 			btnAddRemoveUser.setVisible(false);
 			btnSave.setVisible(false);
@@ -422,7 +430,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						.getInstance();
 				String[] dateComponents = new String[3];
 
-				if (expectedStartTextField.getText().equals("YYYY-MM-DD") || expectedStartTextField.getText().equals("")) {
+				if (expectedStartTextField.getText().equals("YYYY-MM-DD")
+						|| expectedStartTextField.getText().equals("")) {
 					t.setProjectedStartDate(null);
 				} else {
 					dateComponents = expectedStartTextField.getText()
@@ -433,7 +442,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setProjectedStartDate(expectedStart.getTime());
 				}
 
-				if (startTextField.getText().equals("YYYY-MM-DD") || startTextField.getText().equals("")) {
+				if (startTextField.getText().equals("YYYY-MM-DD")
+						|| startTextField.getText().equals("")) {
 					t.setStartDate(null);
 				} else {
 					dateComponents = startTextField.getText().split("-");
@@ -444,7 +454,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setStartDate(start.getTime());
 				}
 
-				if (expectedEndTextField.getText().equals("YYYY-MM-DD") || expectedEndTextField.getText().equals("")) {
+				if (expectedEndTextField.getText().equals("YYYY-MM-DD")
+						|| expectedEndTextField.getText().equals("")) {
 					t.setProjectedEndDate(null);
 				} else {
 					dateComponents = expectedEndTextField.getText().split("-");
@@ -454,7 +465,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setProjectedEndDate(expectedEnd.getTime());
 				}
 
-				if (endTextField.getText().equals("YYYY-MM-DD") || endTextField.getText().equals("")) {
+				if (endTextField.getText().equals("YYYY-MM-DD")
+						|| endTextField.getText().equals("")) {
 					t.setEndDate(null);
 				} else {
 					dateComponents = endTextField.getText().split("-");
@@ -464,42 +476,79 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setEndDate(end.getTime());
 				}
 
-				if (validDates(expectedStart, start, expectedEnd, end)) {
-					if (t.getId() == -1) {
-						manager.db.insertTask(t);
+				if (t.getName() != "") {
+					if (validDates(expectedStart, start, expectedEnd, end)) {
+						errorMessageLabel.setText("");
+						boolean success = true;
+
+						if (t.getId() == -1) {
+							success = manager.db.insertTask(t);
+						} else {
+							success = manager.db.updateTask(t);
+						}
+
+						if (success) {
+							errorMessageLabel.setText("");
+						} else {
+							errorMessageLabel
+									.setText("Task with this name already exists.");
+						}
 					} else {
-						manager.db.updateTask(t);
+						errorMessageLabel
+								.setText("Date conflict exists. Task not saved.");
 					}
 				} else {
-					// TODO add the error message
+					errorMessageLabel.setText("Need a name. Task not saved.");
 				}
-
-				t = manager.db.getTaskByName(t.getName());
 				taskModel.setTask(t);
 
 			} else if (source == btnChangePrerequisites) {
 				manager.addTab(
 						new AlterPrerequisitesPanel(manager, taskModel
-								.getTask()),
-						"Prerequisites: " + taskModel.getTaskName());
+								.getTask(), tableModel), "Prerequisites: "
+								+ taskModel.getTaskName());
 			} else if (source == btnAddRemoveUser) {
 				manager.addTab(
-						new AddUserTaskPanel(manager, taskModel.getTask(), listModel),
-						"Users: " + taskModel.getTaskName());
+						new AddUserTaskPanel(manager, taskModel.getTask(),
+								listModel), "Users: " + taskModel.getTaskName());
 			} else if (source == btnCloseTab) {
 				manager.closeTab(TaskEditorPanel.this);
 			}
 		}
 
 		/**
-		 * @param end 
-		 * @param expectedEnd 
-		 * @param start 
-		 * @param expectedStart 
+		 * @param end
+		 * @param projectedEnd
+		 * @param start
+		 * @param projectedStart
 		 * @return
 		 */
-		private boolean validDates(Calendar expectedStart, Calendar start, Calendar expectedEnd, Calendar end) {
-			return false;
+		private boolean validDates(Calendar projectedStart, Calendar start,
+				Calendar projectedEnd, Calendar end) {
+			boolean valid = true;
+			if (end != Calendar.getInstance()) {
+				valid &= projectedStart != Calendar.getInstance();
+				valid &= start != Calendar.getInstance();
+				valid &= projectedEnd != Calendar.getInstance();
+				valid &= start.getTimeInMillis() < projectedEnd
+						.getTimeInMillis();
+				valid &= start.getTimeInMillis() < end.getTimeInMillis();
+				valid &= projectedStart.getTimeInMillis() < projectedEnd
+						.getTimeInMillis();
+				valid &= projectedStart.getTimeInMillis() < end
+						.getTimeInMillis();
+			} else if (projectedEnd != Calendar.getInstance()) {
+				valid &= projectedStart != Calendar.getInstance();
+				valid &= projectedStart.getTimeInMillis() < projectedEnd
+						.getTimeInMillis();
+				if (start != Calendar.getInstance()) {
+					valid &= start.getTimeInMillis() < projectedEnd
+							.getTimeInMillis();
+				}
+			} else if (start != Calendar.getInstance()) {
+				valid &= projectedStart != Calendar.getInstance();
+			}
+			return valid;
 		}
 	}
 }

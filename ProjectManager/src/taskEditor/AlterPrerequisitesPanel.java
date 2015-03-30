@@ -38,7 +38,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 	private static final long serialVersionUID = 6195901282771479175L;
 	private JTable allTasksTable;
 	private JTable prerequisitesTable;
-	private TaskTableModel prereqTableModel;
+	private TaskTableModel prerequisitesModel;
 	private TaskTableModel allTaskTableModel;
 	private JButton btnSave;
 	private JButton btnCancel;
@@ -46,9 +46,10 @@ public class AlterPrerequisitesPanel extends JPanel {
 	private ProjectManager manager;
 	private ButtonClickListener clickListener;
 
-	public AlterPrerequisitesPanel(ProjectManager manager, Task task) {
+	public AlterPrerequisitesPanel(ProjectManager manager, Task task, TaskTableModel prerequisitesModel) {
 		this.manager = manager;
 		this.task = task;
+		this.prerequisitesModel = prerequisitesModel;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
@@ -86,10 +87,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 		gbc_table.gridy = 3;
 		add(new JScrollPane(allTasksTable), gbc_table);
 
-		prereqTableModel = new TaskTableModel();
-		prereqTableModel.populateModel(manager.db.getTaskRequirements(task));
-
-		prerequisitesTable = new JTable(prereqTableModel);
+		prerequisitesTable = new JTable(prerequisitesModel);
 		prerequisitesTable
 				.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_prerequisitesTable = new GridBagConstraints();
@@ -126,7 +124,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 
 			if (source == btnSave) {
 				// insert all task_reqs in the prerequisites table model
-				ArrayList<Task> allPrereq = prereqTableModel.getAllTasks();
+				ArrayList<Task> allPrereq = prerequisitesModel.getAllTasks();
 				for (int i = 0; i < allPrereq.size(); i++) {
 					// potentially does not insert if already exists
 					manager.db.insertTaskRequirement(new TaskRequirement(-1,
@@ -144,6 +142,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 				}
 			} else if (source == btnCancel) {
 				// close tab
+				prerequisitesModel.populateModel(manager.db.getTaskRequirements(task));
 				manager.closeTab(AlterPrerequisitesPanel.this);
 			}
 		}
@@ -160,15 +159,15 @@ public class AlterPrerequisitesPanel extends JPanel {
 					Task toMove = allTaskTableModel.removeTaskAt(row);
 
 					allTaskTableModel.fireTableRowsDeleted(row, row);
-					prereqTableModel.addTask(toMove);
-					prereqTableModel.fireTableRowsInserted(
-							prereqTableModel.getRowCount() - 2,
-							prereqTableModel.getRowCount() - 2);
+					prerequisitesModel.addTask(toMove);
+					prerequisitesModel.fireTableRowsInserted(
+							prerequisitesModel.getRowCount() - 2,
+							prerequisitesModel.getRowCount() - 2);
 				} else if (target == prerequisitesTable) {
 					int row = target.getSelectedRow();
-					Task toMove = prereqTableModel.removeTaskAt(row);
+					Task toMove = prerequisitesModel.removeTaskAt(row);
 
-					prereqTableModel.fireTableRowsDeleted(row, row);
+					prerequisitesModel.fireTableRowsDeleted(row, row);
 					allTaskTableModel.addTask(toMove);
 					allTaskTableModel.fireTableRowsInserted(
 							allTaskTableModel.getRowCount() - 2,

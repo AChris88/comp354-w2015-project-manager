@@ -103,7 +103,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		listModel = new UserListModel();
 		projectUsers = manager.db.getUsersForProject(project);
 		listModel.populateModel(projectUsers);
-		
+
 		list = new JTable(listModel);
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
@@ -276,7 +276,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		gbc_btnCreateGANTTChart.gridy = 0;
 		add(btnCreateGANTTChart, gbc_btnCreateGANTTChart);
 		btnCreateGANTTChart.setVisible(true);
-		
+
 		errorMessageLabel = new JLabel();
 		errorMessageLabel.setForeground(Color.RED);
 		GridBagConstraints gbc_errorMessageLabel = new GridBagConstraints();
@@ -367,7 +367,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 				String[] dateComponents = new String[3];
 
-				if (txtStartDate.getText().equals("YYYY-MM-DD") || txtStartDate.getText().equals("") ) {
+				if (txtStartDate.getText().equals("YYYY-MM-DD")
+						|| txtStartDate.getText().equals("")) {
 					p.setStartDate(null);
 				} else {
 					dateComponents = txtStartDate.getText().split("-");
@@ -377,7 +378,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					p.setStartDate(start.getTime());
 				}
 
-				if (txtProjectedEndDate.getText().equals("YYYY-MM-DD") || txtProjectedEndDate.getText().equals("")) {
+				if (txtProjectedEndDate.getText().equals("YYYY-MM-DD")
+						|| txtProjectedEndDate.getText().equals("")) {
 					p.setProjectedEndDate(null);
 				} else {
 					dateComponents = txtProjectedEndDate.getText().split("-");
@@ -387,7 +389,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					p.setProjectedEndDate(projectedEnd.getTime());
 				}
 
-				if (txtActualEndDate.getText().equals("YYYY-MM-DD") || txtActualEndDate.getText().equals("")) {
+				if (txtActualEndDate.getText().equals("YYYY-MM-DD")
+						|| txtActualEndDate.getText().equals("")) {
 					p.setEndDate(null);
 				} else {
 					dateComponents = txtActualEndDate.getText().split("-");
@@ -398,15 +401,27 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				}
 
 				projectModel.setProject(p);
-				if (validDates(start, projectedEnd, end)) {
-					errorMessageLabel.setText("");
-					if (p.getId() == -1) {
-						manager.db.insertProject(p, manager.currentUser);
+				if (p.getName() != "") {
+					if (validDates(start, projectedEnd, end)) {
+						errorMessageLabel.setText("");
+						boolean success = true;
+						if (p.getId() == -1) {
+							success = manager.db.insertProject(p, manager.currentUser);
+						} else {
+							success = manager.db.updateProject(p);
+						}
+						if (success){
+							errorMessageLabel.setText("");
+						} else {
+							errorMessageLabel.setText("Project with this name already exists.");
+						}
 					} else {
-						manager.db.updateProject(p);
+						errorMessageLabel
+								.setText("Date conflict exists. Project not saved.");
 					}
 				} else {
-					errorMessageLabel.setText("Date conflict exists. Project not saved.");
+					errorMessageLabel
+							.setText("Need a name. Project not saved.");
 				}
 				// add task button case
 			} else if (source == btnAddTask) {
@@ -419,7 +434,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnAddRemoveUser) {
 				manager.addTab(
 						new AddProjectUserPanel(manager, projectModel
-								.getProject(), listModel), "Add User to Project "
+								.getProject(), listModel),
+						"Add User to Project "
 								+ projectModel.getProject().getName());
 
 				// close tab case
@@ -446,15 +462,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				createGANTTChart(dataSet);
 				IntervalCategoryDataset dataset = createDataset();
 				JFreeChart chart = createGANTTChart(dataset);
-
-				JPanel ganttPanel = new JPanel();
-				ganttPanel.setLayout(new java.awt.BorderLayout());
 				ChartPanel CP = new ChartPanel(chart);
-				ganttPanel.add(btnCloseTab);
-				ganttPanel.add(CP);
-				ganttPanel.validate();
 
-				manager.addTab(ganttPanel, "GANTT Chart");
+				manager.addTab(new GanttPanel(manager, CP), "GANTT Chart");
 			}
 		}
 

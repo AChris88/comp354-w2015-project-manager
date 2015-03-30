@@ -168,6 +168,9 @@ public class ViewTaskPanel extends JPanel implements Observer {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (tableModel.getTaskAt(row) != null) {
+					System.out.println(row);
+					System.out.println(tableModel.getTaskAt(row));
+					System.out.println(manager);
 					manager.addTab(
 							new TaskEditorPanel(manager, tableModel
 									.getTaskAt(row)), "Task: "
