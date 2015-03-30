@@ -44,6 +44,8 @@ import javax.swing.JButton;
 import dashboard.DashboardPanel;
 
 import javax.swing.SwingConstants;
+import javax.swing.JCheckBox;
+import javax.swing.JPasswordField;
 
 /**
  * @author Philippe GENOIS 6527426
@@ -55,7 +57,6 @@ public class UserEditorPanel extends JPanel implements Observer {
 	private UserEditorModel userModel;
 	private JTextField txtFirstName;
 	private JTextField txtUserName;
-	private JTextField txtRole;
 	private TaskTableModel tableModel;
 	private JButton btnCloseTab;
 	private JButton btnSave;
@@ -64,7 +65,8 @@ public class UserEditorPanel extends JPanel implements Observer {
 	private JLabel lblLastName;
 	private JTextField txtLastName;
 	private JLabel lblPassword;
-	private JTextField txtPassword;
+	private JCheckBox chckbxRole;
+	private JPasswordField passwordField;
 
 	public UserEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -136,22 +138,12 @@ public class UserEditorPanel extends JPanel implements Observer {
 						add(txtUserName, gbc_txtUserName);
 						txtUserName.setColumns(10);
 		
-				JLabel lblRole = new JLabel("Role");
+				JLabel lblRole = new JLabel("Project Manager");
 				GridBagConstraints gbc_lblRole = new GridBagConstraints();
 				gbc_lblRole.insets = new Insets(0, 0, 5, 5);
 				gbc_lblRole.gridx = 2;
 				gbc_lblRole.gridy = 4;
 				add(lblRole, gbc_lblRole);
-				
-						txtRole = new JTextField();
-						txtRole.setText("1");
-						GridBagConstraints gbc_txtRole = new GridBagConstraints();
-						gbc_txtRole.insets = new Insets(0, 0, 5, 5);
-						gbc_txtRole.fill = GridBagConstraints.HORIZONTAL;
-						gbc_txtRole.gridx = 4;
-						gbc_txtRole.gridy = 4;
-						add(txtRole, gbc_txtRole);
-						txtRole.setColumns(10);
 
 		this.setBounds(100, 100, 500, 450);
 
@@ -162,24 +154,30 @@ public class UserEditorPanel extends JPanel implements Observer {
 
 		clickListener = new ButtonClickListener();
 		
+		chckbxRole = new JCheckBox("");
+		GridBagConstraints gbc_chckbxRole = new GridBagConstraints();
+		gbc_chckbxRole.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxRole.gridx = 4;
+		gbc_chckbxRole.gridy = 4;
+		add(chckbxRole, gbc_chckbxRole);
+		
 		lblPassword = new JLabel("Password");
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
 		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPassword.gridx = 2;
 		gbc_lblPassword.gridy = 5;
 		add(lblPassword, gbc_lblPassword);
-		
-		txtPassword = new JTextField();
-		txtPassword.setColumns(10);
-		GridBagConstraints gbc_txtPassword = new GridBagConstraints();
-		gbc_txtPassword.insets = new Insets(0, 0, 5, 5);
-		gbc_txtPassword.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtPassword.gridx = 4;
-		gbc_txtPassword.gridy = 5;
-		add(txtPassword, gbc_txtPassword);
 				
 				btnDeleteUser = new JButton("Delete Project");
 				btnDeleteUser.addActionListener(clickListener);
+				
+				passwordField = new JPasswordField();
+				GridBagConstraints gbc_passwordField = new GridBagConstraints();
+				gbc_passwordField.insets = new Insets(0, 0, 5, 5);
+				gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
+				gbc_passwordField.gridx = 4;
+				gbc_passwordField.gridy = 5;
+				add(passwordField, gbc_passwordField);
 				GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
 				gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
 				gbc_btnDeleteUser.gridx = 1;
@@ -272,29 +270,54 @@ public class UserEditorPanel extends JPanel implements Observer {
 				u.setLastName(txtLastName.getText());
 				u.setUsername(txtUserName.getText());
 				
-				try 
+				if(chckbxRole.isSelected())
 				{
-					u.setRole(Integer.parseInt(txtRole.getText()));
+					u.setRole(1);
 				}
-				catch(Exception ex) 
+				else 
 				{
 					u.setRole(0);
 				}
 
 				userModel.setUser(u);
+				
+				boolean valid = true;
 
 				if (u.getId() == -1) 
 				{
-					manager.db.insertUser(u, txtPassword.getText());
-				} else 
+					ArrayList<User> users = manager.db.getUsers();
+					
+					for(int i = 0; i < users.size(); ++i)
+					{
+						if(u.getUsername().equals(users.get(i).getUsername()))
+						{
+							valid = false;
+						}
+					}
+					
+					if(valid)
+					{
+						manager.db.insertUser(u, passwordField.getPassword().toString());
+						
+						JOptionPane.showMessageDialog(null, "User was added with success.");
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "This username is already used. Please choose another one.");
+					}
+				} 
+				else 
 				{
 					manager.db.updateUser(u);
+					
+					JOptionPane.showMessageDialog(null, "User was updated with success.");
 				}
 				
-				JOptionPane.showMessageDialog(null, "User was added with success.");
-				
-				manager.setActivePanel(new DashboardPanel(manager),
-						manager.currentUser.getFirstName() + "'s Dashboard");
+				if(valid)
+				{
+					manager.setActivePanel(new DashboardPanel(manager),
+							manager.currentUser.getFirstName() + "'s Dashboard");
+				}
 			} 
 			else if (source == btnCloseTab) 
 			{
