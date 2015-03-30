@@ -16,7 +16,7 @@ public class Task {
 	private Date startDate;
 	private Date projectedEndDate;
 	private Date endDate;
-	private String toDo;
+	private int value;
 
 	public Task() {
 		id = 0;
@@ -26,12 +26,12 @@ public class Task {
 		startDate = null;
 		projectedEndDate = null;
 		endDate = null;
-		toDo = null;
+		value = 0;
 	}
 
 	public Task(int id, int projectId, String name, Date projectedStartDate,
 			Date startDate, Date projectedEndDate, Date endDate,
-			String toDo) {
+			int value) {
 		super();
 		this.id = id;
 		this.projectId = projectId;
@@ -40,7 +40,7 @@ public class Task {
 		this.startDate = startDate;
 		this.projectedEndDate = projectedEndDate;
 		this.endDate = endDate;
-		this.toDo = toDo;
+		this.value = value;
 	}
 
 	public String getName() {
@@ -83,12 +83,12 @@ public class Task {
 		this.endDate = endDate;
 	}
 
-	public String getToDo() {
-		return toDo;
+	public int getValue() {
+		return value;
 	}
 
-	public void setToDo(String toDo) {
-		this.toDo = toDo;
+	public void setValue(int value) {
+		this.value = value;
 	}
 
 	public int getId() {
@@ -106,6 +106,6 @@ public class Task {
 		return "Task [id=" + id + ", projectId=" + projectId + ", name=" + name
 				+ ", projectedStartDate=" + projectedStartDate + ", startDate="
 				+ startDate + ", projectedEndDate=" + projectedEndDate
-				+ ", endDate=" + endDate + ", toDo=" + toDo + "]";
+				+ ", endDate=" + endDate + ", value=" + value + "]";
 	}
 }

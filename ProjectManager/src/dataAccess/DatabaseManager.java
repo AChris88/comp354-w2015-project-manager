@@ -101,7 +101,7 @@ public class DatabaseManager {
 								+ "actual_start DATE, "
 								+ "projected_end DATE, "
 								+ "actual_end DATE, "
-								+ "to_do TEXT,"
+								+ "value INTEGER,"
 								+ "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);");
 			}
 
@@ -253,7 +253,7 @@ public class DatabaseManager {
 			connect();
 			preparedStatement = connection
 					.prepareStatement(
-							"INSERT INTO tasks (id, project_id, name, projected_start, actual_start, projected_end, actual_end, to_do) VALUES(?,?,?,?,?,?,?,?)",
+							"INSERT INTO tasks (id, project_id, name, projected_start, actual_start, projected_end, actual_end, value) VALUES(?,?,?,?,?,?,?,?)",
 							Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, null);
 			preparedStatement.setInt(2, task.getProjectId());
@@ -270,7 +270,7 @@ public class DatabaseManager {
 			preparedStatement.setDate(7,
 					task.getEndDate() != null ? new java.sql.Date(task
 							.getEndDate().getTime()) : null);
-			preparedStatement.setString(8, new Gson().toJson(task.getToDo()));
+			preparedStatement.setInt(8, task.getValue());
 			int records = preparedStatement.executeUpdate();
 
 			if (records != 0) {
@@ -557,7 +557,7 @@ public class DatabaseManager {
 						resultSet.getDate("projected_start"), resultSet
 								.getDate("actual_start"), resultSet
 								.getDate("projected_end"), resultSet
-								.getDate("actual_end"), resultSet.getString("to_do")));
+								.getDate("actual_end"), resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -588,7 +588,7 @@ public class DatabaseManager {
 						resultSet.getDate("projected_start"), resultSet
 								.getDate("actual_start"), resultSet
 								.getDate("projected_end"), resultSet
-								.getDate("actual_end"), resultSet.getString("to_do")));
+								.getDate("actual_end"), resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -618,7 +618,7 @@ public class DatabaseManager {
 						resultSet.getDate("projected_start"), resultSet
 								.getDate("actual_start"), resultSet
 								.getDate("projected_end"), resultSet
-								.getDate("actual_end"), resultSet.getString("to_do")));
+								.getDate("actual_end"), resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -724,7 +724,7 @@ public class DatabaseManager {
 								resultSet.getDate("sctual_start"),
 								resultSet.getDate("projected_end"),
 								resultSet.getDate("actual_end"),
-								resultSet.getString("to_do"));
+								resultSet.getInt("value"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -812,7 +812,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, resultSet.getString("to_do")));
+								: null, resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -882,7 +882,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, resultSet.getString("to_do")));
+								: null, resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -921,7 +921,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, resultSet.getString("to_do"));
+								: null, resultSet.getInt("value"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1052,7 +1052,7 @@ public class DatabaseManager {
 								: null,
 						resultSet.getDate("actual_end") != null ? new java.sql.Date(
 								resultSet.getDate("actual_end").getTime())
-								: null, resultSet.getString("to_do")));
+								: null, resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1136,8 +1136,8 @@ public class DatabaseManager {
 		try {
 			String update = "UPDATE tasks SET project_id= ?" + ", name = ?"
 					+ ", projected_start = ?" + ", actual_start = ?"
-					+ ", projected_end = ?" + ", actual_end = ?" + ", to_do = "
-					+ task.getToDo() + " WHERE id= ?";
+					+ ", projected_end = ?" + ", actual_end = ?" + ", value = "
+					+ task.getValue() + " WHERE id= ?";
 			connect();
 			preparedStatement = connection.prepareStatement(update);
 			preparedStatement.setInt(1, task.getProjectId());

@@ -58,7 +58,7 @@ String dbFile="ITtestdb.db";
         ProjectUser pu = dbm.getProjectUsers().get(0);
         
         Task taskToAdd = new Task(0, p.getId(), "task", new Date(),
-				new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), 0);
         
         dbm.insertTask(taskToAdd);
         

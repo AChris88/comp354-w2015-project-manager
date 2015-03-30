@@ -89,7 +89,7 @@ public class JFreeChartTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void ErrorHandlingTest() {
-        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);
         assumeTrue(_dbm.insertTask(t1));
 
         ArrayList<obj.Task> tasks = _dbm.getTasksForProject(_project);
@@ -103,19 +103,19 @@ public class JFreeChartTest {
     public void InterpretationTest() throws InterruptedException {
 
 
-        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(17, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(17, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);
         assumeTrue(_dbm.insertTask(t1));
 
-        obj.Task t2 = new obj.Task(0, _project.getId(), "Proceed to test this", date(16, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(24, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        obj.Task t2 = new obj.Task(0, _project.getId(), "Proceed to test this", date(16, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(24, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);
         assumeTrue(_dbm.insertTask(t2));
 
-        obj.Task t3 = new obj.Task(0, _project.getId(), "Integration tests", date(23, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(31, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        obj.Task t3 = new obj.Task(0, _project.getId(), "Integration tests", date(23, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(31, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);
         assumeTrue(_dbm.insertTask(t3));
 
-        obj.Task t4 = new obj.Task(0, _project.getId(), "Unit tests", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(30, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), "Work Mofo");
+        obj.Task t4 = new obj.Task(0, _project.getId(), "Unit tests", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(30, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);
         assumeTrue(_dbm.insertTask(t4));
 
-        obj.Task t5 = new obj.Task(0, _project.getId(), "Documentation", date(30, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.APRIL, 2015), date(1, Calendar.APRIL, 2015), "Work Mofo");
+        obj.Task t5 = new obj.Task(0, _project.getId(), "Documentation", date(30, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.APRIL, 2015), date(1, Calendar.APRIL, 2015), 0);
         assumeTrue(_dbm.insertTask(t5));
 
         ArrayList<obj.Task> tasks = _dbm.getTasksForProject(_project);

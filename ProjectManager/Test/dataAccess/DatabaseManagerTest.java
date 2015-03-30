@@ -208,7 +208,7 @@ public class DatabaseManagerTest {
 		assumeNotNull(pu); // Skips the test if the get does not work
 
 		Task taskToAdd = new Task(0, pToAdd.getId(), "task", new Date(),
-				new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 
 		ArrayList<Task> tasks = _db_mg.getTasks();
@@ -232,7 +232,7 @@ public class DatabaseManagerTest {
 	public void testInsertTask() throws Exception {
 
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assertTrue(_db_mg.insertTask(taskToAdd));
 
 		ArrayList<Task> tasks = _db_mg.getTasks();
@@ -245,7 +245,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void testRemoveTask() throws Exception {
 		Task taskToDelete = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToDelete));
 
 		ArrayList<Task> tasks = _db_mg.getTasks();
@@ -280,11 +280,11 @@ public class DatabaseManagerTest {
 	@Test
 	public void removeTaskRequirement() throws Exception {
 		Task t1 = new Task(0, _test_project_delete.getId(), "task1",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(t1));
 		
 		Task t2 = new Task(0, _test_project_delete.getId(), "task2",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(t2));
 		
 		TaskRequirement taskRequirementToDelete = new TaskRequirement(0, t1.getId(), t2.getId());
@@ -305,7 +305,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void removeUserTask() throws Exception {
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 		
 		ProjectUser projectUserToAdd = new ProjectUser(0,
@@ -364,7 +364,7 @@ public class DatabaseManagerTest {
 	public void testGetTasks() throws Exception {
 
 		Task taskToDelete = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToDelete));
 
 		ArrayList<Task> tasks = _db_mg.getTasks();
@@ -415,7 +415,7 @@ public class DatabaseManagerTest {
 	public void testInsertUserTask() throws Exception {
 
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 		ProjectUser pUserToAdd = new ProjectUser(0,
 				_test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -437,9 +437,9 @@ public class DatabaseManagerTest {
 	public void testInsertTaskRequirement() throws Exception {
 
 		Task taskToAdd1 = new Task(0, _test_project_delete.getId(), "task1",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		Task taskToAdd2 = new Task(0, _test_project_delete.getId(), "task2",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 
 		assumeTrue(_db_mg.insertTask(taskToAdd1));
 		assumeTrue(_db_mg.insertTask(taskToAdd2));
@@ -484,7 +484,7 @@ public class DatabaseManagerTest {
 	public void testGetUserTasks() throws Exception {
 
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 		ProjectUser pUserToAdd = new ProjectUser(0,
 				_test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -505,9 +505,9 @@ public class DatabaseManagerTest {
 	public void testGetTaskRequirements() throws Exception {
 
 		Task taskToAdd1 = new Task(0, _test_project_delete.getId(), "task1",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		Task taskToAdd2 = new Task(0, _test_project_delete.getId(), "task2",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 
 		assumeTrue(_db_mg.insertTask(taskToAdd1));
 		assumeTrue(_db_mg.insertTask(taskToAdd2));
@@ -528,7 +528,7 @@ public class DatabaseManagerTest {
 	public void testGetTasksForProject() throws Exception {
 
 		Task taskToAdd1 = new Task(0, _test_project_delete.getId(), "task1",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 
 		ArrayList<Task> tasks = _db_mg.getTasksForProject(_test_project_delete);
 
@@ -587,7 +587,7 @@ public class DatabaseManagerTest {
 	public void testGetUsersForTask() throws Exception {
 
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 		ProjectUser pUserToAdd = new ProjectUser(0,
 				_test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -610,7 +610,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void	testGetTasksForUser() throws Exception {
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assertTrue(_db_mg.insertTask(taskToAdd));
 		
 		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -628,7 +628,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void testGetTasksForProjectUser() throws Exception {
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assertTrue(_db_mg.insertTask(taskToAdd));
 		
 		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -646,7 +646,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void testGetUserTasksForUser() throws Exception {
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assertTrue(_db_mg.insertTask(taskToAdd));
 		
 		ProjectUser projectUserToAdd = new ProjectUser(0, _test_project_delete.getId(), _test_user_delete.getId(), 0);
@@ -664,7 +664,7 @@ public class DatabaseManagerTest {
 	@Test
 	public void testGetTaskByName() throws Exception {
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "A Task Name",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assertTrue(_db_mg.insertTask(taskToAdd));
 		
 		Task task = _db_mg.getTaskByName("A Task Name");
@@ -719,7 +719,7 @@ public class DatabaseManagerTest {
 	public void testUpdateTask() throws Exception {
 
 		Task taskToAdd = new Task(0, _test_project_delete.getId(), "task",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(taskToAdd));
 
 		taskToAdd.setName("lol");
@@ -748,25 +748,25 @@ public class DatabaseManagerTest {
 	@Test
 	public void testCircularDependency() {
 		Task task1 = new Task(0, _test_project_delete.getId(), "task 1",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(task1));
 
 		task1 = _db_mg.getTaskByName("task 1");
 
 		Task task2 = new Task(0, _test_project_delete.getId(), "task 2",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(task2));
 
 		task2 = _db_mg.getTaskByName("task 2");
 
 		Task task3 = new Task(0, _test_project_delete.getId(), "task 3",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(task3));
 
 		task3 = _db_mg.getTaskByName("task 3");
 
 		Task task4 = new Task(0, _test_project_delete.getId(), "task 4",
-				new Date(), new Date(), new Date(), new Date(), null);
+				new Date(), new Date(), new Date(), new Date(), 0);
 		assumeTrue(_db_mg.insertTask(task4));
 
 		task4 = _db_mg.getTaskByName("task 4");
