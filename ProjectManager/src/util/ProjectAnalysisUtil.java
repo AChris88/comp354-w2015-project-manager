@@ -37,11 +37,22 @@ public class ProjectAnalysisUtil {
 	}
 
 	public void pertAnalysis() {
-
+		double optimisticMod = 1.25;
+		double pessimisticMod = 1.5;
+		
 	}
 
-	public void earnedValueAnalysis() {
-
+	public int earnedValueAnalysis() {
+		int earnedValue = 0;
+		Task task = null;
+		for(int i = 0; i<tasks.size(); i++){
+			task = tasks.get(i);
+			if(task.getEndDate()!= null){
+				earnedValue += task.getValue();
+			}
+		}
+		
+		return earnedValue;
 	}
 
 	private long findTaskChainDuration(Task task) {
