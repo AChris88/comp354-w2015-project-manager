@@ -212,44 +212,9 @@ public class UserEditorPanel extends JPanel implements Observer {
 	}
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
+	public void update(Observable arg0, Object arg1) 
+	{
 		txtFirstName.setText(userModel.getFirstName());
-
-		Calendar calendar = Calendar.getInstance();
-/*
-		if (projectModel.getProject().getStartDate() != null) {
-			calendar.setTime(projectModel.getProject().getStartDate());
-			txtStartDate.setText(calendar.get(Calendar.YEAR) + "-"
-					+ (calendar.get(Calendar.MONTH) + 1) + "-"
-					+ calendar.get(Calendar.DATE));
-		} else {
-			txtStartDate.setText("YYYY-MM-DD");
-		}
-
-		// set projected end field
-		if (projectModel.getProject().getProjectedEndDate() != null) {
-			calendar.setTime(projectModel.getProject().getProjectedEndDate());
-			txtProjectedEndDate.setText(calendar.get(Calendar.YEAR) + "-"
-					+ (calendar.get(Calendar.MONTH) + 1) + "-"
-					+ calendar.get(Calendar.DATE));
-		} else {
-			txtProjectedEndDate.setText("YYYY-MM-DD");
-		}
-
-		// set actual end date if not null
-		if (projectModel.getProject().getEndDate() != null) {
-			calendar.setTime(projectModel.getProject().getEndDate());
-			txtActualEndDate.setText(calendar.get(Calendar.YEAR) + "-"
-					+ (calendar.get(Calendar.MONTH) + 1) + "-"
-					+ calendar.get(Calendar.DATE));
-		} else {
-			txtActualEndDate.setText("YYYY-MM-DD");
-		}
-		
-		if ( projectModel.getProject().getId() != -1) {
-			btnAddTask.setVisible(true);
-			btnDeleteProject.setVisible(true);
-		}*/
 	}
 
 	/**
@@ -267,9 +232,9 @@ public class UserEditorPanel extends JPanel implements Observer {
 			if (source == btnSave) 
 			{
 				User u = userModel.getUser();
-				u.setFirstName(txtFirstName.getText());
-				u.setLastName(txtLastName.getText());
-				u.setUsername(txtUserName.getText());
+				u.setFirstName(txtFirstName.getText().trim());
+				u.setLastName(txtLastName.getText().trim());
+				u.setUsername(txtUserName.getText().trim());
 				
 				if(chckbxRole.isSelected())
 				{
@@ -282,7 +247,15 @@ public class UserEditorPanel extends JPanel implements Observer {
 
 				userModel.setUser(u);
 				
-				boolean valid = true;
+				int valid = 0;
+				
+				if(u.getUsername().length() == 0 || 
+					u.getFirstName().length() == 0 || 
+					u.getLastName().length() == 0 || 
+					passwordField.getPassword().length == 0)
+				{
+					valid = -2;
+				}
 
 				if (u.getId() == -1) 
 				{
@@ -292,19 +265,28 @@ public class UserEditorPanel extends JPanel implements Observer {
 					{
 						if(u.getUsername().equals(users.get(i).getUsername()))
 						{
-							valid = false;
+							valid = -1;
+						}
+						
+						if(valid != 0)
+						{
+							break;
 						}
 					}
 					
-					if(valid)
+					if(valid == 0)
 					{
-						manager.db.insertUser(u, passwordField.getPassword().toString());
+						manager.db.insertUser(u, passwordField.getPassword().toString().trim());
 						
 						JOptionPane.showMessageDialog(null, "User was added with success.");
 					}
-					else
+					else if (valid == -1)
 					{
 						JOptionPane.showMessageDialog(null, "This username is already used. Please choose another one.");
+					}
+					else if (valid == -2)
+					{
+						JOptionPane.showMessageDialog(null, "At least one field is missing.");
 					}
 				} 
 				else 
@@ -314,7 +296,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 					JOptionPane.showMessageDialog(null, "User was updated with success.");
 				}
 				
-				if(valid)
+				if(valid == 0)
 				{
 					manager.setActivePanel(new DashboardPanel(manager),
 							manager.currentUser.getFirstName() + "'s Dashboard");
