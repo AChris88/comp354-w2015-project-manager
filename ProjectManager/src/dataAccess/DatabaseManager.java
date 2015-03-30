@@ -1131,6 +1131,35 @@ public class DatabaseManager {
 		return valid;
 	}
 
+	public boolean updateProjectUser(ProjectUser projectUser) {
+		boolean valid = true;
+		try {
+			String update = "UPDATE project_users SET project_id = ?, user_id = ?, project_role = ? WHERE id = ?";
+			connect();
+
+			preparedStatement = connection.prepareStatement(update);
+			preparedStatement.setInt(1, projectUser.getProjectId());
+			preparedStatement.setInt(2, projectUser.getUserId());
+			preparedStatement.setInt(3, projectUser.getProjectRole());
+			preparedStatement.setInt(4, projectUser.getId());
+
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				valid = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
+
+
 	public boolean updateTask(Task task) {
 		boolean valid = true;
 		try {

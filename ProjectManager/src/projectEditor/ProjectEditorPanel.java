@@ -6,16 +6,17 @@ package projectEditor;
 import javax.swing.JPanel;
 
 import obj.Project;
+import obj.ProjectUser;
 import obj.Task;
 import obj.User;
 import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
+import userEditor.UserChangeProjectRole;
 import application.ProjectManager;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
-
 import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
@@ -23,6 +24,7 @@ import javax.swing.JLabel;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -33,6 +35,8 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
@@ -89,7 +93,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public ProjectEditorPanel(ProjectManager manager, Project project) {
+	public ProjectEditorPanel(final ProjectManager manager, final Project project) {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -105,6 +109,39 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		listModel.populateModel(projectUsers);
 
 		list = new JTable(listModel);
+		
+		list.addMouseListener(new MouseAdapter() 
+		{
+		    public void mouseClicked(MouseEvent evt) 
+		    {	
+		    	JTable list = (JTable)evt.getSource();
+		        
+		        if (evt.getClickCount() == 2) 
+		        {		        	
+		        	User u = listModel.getUserAt(list.getSelectedRow());
+
+		        	ProjectUser pu = manager.db.getProjectUser(project, u);
+		        	ProjectUser puCurrent = manager.db.getProjectUser(project, manager.currentUser);
+		        	
+		        	if(u.getId() == manager.currentUser.getId())
+		        	{
+						JOptionPane.showMessageDialog(null, "You cannot change your own permission.");
+		        	}
+		        	else if((pu.getProjectRole() == 1 && u.getRole() == 1) ||
+		        	   (pu.getProjectRole() == 1 && u.getRole() == 0 && (manager.currentUser.getRole() == 0 || puCurrent.getProjectRole() == 0)) ||
+		        	   (pu.getProjectRole() == 0 && u.getRole() == 0 && puCurrent.getProjectRole() == 0))
+		        	{
+						JOptionPane.showMessageDialog(null, "This User's permission cannot be changed. \nYou may not have the required permission or this user is both project manager and system-level manager.");
+		        	}
+		        	else
+		        	{
+			        	manager.addTab(
+								new UserChangeProjectRole(manager, u,
+										projectModel.getProject()), "Modify " + u.getFirstName() + " " + u.getLastName() + "'s permission");
+		        	}
+		        } 
+		    }
+		});
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.gridheight = 5;
@@ -578,20 +615,27 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	// This utility saves the JFreeChart as a JPEG First Parameter:FileName,
 	// Second Parameter: Chart To Save, Third Parameter: Height Of Picture,
 	// Fourth Parameter: Width Of Picture
-	public void saveChart(JFreeChart chart, String fileLocation) {
+	public void saveChart(JFreeChart chart, String fileLocation) 
+	{
 		String fileName = fileLocation;
 
-		try {
+		try 
+		{
 			ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 800, 600);
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
 			System.err.println("Problem occurred creating chart.");
 		}
 	}
 
-	private class DoubleClickListener implements MouseListener {
-		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
+	private class DoubleClickListener implements MouseListener 
+	{
+		public void mouseClicked(MouseEvent e) 
+		{
+			if (e.getClickCount() == 2) 
+			{
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (table.isEnabled() && tableModel.getTaskAt(row) != null)

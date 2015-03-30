@@ -169,7 +169,9 @@ public class UserEditorPanel extends JPanel implements Observer {
 		add(lblPassword, gbc_lblPassword);
 				
 				btnDeleteUser = new JButton("Delete Project");
+				btnDeleteUser.setEnabled(false);
 				btnDeleteUser.addActionListener(clickListener);
+				btnDeleteUser.setVisible(false);
 				
 				passwordField = new JPasswordField();
 				GridBagConstraints gbc_passwordField = new GridBagConstraints();
@@ -183,7 +185,6 @@ public class UserEditorPanel extends JPanel implements Observer {
 				gbc_btnDeleteUser.gridx = 1;
 				gbc_btnDeleteUser.gridy = 7;
 				add(btnDeleteUser, gbc_btnDeleteUser);
-				btnDeleteUser.setVisible(false);
 
 		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
