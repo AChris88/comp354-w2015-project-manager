@@ -40,7 +40,7 @@ public class MemberModuleTest {
     public void setup() throws AWTException, NoSuchFieldException, IllegalAccessException {
 
 //        UIRobot bot = new UIRobot();
-String dbFile="ITtestdb.db";
+        String dbFile = "ITtestdb.db";
         File testDbFile = new File(dbFile);
         if (testDbFile.exists()) {
             testDbFile.delete();
@@ -49,23 +49,23 @@ String dbFile="ITtestdb.db";
         Runnable app = (Runnable) new ProjectManager(dbFile);
 
         DatabaseManager dbm = new DatabaseManager(dbFile);
-        User u = new User(0,"test","test","test",0);
-        dbm.insertUser(u,"test");
+        User u = new User(0, "test", "test", "test", 0);
+        dbm.insertUser(u, "test");
 
-        Project p = new Project(0,"testp",new Date(),new Date(),new Date());
-        dbm.insertProject(p,u);
-        
+        Project p = new Project(0, "testp", new Date(), new Date(), new Date());
+        dbm.insertProject(p, u);
+
         ProjectUser pu = dbm.getProjectUsers().get(0);
-        
+
         Task taskToAdd = new Task(0, p.getId(), "task", new Date(),
-				new Date(), new Date(), new Date(), 0);
-        
+                new Date(), new Date(), new Date(), 0);
+
         dbm.insertTask(taskToAdd);
-        
-        UserTask ut = new UserTask(0,u.getId(), taskToAdd.getId(), pu.getId());
+
+        UserTask ut = new UserTask(0, u.getId(), taskToAdd.getId(), pu.getId());
         dbm.insertUserTask(ut);
 
-_pm = (ProjectManager)app;
+        _pm = (ProjectManager) app;
 
 
 //        Thread botThread = new Thread(bot);
@@ -91,7 +91,7 @@ _pm = (ProjectManager)app;
 //            Thread.sleep(500);
 
 //            bot.clickGanttButton();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -108,10 +108,10 @@ _pm = (ProjectManager)app;
 
         Class temp = AuthenticationPanel.class;
 
-        getTF(temp,"usernameField").setText("test");
-        getPF(temp,"passwordField").setText("test");
+        getTF(temp, "usernameField").setText("test");
+        getPF(temp, "passwordField").setText("test");
 
-        getButton(AuthenticationPanel.class,"loginButton").doClick();
+        getButton(AuthenticationPanel.class, "loginButton").doClick();
 
         temp = DashboardPanel.class;
 
@@ -128,19 +128,18 @@ _pm = (ProjectManager)app;
     public void LimitedProjectEditor() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         Class temp = AuthenticationPanel.class;
 
-        getTF(temp,"usernameField").setText("test");
-        getPF(temp,"passwordField").setText("test");
+        getTF(temp, "usernameField").setText("test");
+        getPF(temp, "passwordField").setText("test");
 
-        getButton(AuthenticationPanel.class,"loginButton").doClick();
+        getButton(AuthenticationPanel.class, "loginButton").doClick();
 
         temp = DashboardPanel.class;
 
-        JTable jt = getTable(temp,"table");
+        JTable jt = getTable(temp, "table");
 
-        jt.setRowSelectionInterval(0,0);
+        jt.setRowSelectionInterval(0, 0);
 
-        ((DashboardPanel)_pm.getActivePanel()).openCurrentSelectedProject();
-
+        ((DashboardPanel) _pm.getActivePanel()).openCurrentSelectedProject();
 
 
 //        JButton btnAddU = getButton(ProjectEditorPanel.class,"btnAddUser");
@@ -160,55 +159,51 @@ _pm = (ProjectManager)app;
         assertFalse(getTable(ProjectEditorPanel.class, "table").isVisible());
 
 
-
-
     }
-    
+
     @Test
     public void LimitedTaskViewer() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         Class temp = AuthenticationPanel.class;
 
-        getTF(temp,"usernameField").setText("test");
-        getPF(temp,"passwordField").setText("test");
+        getTF(temp, "usernameField").setText("test");
+        getPF(temp, "passwordField").setText("test");
 
-        getButton(AuthenticationPanel.class,"loginButton").doClick();
+        getButton(AuthenticationPanel.class, "loginButton").doClick();
 
         temp = DashboardPanel.class;
 
-        JTable jt = getTable(temp,"table");
+        JTable jt = getTable(temp, "table");
 
-        jt.setRowSelectionInterval(0,0);
+        jt.setRowSelectionInterval(0, 0);
 
-        ((DashboardPanel)_pm.getActivePanel()).openCurrentSelectedProject();
-
+        ((DashboardPanel) _pm.getActivePanel()).openCurrentSelectedProject();
 
 
 //        JButton btnAddU = getButton(ProjectEditorPanel.class,"btnAddUser");
 
-        
 
         getButton(ProjectEditorPanel.class, "btnViewTask").doClick();
-        
-        
-//        Thread.sleep(15000);
-        
-        JTable jt2 = getTable2(ViewTaskPanel.class,"table",1);
 
-        jt2.setRowSelectionInterval(0,0);
-        
-        assertEquals(0,jt2.getSelectedRow());
+
+//        Thread.sleep(15000);
+
+        JTable jt2 = getTable2(ViewTaskPanel.class, "table", 1);
+
+        jt2.setRowSelectionInterval(0, 0);
+
+        assertEquals(0, jt2.getSelectedRow());
 
 
     }
-    
+
     private JTable getTable2(Class c, String t, int i) throws NoSuchFieldException, IllegalAccessException {
 
         Field f = c.getDeclaredField(t);
         f.setAccessible(true);
         JTable test;
-        if (_pm.getActivePanel() instanceof JTabbedPane){
-            test = (JTable) f.get(((JTabbedPane)_pm.getActivePanel()).getComponent(i));
-        }else{
+        if (_pm.getActivePanel() instanceof JTabbedPane) {
+            test = (JTable) f.get(((JTabbedPane) _pm.getActivePanel()).getComponent(i));
+        } else {
             test = (JTable) f.get(_pm.getActivePanel());
 
         }
@@ -221,23 +216,24 @@ _pm = (ProjectManager)app;
         Field f = c.getDeclaredField(button);
         f.setAccessible(true);
         JButton test;
-        if (_pm.getActivePanel() instanceof JTabbedPane){
-            test = (JButton) f.get(((JTabbedPane)_pm.getActivePanel()).getComponent(0));
-        }else{
+        if (_pm.getActivePanel() instanceof JTabbedPane) {
+            test = (JButton) f.get(((JTabbedPane) _pm.getActivePanel()).getComponent(0));
+        } else {
             test = (JButton) f.get(_pm.getActivePanel());
 
         }
         return test;
 
     }
+
     private JTextField getTF(Class c, String tf) throws NoSuchFieldException, IllegalAccessException {
 
         Field f = c.getDeclaredField(tf);
         f.setAccessible(true);
         JTextField test;
-        if (_pm.getActivePanel() instanceof JTabbedPane){
-            test = (JTextField) f.get(((JTabbedPane)_pm.getActivePanel()).getComponent(0));
-        }else{
+        if (_pm.getActivePanel() instanceof JTabbedPane) {
+            test = (JTextField) f.get(((JTabbedPane) _pm.getActivePanel()).getComponent(0));
+        } else {
             test = (JTextField) f.get(_pm.getActivePanel());
 
         }
@@ -259,9 +255,9 @@ _pm = (ProjectManager)app;
         Field f = c.getDeclaredField(t);
         f.setAccessible(true);
         JTable test;
-        if (_pm.getActivePanel() instanceof JTabbedPane){
-            test = (JTable) f.get(((JTabbedPane)_pm.getActivePanel()).getComponent(0));
-        }else{
+        if (_pm.getActivePanel() instanceof JTabbedPane) {
+            test = (JTable) f.get(((JTabbedPane) _pm.getActivePanel()).getComponent(0));
+        } else {
             test = (JTable) f.get(_pm.getActivePanel());
 
         }
@@ -277,7 +273,6 @@ _pm = (ProjectManager)app;
         return test;
 
     }
-
 
 
 }
