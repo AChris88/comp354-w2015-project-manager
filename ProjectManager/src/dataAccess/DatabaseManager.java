@@ -709,22 +709,37 @@ public class DatabaseManager {
 		return taskReqs;
 	}
 
-	public Task getTaskPrereq(Task task) {
+	/**
+	 * Method used to get all of the tasks of a project that are not prerequisites to any other tasks
+	 * @param p project in question
+	 * @return project's tasks that are not prerequisites to anything
+	 */
+	public ArrayList<Task> getBottomLevelTasks(Project p) {
 		Task req = null;
 		try {
 			connect();
-			preparedStatement = connection.prepareStatement("SELECT * FROM tasks where tasks.id = task_reqs.task_id AND tasks.id = ?");
-			preparedStatement.setInt(1, task.getId());
+			preparedStatement = connection.prepareStatement("select * from tasks where project_id = ? AND id not in (select task_req from task_reqs)");
+			preparedStatement.setInt(1, p.getId());
 			resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				req = new Task(resultSet.getInt("id"),
-						resultSet.getInt("project_id"), resultSet
-								.getString("name"),
-								resultSet.getDate("projected_start"),
-								resultSet.getDate("sctual_start"),
-								resultSet.getDate("projected_end"),
-								resultSet.getDate("actual_end"),
-								resultSet.getInt("value"));
+			
+			ArrayList<Task> tasks = new ArrayList<Task>();
+			while (resultSet.next()) {
+				tasks.add(new Task(
+						resultSet.getInt("id"),
+						resultSet.getInt("project_id"),
+						resultSet.getString("name"),
+						resultSet.getDate("projected_start") != null ? new java.sql.Date(
+								resultSet.getDate("projected_start").getTime())
+								: null,
+						resultSet.getDate("actual_start") != null ? new java.sql.Date(
+								resultSet.getDate("actual_start").getTime())
+								: null,
+						resultSet.getDate("projected_end") != null ? new java.sql.Date(
+								resultSet.getDate("projected_end").getTime())
+								: null,
+						resultSet.getDate("actual_end") != null ? new java.sql.Date(
+								resultSet.getDate("actual_end").getTime())
+								: null, resultSet.getInt("value")));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -736,7 +751,7 @@ public class DatabaseManager {
 				e.printStackTrace();
 			}
 		}
-		return req;
+		return tasks;
 	}
 	
 	/**
