@@ -5,6 +5,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ * 
+ * @author Christian Allard 7026188
+ *
+ *	Utility used for generating password salt and hashes when
+ *  creating user accounts and when users log into the system.
+ */
+
 public class PasswordUtil {
 	private String password;
 	private String salt;

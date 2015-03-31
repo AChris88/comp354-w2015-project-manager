@@ -6,6 +6,14 @@ import dataAccess.DatabaseManager;
 import obj.Project;
 import obj.Task;
 
+/**
+ * 
+ * @author Christian Allard
+ *
+ *	Utility used to perform project analysis such as critical path analysis,
+ *	PERT analysis, and earned value analysis.
+ */
+
 public class ProjectAnalysisUtil {
 
 	DatabaseManager dm;

@@ -14,22 +14,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+
 import obj.Task;
 import application.ProjectManager;
 import customComponents.TaskTableModel;
 import customComponents.UserListModel;
 
 import javax.swing.JButton;
+import javax.swing.text.MaskFormatter;
 
 import userEditor.AddUserTaskPanel;
 
@@ -64,6 +68,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JTable list;
 	private UserListModel listModel;
 	private JLabel errorMessageLabel;
+	private JLabel lblTaskValue;
+	private JTextField valueTextField;
 
 	/**
 	 * @wbp.parser.constructor
@@ -76,10 +82,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0,
 				1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
@@ -99,7 +105,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		list = new JTable(listModel);
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.gridheight = 6;
+		gbc_list.gridheight = 7;
 		gbc_list.gridwidth = 2;
 		gbc_list.insets = new Insets(0, 0, 5, 5);
 		gbc_list.fill = GridBagConstraints.BOTH;
@@ -125,20 +131,45 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		add(lblTakeName, gbc_lblTakeName);
 
 		nameTextField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 5;
-		gbc_textField.gridy = 1;
-		add(nameTextField, gbc_textField);
+		GridBagConstraints gbc_nameTextField = new GridBagConstraints();
+		gbc_nameTextField.insets = new Insets(0, 0, 5, 0);
+		gbc_nameTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_nameTextField.gridx = 5;
+		gbc_nameTextField.gridy = 1;
+		add(nameTextField, gbc_nameTextField);
 		nameTextField.setColumns(10);
+		
+		lblTaskValue = new JLabel("Task Value:");
+		GridBagConstraints gbc_lblTaskValue = new GridBagConstraints();
+		gbc_lblTaskValue.anchor = GridBagConstraints.EAST;
+		gbc_lblTaskValue.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTaskValue.gridx = 4;
+		gbc_lblTaskValue.gridy = 2;
+		add(lblTaskValue, gbc_lblTaskValue);
+		
+//	    MaskFormatter format = null;
+//		try {
+//			format = new MaskFormatter("###");
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		valueTextField = new JTextField();
+		GridBagConstraints gbc_valueTextField = new GridBagConstraints();
+		gbc_valueTextField.insets = new Insets(0, 0, 5, 0);
+		gbc_valueTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_valueTextField.gridx = 5;
+		gbc_valueTextField.gridy = 2;
+		add(valueTextField, gbc_valueTextField);
+		valueTextField.setColumns(10);
 
 		lblExpectedStart = new JLabel("Expected Start:");
 		GridBagConstraints gbc_lblExpectedStart = new GridBagConstraints();
 		gbc_lblExpectedStart.anchor = GridBagConstraints.EAST;
 		gbc_lblExpectedStart.insets = new Insets(0, 0, 5, 5);
 		gbc_lblExpectedStart.gridx = 4;
-		gbc_lblExpectedStart.gridy = 2;
+		gbc_lblExpectedStart.gridy = 3;
 		add(lblExpectedStart, gbc_lblExpectedStart);
 
 		expectedStartTextField = new JTextField();
@@ -146,7 +177,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_expectedStartTextField.insets = new Insets(0, 0, 5, 0);
 		gbc_expectedStartTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_expectedStartTextField.gridx = 5;
-		gbc_expectedStartTextField.gridy = 2;
+		gbc_expectedStartTextField.gridy = 3;
 		add(expectedStartTextField, gbc_expectedStartTextField);
 		expectedStartTextField.setColumns(10);
 
@@ -155,7 +186,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_lblActualStart.anchor = GridBagConstraints.EAST;
 		gbc_lblActualStart.insets = new Insets(0, 0, 5, 5);
 		gbc_lblActualStart.gridx = 4;
-		gbc_lblActualStart.gridy = 3;
+		gbc_lblActualStart.gridy = 4;
 		add(lblActualStart, gbc_lblActualStart);
 
 		startTextField = new JTextField();
@@ -163,7 +194,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_startTextField.insets = new Insets(0, 0, 5, 0);
 		gbc_startTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_startTextField.gridx = 5;
-		gbc_startTextField.gridy = 3;
+		gbc_startTextField.gridy = 4;
 		add(startTextField, gbc_startTextField);
 		startTextField.setColumns(10);
 
@@ -172,7 +203,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_lblExpectedEnd.anchor = GridBagConstraints.EAST;
 		gbc_lblExpectedEnd.insets = new Insets(0, 0, 5, 5);
 		gbc_lblExpectedEnd.gridx = 4;
-		gbc_lblExpectedEnd.gridy = 4;
+		gbc_lblExpectedEnd.gridy = 5;
 		add(lblExpectedEnd, gbc_lblExpectedEnd);
 
 		expectedEndTextField = new JTextField();
@@ -180,7 +211,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_expectedEndTextField.insets = new Insets(0, 0, 5, 0);
 		gbc_expectedEndTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_expectedEndTextField.gridx = 5;
-		gbc_expectedEndTextField.gridy = 4;
+		gbc_expectedEndTextField.gridy = 5;
 		add(expectedEndTextField, gbc_expectedEndTextField);
 		expectedEndTextField.setColumns(10);
 
@@ -189,7 +220,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_lblActualEnd.anchor = GridBagConstraints.EAST;
 		gbc_lblActualEnd.insets = new Insets(0, 0, 5, 5);
 		gbc_lblActualEnd.gridx = 4;
-		gbc_lblActualEnd.gridy = 5;
+		gbc_lblActualEnd.gridy = 6;
 		add(lblActualEnd, gbc_lblActualEnd);
 
 		endTextField = new JTextField();
@@ -197,7 +228,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_endTextField.insets = new Insets(0, 0, 5, 0);
 		gbc_endTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_endTextField.gridx = 5;
-		gbc_endTextField.gridy = 5;
+		gbc_endTextField.gridy = 6;
 		add(endTextField, gbc_endTextField);
 		endTextField.setColumns(10);
 
@@ -205,7 +236,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
 		gbc_btnSave.insets = new Insets(0, 0, 5, 5);
 		gbc_btnSave.gridx = 4;
-		gbc_btnSave.gridy = 6;
+		gbc_btnSave.gridy = 7;
 
 		clickListener = new ButtonClickListener();
 
@@ -219,7 +250,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
 		gbc_btnReset.insets = new Insets(0, 0, 5, 0);
 		gbc_btnReset.gridx = 5;
-		gbc_btnReset.gridy = 6;
+		gbc_btnReset.gridy = 7;
 		// TODO add button action listener to reset fields
 		add(btnReset, gbc_btnReset);
 
@@ -227,7 +258,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_lblPrerequisites = new GridBagConstraints();
 		gbc_lblPrerequisites.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPrerequisites.gridx = 3;
-		gbc_lblPrerequisites.gridy = 7;
+		gbc_lblPrerequisites.gridy = 8;
 		add(lblPrerequisites, gbc_lblPrerequisites);
 
 		tableModel = new TaskTableModel();
@@ -240,7 +271,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_table.gridwidth = 6;
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 0;
-		gbc_table.gridy = 8;
+		gbc_table.gridy = 9;
 		add(new JScrollPane(table), gbc_table);
 
 		taskModel = new TaskEditorModel();
@@ -252,7 +283,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_btnChangePrerequisites = new GridBagConstraints();
 		gbc_btnChangePrerequisites.insets = new Insets(0, 0, 5, 5);
 		gbc_btnChangePrerequisites.gridx = 3;
-		gbc_btnChangePrerequisites.gridy = 9;
+		gbc_btnChangePrerequisites.gridy = 10;
 		add(btnChangePrerequisites, gbc_btnChangePrerequisites);
 		btnChangePrerequisites.setVisible(false);
 
@@ -262,13 +293,13 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		GridBagConstraints gbc_btnAddUser = new GridBagConstraints();
 		gbc_btnAddUser.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAddUser.gridx = 4;
-		gbc_btnAddUser.gridy = 9;
+		gbc_btnAddUser.gridy = 10;
 		add(btnAddRemoveUser, gbc_btnAddUser);
 
 		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
 		gbc_btnCloseTab.insets = new Insets(0, 0, 5, 0);
 		gbc_btnCloseTab.gridx = 5;
-		gbc_btnCloseTab.gridy = 9;
+		gbc_btnCloseTab.gridy = 10;
 		add(btnCloseTab, gbc_btnCloseTab);
 
 		taskModel.setTask(task);
@@ -311,6 +342,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			btnSave.setVisible(false);
 			btnReset.setVisible(false);
 			nameTextField.setEditable(false);
+			valueTextField.setEditable(false);
 			endTextField.setEditable(false);
 			startTextField.setEditable(false);
 			expectedEndTextField.setEditable(false);
@@ -323,6 +355,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			btnSave.setVisible(true);
 			btnReset.setVisible(true);
 			nameTextField.setEditable(true);
+			valueTextField.setEditable(true);
 			endTextField.setEditable(true);
 			startTextField.setEditable(true);
 			expectedEndTextField.setEditable(true);
@@ -335,7 +368,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		nameTextField.setText(taskModel.getTaskName());
-
+		valueTextField.setText("" + taskModel.getTaskValue());
+		
 		Calendar calendar = Calendar.getInstance();
 
 		if (taskModel.getTaskProjectedStartDate() != null) {
@@ -431,7 +465,13 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			if (source == btnSave) {
 				Task t = taskModel.getTask();
 				t.setName(nameTextField.getText());
-
+				
+				if(valueTextField.getText().equals(""))
+					t.setValue(0);
+				else {
+					t.setValue(Integer.parseInt(valueTextField.getText().trim()));
+				}
+				
 				Calendar expectedStart = null, start = null, expectedEnd = null, end = null;
 				String[] dateComponents = new String[3];
 
@@ -484,7 +524,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setEndDate(end.getTime());
 				}
 
-				if (t.getName() != "") {
+				if (t.getName() != "" || t.getValue() == 0) {
 					if (validDates(expectedStart, start, expectedEnd, end)) {
 						errorMessageLabel.setText("");
 						boolean success = true;
@@ -507,7 +547,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 								.setText("Date conflict exists. Task not saved.");
 					}
 				} else {
-					errorMessageLabel.setText("Need a name. Task not saved.");
+					errorMessageLabel.setText("Task needs a name and value. Task not saved.");
 				}
 				taskModel.setTask(t);
 

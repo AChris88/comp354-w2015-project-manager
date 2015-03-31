@@ -51,6 +51,13 @@ public class TaskEditorModel extends Observable{
 	}
 
 	/**
+	 * @return
+	 */
+	public int getTaskValue() {
+		return t.getValue();
+	}
+	
+	/**
 	 * @return the model's Task
 	 */
 	public Task getTask() {
