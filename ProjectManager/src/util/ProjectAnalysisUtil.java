@@ -35,10 +35,48 @@ public class ProjectAnalysisUtil {
 		return duration;
 	}
 
-	public void pertAnalysis() {
-		double optimisticMod = 1.25;
+	public ArrayList<String[]> pertAnalysis() {
+		ArrayList<String[]> pert = new ArrayList<String[]>();
+
+		double likelyMod = 1.25;
 		double pessimisticMod = 1.5;
 
+		long shortest = 0;
+		double likely = 0.0;
+		double worst = 0.0;
+		double expected = 0.0;
+		double deviation = 0.0;
+
+		String taskTitle = "";
+		String taskReqTitles = "";
+		ArrayList<Task> prereqs = new ArrayList<Task>();
+
+		for (Task task : tasks) {
+			taskTitle = task.getName();
+			prereqs = dm.getTaskRequirements(task);
+
+			if (prereqs.size() > 0) {
+				for (Task req : prereqs) {
+					taskReqTitles = taskReqTitles + req.getName() + ", ";
+				}
+				// remove last comma
+				taskReqTitles = taskReqTitles.substring(0,
+						taskReqTitles.length() - 2);
+			}
+
+			shortest = task.getProjectedEndDate().getTime()
+					- task.getProjectedStartDate().getTime();
+			likely = shortest * likelyMod;
+			worst = shortest * pessimisticMod;
+			expected = (shortest + (4 * likely) + worst) / 6;
+			deviation = (worst - likely) / 6;
+
+			String[] record = { taskTitle, taskReqTitles, "" + shortest,
+					"" + likely, "" + worst, "" + expected, "" + deviation };
+
+			pert.add(record);
+		}
+		return pert;
 	}
 
 	public int earnedValueAnalysis() {

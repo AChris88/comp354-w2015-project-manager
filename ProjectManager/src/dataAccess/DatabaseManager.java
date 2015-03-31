@@ -716,13 +716,14 @@ public class DatabaseManager {
 	 */
 	public ArrayList<Task> getBottomLevelTasks(Project p) {
 		Task req = null;
+		ArrayList<Task> tasks = null;
 		try {
 			connect();
 			preparedStatement = connection.prepareStatement("select * from tasks where project_id = ? AND id not in (select task_req from task_reqs)");
 			preparedStatement.setInt(1, p.getId());
 			resultSet = preparedStatement.executeQuery();
 			
-			ArrayList<Task> tasks = new ArrayList<Task>();
+			tasks = new ArrayList<Task>();
 			while (resultSet.next()) {
 				tasks.add(new Task(
 						resultSet.getInt("id"),
