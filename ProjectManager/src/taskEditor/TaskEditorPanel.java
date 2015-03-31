@@ -82,11 +82,12 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0,
 				1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		tabbedPane = new JTabbedPane();
@@ -138,7 +139,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_nameTextField.gridy = 1;
 		add(nameTextField, gbc_nameTextField);
 		nameTextField.setColumns(10);
-		
+
 		lblTaskValue = new JLabel("Task Value:");
 		GridBagConstraints gbc_lblTaskValue = new GridBagConstraints();
 		gbc_lblTaskValue.anchor = GridBagConstraints.EAST;
@@ -146,15 +147,15 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_lblTaskValue.gridx = 4;
 		gbc_lblTaskValue.gridy = 2;
 		add(lblTaskValue, gbc_lblTaskValue);
-		
-//	    MaskFormatter format = null;
-//		try {
-//			format = new MaskFormatter("###");
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+
+		// MaskFormatter format = null;
+		// try {
+		// format = new MaskFormatter("###");
+		// } catch (ParseException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
 		valueTextField = new JTextField();
 		GridBagConstraints gbc_valueTextField = new GridBagConstraints();
 		gbc_valueTextField.insets = new Insets(0, 0, 5, 0);
@@ -369,7 +370,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		nameTextField.setText(taskModel.getTaskName());
 		valueTextField.setText("" + taskModel.getTaskValue());
-		
+
 		Calendar calendar = Calendar.getInstance();
 
 		if (taskModel.getTaskProjectedStartDate() != null) {
@@ -411,7 +412,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		if (taskModel.getTask().getId() != -1) {
 			btnChangePrerequisites.setVisible(true);
 		}
-
 	}
 
 	private class DoubleClickListener implements MouseListener {
@@ -466,12 +466,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				Task t = taskModel.getTask();
 				t.setName(nameTextField.getText());
 				
-				if(valueTextField.getText().equals(""))
-					t.setValue(0);
-				else {
-					t.setValue(Integer.parseInt(valueTextField.getText().trim()));
-				}
-				
 				Calendar expectedStart = null, start = null, expectedEnd = null, end = null;
 				String[] dateComponents = new String[3];
 
@@ -524,7 +518,20 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setEndDate(end.getTime());
 				}
 
-				if (t.getName() != "" || t.getValue() == 0) {
+				if(!valueTextField.getText().trim().equals("")){
+					int val = 0;
+					try{
+						val = Integer.parseInt(valueTextField.getText().trim());
+						if(val < 1)
+							throw new NumberFormatException();
+						else
+							t.setValue(val);
+					} catch(NumberFormatException ex) {
+						
+					}
+				}
+				
+				if (!t.getName().equals("") && t.getValue() > 0) {
 					if (validDates(expectedStart, start, expectedEnd, end)) {
 						errorMessageLabel.setText("");
 						boolean success = true;

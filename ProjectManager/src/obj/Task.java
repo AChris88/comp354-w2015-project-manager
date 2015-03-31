@@ -26,7 +26,7 @@ public class Task {
 		startDate = null;
 		projectedEndDate = null;
 		endDate = null;
-		value = 0;
+		value = 1;
 	}
 
 	public Task(int id, int projectId, String name, Date projectedStartDate,

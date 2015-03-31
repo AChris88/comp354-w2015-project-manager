@@ -460,7 +460,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				// add task button case
 			} else if (source == btnAddTask) {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
-						null, null, null, null, 0);
+						null, null, null, null, 1);
 				// add tab for new task
 				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
 
