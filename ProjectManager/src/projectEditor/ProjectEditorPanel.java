@@ -93,7 +93,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public ProjectEditorPanel(final ProjectManager manager, final Project project) {
+	public ProjectEditorPanel(final ProjectManager manager,
+			final Project project) {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -109,38 +110,40 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		listModel.populateModel(projectUsers);
 
 		list = new JTable(listModel);
-		
-		list.addMouseListener(new MouseAdapter() 
-		{
-		    public void mouseClicked(MouseEvent evt) 
-		    {	
-		    	JTable list = (JTable)evt.getSource();
-		        
-		        if (evt.getClickCount() == 2) 
-		        {		        	
-		        	User u = listModel.getUserAt(list.getSelectedRow());
 
-		        	ProjectUser pu = manager.db.getProjectUser(project, u);
-		        	ProjectUser puCurrent = manager.db.getProjectUser(project, manager.currentUser);
-		        	
-		        	if(u.getId() == manager.currentUser.getId())
-		        	{
-						JOptionPane.showMessageDialog(null, "You cannot change your own permission.");
-		        	}
-		        	else if((pu.getProjectRole() == 1 && u.getRole() == 1) ||
-		        	   (pu.getProjectRole() == 1 && u.getRole() == 0 && (manager.currentUser.getRole() == 0 || puCurrent.getProjectRole() == 0)) ||
-		        	   (pu.getProjectRole() == 0 && u.getRole() == 0 && puCurrent.getProjectRole() == 0))
-		        	{
-						JOptionPane.showMessageDialog(null, "This User's permission cannot be changed. \nYou may not have the required permission or this user is both project manager and system-level manager.");
-		        	}
-		        	else
-		        	{
-			        	manager.addTab(
+		list.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				JTable list = (JTable) evt.getSource();
+
+				if (evt.getClickCount() == 2) {
+					User u = listModel.getUserAt(list.getSelectedRow());
+
+					ProjectUser pu = manager.db.getProjectUser(project, u);
+					ProjectUser puCurrent = manager.db.getProjectUser(project,
+							manager.currentUser);
+
+					if (u.getId() == manager.currentUser.getId()) {
+						JOptionPane.showMessageDialog(null,
+								"You cannot change your own permission.");
+					} else if ((pu.getProjectRole() == 1 && u.getRole() == 1)
+							|| (pu.getProjectRole() == 1 && u.getRole() == 0 && (manager.currentUser
+									.getRole() == 0 || puCurrent
+									.getProjectRole() == 0))
+							|| (pu.getProjectRole() == 0 && u.getRole() == 0 && puCurrent
+									.getProjectRole() == 0)) {
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"This User's permission cannot be changed. \nYou may not have the required permission or this user is both project manager and system-level manager.");
+					} else {
+						manager.addTab(
 								new UserChangeProjectRole(manager, u,
-										projectModel.getProject()), "Modify " + u.getFirstName() + " " + u.getLastName() + "'s permission");
-		        	}
-		        } 
-		    }
+										projectModel.getProject()),
+								"Modify " + u.getFirstName() + " "
+										+ u.getLastName() + "'s permission");
+					}
+				}
+			}
 		});
 
 		GridBagConstraints gbc_list = new GridBagConstraints();
@@ -324,21 +327,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		add(errorMessageLabel, gbc_errorMessageLabel);
 
 		projectModel.setProject(project);
-
-		if (project.getId() != -1 && manager.projectUser.getProjectRole() != 1) {
-			btnAddTask.setVisible(false);
-			btnAddRemoveUser.setVisible(false);
-			btnCreateGANTTChart.setVisible(false);
-			btnDeleteProject.setVisible(false);
-			btnSave.setVisible(false);
-			table.setEnabled(false);
-			txtActualEndDate.setEditable(false);
-			txtProjectedEndDate.setEditable(false);
-			txtProjectName.setEditable(false);
-			txtStartDate.setEditable(false);
-			btnCreateGANTTChart.setVisible(false);
-			list.setEnabled(false);
-		}
+		
+		reinitializePanel();
 	}
 
 	@Override
@@ -398,9 +388,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			if (source == btnSave) {
 				Project p = projectModel.getProject();
 				p.setName(txtProjectName.getText());
-
-				Calendar start = Calendar.getInstance(), projectedEnd = Calendar
-						.getInstance(), end = Calendar.getInstance();
+				Calendar start = null, projectedEnd = null, end = null;
 
 				String[] dateComponents = new String[3];
 
@@ -409,6 +397,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					p.setStartDate(null);
 				} else {
 					dateComponents = txtStartDate.getText().split("-");
+					start = Calendar.getInstance();
 					start.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -420,6 +409,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					p.setProjectedEndDate(null);
 				} else {
 					dateComponents = txtProjectedEndDate.getText().split("-");
+					projectedEnd = Calendar.getInstance();
 					projectedEnd.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -431,6 +421,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 					p.setEndDate(null);
 				} else {
 					dateComponents = txtActualEndDate.getText().split("-");
+					end = Calendar.getInstance();
 					end.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -438,19 +429,25 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				}
 
 				projectModel.setProject(p);
-				if (p.getName() != "") {
+
+				if (! p.getName().equals("")) {
 					if (validDates(start, projectedEnd, end)) {
 						errorMessageLabel.setText("");
 						boolean success = true;
 						if (p.getId() == -1) {
-							success = manager.db.insertProject(p, manager.currentUser);
+							success = manager.db.insertProject(p,
+									manager.currentUser);
+							manager.currentProject = p;
+							manager.projectUser = manager.db.getProjectUser(p, manager.currentUser);
+							reinitializePanel();
 						} else {
 							success = manager.db.updateProject(p);
 						}
-						if (success){
+						if (success) {
 							errorMessageLabel.setText("");
 						} else {
-							errorMessageLabel.setText("Project with this name already exists.");
+							errorMessageLabel
+									.setText("Project with this name already exists.");
 						}
 					} else {
 						errorMessageLabel
@@ -515,23 +512,16 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				Calendar end) {
 			boolean valid = true;
 
-			// start date is set
-			if (start != Calendar.getInstance()) {
-				// projectedEnd date is set
-				if (projectedEnd != Calendar.getInstance()) {
-					// start date must be before projectedEnd
-					valid &= (start.getTimeInMillis() < projectedEnd
-							.getTimeInMillis());
-				}
-				// end date is set
-				if (end != Calendar.getInstance()) {
-					// projectedEnd must be set and start must be before end
-					valid &= (projectedEnd != Calendar.getInstance() && start
-							.getTimeInMillis() < end.getTimeInMillis());
-				}
-			} else {
-				// no other dates should be set
-				valid &= (projectedEnd == Calendar.getInstance() && projectedEnd == end);
+			if (end != null) {
+				valid &= projectedEnd != null;
+				valid &= start != null;
+				valid &= start.getTimeInMillis() < end.getTimeInMillis();
+				valid &= start.getTimeInMillis() < projectedEnd
+						.getTimeInMillis();
+			} else if (projectedEnd != null) {
+				valid &= start != null;
+				valid &= start.getTimeInMillis() < projectedEnd
+						.getTimeInMillis();
 			}
 
 			return valid;
@@ -596,6 +586,45 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		return collection;
 	}
 
+	/**
+	 * Method to show or hide UI components based upon access level and whether or not the project is saved
+	 */
+	public void reinitializePanel() {
+		if (manager.currentProject.getId() == -1) {
+			btnViewTask.setVisible(false);
+			btnAddTask.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
+			btnCreateGANTTChart.setVisible(false);
+			btnDeleteProject.setVisible(false);
+			table.setEnabled(false);
+			list.setEnabled(false);
+		} else if (manager.projectUser.getProjectRole() != 1) {
+			btnAddTask.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
+			btnCreateGANTTChart.setVisible(false);
+			btnDeleteProject.setVisible(false);
+			btnSave.setVisible(false);
+			table.setEnabled(false);
+			txtActualEndDate.setEditable(false);
+			txtProjectedEndDate.setEditable(false);
+			txtProjectName.setEditable(false);
+			txtStartDate.setEditable(false);
+			list.setEnabled(false);
+		} else {
+			btnAddTask.setVisible(true);
+			btnAddRemoveUser.setVisible(true);
+			btnCreateGANTTChart.setVisible(true);
+			btnDeleteProject.setVisible(true);
+			btnSave.setVisible(true);
+			table.setEnabled(true);
+			txtActualEndDate.setEditable(true);
+			txtProjectedEndDate.setEditable(true);
+			txtProjectName.setEditable(true);
+			txtStartDate.setEditable(true);
+			list.setEnabled(true);
+		}
+	}
+
 	// Creates a GANTT chart based on both the planned and actual series
 	private JFreeChart createGANTTChart(final IntervalCategoryDataset dataset) {
 		final JFreeChart chart = ChartFactory.createGanttChart(
@@ -615,27 +644,20 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	// This utility saves the JFreeChart as a JPEG First Parameter:FileName,
 	// Second Parameter: Chart To Save, Third Parameter: Height Of Picture,
 	// Fourth Parameter: Width Of Picture
-	public void saveChart(JFreeChart chart, String fileLocation) 
-	{
+	public void saveChart(JFreeChart chart, String fileLocation) {
 		String fileName = fileLocation;
 
-		try 
-		{
+		try {
 			ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 800, 600);
-		} 
-		catch (IOException e) 
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Problem occurred creating chart.");
 		}
 	}
 
-	private class DoubleClickListener implements MouseListener 
-	{
-		public void mouseClicked(MouseEvent e) 
-		{
-			if (e.getClickCount() == 2) 
-			{
+	private class DoubleClickListener implements MouseListener {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (table.isEnabled() && tableModel.getTaskAt(row) != null)

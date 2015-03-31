@@ -7,35 +7,24 @@ import java.awt.GridBagLayout;
 import javax.swing.JTable;
 
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-
-import obj.Project;
-import obj.ProjectUser;
 import obj.Task;
-import obj.User;
-import obj.UserTask;
 import application.ProjectManager;
 import customComponents.TaskTableModel;
 import customComponents.UserListModel;
@@ -43,8 +32,6 @@ import customComponents.UserListModel;
 import javax.swing.JButton;
 
 import userEditor.AddUserTaskPanel;
-
-import javax.swing.JList;
 
 /**
  * 
@@ -247,6 +234,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		tableModel.populateModel(manager.db.getTaskRequirements(task));
 
 		table = new JTable(tableModel);
+		table.addMouseListener(((MouseListener) new DoubleClickListener()));
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.insets = new Insets(0, 0, 5, 0);
 		gbc_table.gridwidth = 6;
@@ -285,21 +273,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 		taskModel.setTask(task);
 
-		if (manager.projectUser.getProjectRole() != 1) {
-			btnChangePrerequisites.setVisible(false);
-			btnAddRemoveUser.setVisible(false);
-			btnSave.setVisible(false);
-			btnReset.setVisible(false);
-			nameTextField.setEditable(false);
-			endTextField.setEditable(false);
-			startTextField.setEditable(false);
-			expectedEndTextField.setEditable(false);
-			expectedStartTextField.setEditable(false);
-			list.setEnabled(false);
-
-		} else {
-			table.addMouseListener(((MouseListener) new DoubleClickListener()));
-		}
+		reinitializePanel();
 	}
 
 	private JComponent makeTextPanel(String text) {
@@ -318,6 +292,43 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		} else {
 			System.err.println("Couldn't find file: " + path);
 			return null;
+		}
+	}
+
+	/**
+	 * Method to show or hide UI components based upon access level and whether
+	 * or not the project is saved
+	 */
+	private void reinitializePanel() {
+		if (taskModel.getTask().getId() == -1) {
+			btnChangePrerequisites.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
+			list.setEnabled(false);
+			table.setEnabled(false);
+		} else if (manager.projectUser.getProjectRole() != 1) {
+			btnChangePrerequisites.setVisible(false);
+			btnAddRemoveUser.setVisible(false);
+			btnSave.setVisible(false);
+			btnReset.setVisible(false);
+			nameTextField.setEditable(false);
+			endTextField.setEditable(false);
+			startTextField.setEditable(false);
+			expectedEndTextField.setEditable(false);
+			expectedStartTextField.setEditable(false);
+			list.setEnabled(false);
+			table.setEnabled(false);
+		} else {
+			btnChangePrerequisites.setVisible(true);
+			btnAddRemoveUser.setVisible(true);
+			btnSave.setVisible(true);
+			btnReset.setVisible(true);
+			nameTextField.setEditable(true);
+			endTextField.setEditable(true);
+			startTextField.setEditable(true);
+			expectedEndTextField.setEditable(true);
+			expectedStartTextField.setEditable(true);
+			list.setEnabled(true);
+			table.setEnabled(true);
 		}
 	}
 
@@ -421,13 +432,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				Task t = taskModel.getTask();
 				t.setName(nameTextField.getText());
 
-				Project p = new Project(taskModel.getTask().getProjectId(), "",
-						new Date(0), new Date(0), new Date(0));
-
-				Calendar c = Calendar.getInstance();
-				Calendar expectedStart = Calendar.getInstance(), start = Calendar
-						.getInstance(), expectedEnd = Calendar.getInstance(), end = Calendar
-						.getInstance();
+				Calendar expectedStart = null, start = null, expectedEnd = null, end = null;
 				String[] dateComponents = new String[3];
 
 				if (expectedStartTextField.getText().equals("YYYY-MM-DD")
@@ -436,6 +441,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				} else {
 					dateComponents = expectedStartTextField.getText()
 							.split("-");
+					expectedStart = Calendar.getInstance();
 					expectedStart.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -447,7 +453,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setStartDate(null);
 				} else {
 					dateComponents = startTextField.getText().split("-");
-
+					start = Calendar.getInstance();
 					start.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -459,6 +465,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setProjectedEndDate(null);
 				} else {
 					dateComponents = expectedEndTextField.getText().split("-");
+					expectedEnd = Calendar.getInstance();
 					expectedEnd.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -470,6 +477,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 					t.setEndDate(null);
 				} else {
 					dateComponents = endTextField.getText().split("-");
+					end = Calendar.getInstance();
 					end.set(Integer.parseInt(dateComponents[0]),
 							Integer.parseInt(dateComponents[1]) - 1,
 							Integer.parseInt(dateComponents[2]));
@@ -483,6 +491,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 						if (t.getId() == -1) {
 							success = manager.db.insertTask(t);
+							reinitializePanel();
 						} else {
 							success = manager.db.updateTask(t);
 						}
@@ -526,10 +535,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		private boolean validDates(Calendar projectedStart, Calendar start,
 				Calendar projectedEnd, Calendar end) {
 			boolean valid = true;
-			if (end != Calendar.getInstance()) {
-				valid &= projectedStart != Calendar.getInstance();
-				valid &= start != Calendar.getInstance();
-				valid &= projectedEnd != Calendar.getInstance();
+			if (end != null) {
+				valid &= projectedStart != null;
+				valid &= start != null;
+				valid &= projectedEnd != null;
 				valid &= start.getTimeInMillis() < projectedEnd
 						.getTimeInMillis();
 				valid &= start.getTimeInMillis() < end.getTimeInMillis();
@@ -537,16 +546,16 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						.getTimeInMillis();
 				valid &= projectedStart.getTimeInMillis() < end
 						.getTimeInMillis();
-			} else if (projectedEnd != Calendar.getInstance()) {
-				valid &= projectedStart != Calendar.getInstance();
+			} else if (projectedEnd != null) {
+				valid &= projectedStart != null;
 				valid &= projectedStart.getTimeInMillis() < projectedEnd
 						.getTimeInMillis();
-				if (start != Calendar.getInstance()) {
+				if (start != null) {
 					valid &= start.getTimeInMillis() < projectedEnd
 							.getTimeInMillis();
 				}
-			} else if (start != Calendar.getInstance()) {
-				valid &= projectedStart != Calendar.getInstance();
+			} else if (start != null) {
+				valid &= projectedStart != null;
 			}
 			return valid;
 		}
