@@ -148,14 +148,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		gbc_lblTaskValue.gridy = 2;
 		add(lblTaskValue, gbc_lblTaskValue);
 
-		// MaskFormatter format = null;
-		// try {
-		// format = new MaskFormatter("###");
-		// } catch (ParseException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
 		valueTextField = new JTextField();
 		GridBagConstraints gbc_valueTextField = new GridBagConstraints();
 		gbc_valueTextField.insets = new Insets(0, 0, 5, 0);
@@ -554,7 +546,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 								.setText("Date conflict exists. Task not saved.");
 					}
 				} else {
-					errorMessageLabel.setText("Task needs a name and value. Task not saved.");
+					errorMessageLabel.setText("Task needs a name and positive value. Task not saved.");
 				}
 				taskModel.setTask(t);
 

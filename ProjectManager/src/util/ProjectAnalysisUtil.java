@@ -87,17 +87,23 @@ public class ProjectAnalysisUtil {
 		return pert;
 	}
 
-	public int earnedValueAnalysis() {
+	public int[] earnedValueAnalysis() {
+		int[] values = new int[2];
 		int earnedValue = 0;
 		Task task = null;
+		int total = 0;
 		for (int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
 			if (task.getEndDate() != null) {
 				earnedValue += task.getValue();
 			}
+			total += task.getValue();
 		}
 
-		return earnedValue;
+		values[0] = earnedValue;
+		values[1] = total;
+		
+		return values;
 	}
 
 	private long findTaskChainDuration(Task task) {
