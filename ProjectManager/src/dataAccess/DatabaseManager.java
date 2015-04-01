@@ -1110,6 +1110,36 @@ public class DatabaseManager {
 		}
 		return valid;
 	}
+	public boolean updateUser(User user, String password) {
+		boolean valid = true;
+		PasswordUtil util = new PasswordUtil(password);
+		try {
+			String update = "UPDATE users SET first_name= '"
+				+ user.getFirstName() + "', last_name = '"
+				+ user.getLastName() + "', username = '"
+				+ user.getUsername() + "', role = " 
+				+ user.getRole() + ", password = '" 
+				+ util.getHash() + "', salt = '" 
+				+ util.getSalt() + "' "
+				+ " WHERE id= " + user.getId();
+			
+			connect();
+			preparedStatement = connection.prepareStatement(update);
+			int records = preparedStatement.executeUpdate();
+			if (records != 1)
+				valid = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close();
+			try {
+				preparedStatement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
 
 	public boolean updateProject(Project project) {
 		boolean valid = true;

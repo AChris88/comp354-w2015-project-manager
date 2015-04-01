@@ -259,7 +259,19 @@ public class ProjectManager extends JFrame implements Runnable{
 		// check if the project is a new project or one pulled from the database
 		tabbedPane.add(
 				u.getId() == -1 ? "New User" : "User: " + u.getFirstName() + " " + u.getLastName(),
-				new UserEditorPanel(this, u));
+				new UserEditorPanel(this, u, true));
+		tabbedPane.setBounds(new Rectangle(800, 400));
+		this.setActivePanel(tabbedPane, u.getFirstName() == null ? "New User"
+				: "User: " + u.getFirstName() + " "  + u.getLastName());
+	}
+	public void openUser(User u, boolean roleActivated) {
+		JTabbedPane tabbedPane = new JTabbedPane();
+
+
+		// check if the project is a new project or one pulled from the database
+		tabbedPane.add(
+				u.getId() == -1 ? "New User" : "User: " + u.getFirstName() + " " + u.getLastName(),
+				new UserEditorPanel(this, u, roleActivated));
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, u.getFirstName() == null ? "New User"
 				: "User: " + u.getFirstName() + " "  + u.getLastName());

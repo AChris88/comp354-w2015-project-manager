@@ -39,10 +39,12 @@ public class DashboardPanel extends JPanel {
 	private static final long serialVersionUID = 2351909846353604219L;
 	private ProjectManager manager;
 	private JButton btnNewUser;
-	private JButton btnNewProject;
+	private JButton btnEditMyProfile;
+	private JButton btnEditSupUser;
 	private JTable table;
 	private ProjectTableModel model;
 	private ButtonClickListener clickListener;
+	private JButton btnNewProject;
 
 	public DashboardPanel(ProjectManager manager) {
 		this.manager = manager;
@@ -79,7 +81,7 @@ public class DashboardPanel extends JPanel {
 			
 			btnNewProject.addActionListener(clickListener);
 			
-			JButton btnEditSupUser = new JButton("Edit / Delete Users");
+			btnEditSupUser = new JButton("Edit / Delete Users");
 			GridBagConstraints gbc_btnEditSupUser = new GridBagConstraints();
 			gbc_btnEditSupUser.anchor = GridBagConstraints.NORTH;
 			gbc_btnEditSupUser.insets = new Insets(0, 0, 5, 0);
@@ -90,7 +92,7 @@ public class DashboardPanel extends JPanel {
 			btnEditSupUser.addActionListener(clickListener);
 		}
 		
-		JButton btnEditMyProfile = new JButton("Edit my profile");
+		btnEditMyProfile = new JButton("Edit my profile");
 		GridBagConstraints gbc_btnEditMyProfile = new GridBagConstraints();
 		gbc_btnEditMyProfile.insets = new Insets(0, 0, 5, 0);
 		gbc_btnEditMyProfile.gridx = 6;
@@ -157,6 +159,12 @@ public class DashboardPanel extends JPanel {
 			}
 			else if (source == btnNewUser) {
 				manager.openUser(new User(-1, null, null, null, -1));
+			}
+			else if (source == btnEditSupUser) {
+				manager.openUser(new User(-1, null, null, null, -1));
+			}
+			else if (source == btnEditMyProfile) {
+				manager.openUser(manager.currentUser, false);
 			}
 		}
 	}
