@@ -180,6 +180,11 @@ public class UserEditorPanel extends JPanel implements Observer {
 		btnDeleteUser = new JButton("Delete User");
 		
 		btnDeleteUser.addActionListener(clickListener);
+		GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
+		gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
+		gbc_btnDeleteUser.gridx = 3;
+		gbc_btnDeleteUser.gridy = 7;
+		add(btnDeleteUser, gbc_btnDeleteUser);
 		
 		if(!closeTab)
 		{
@@ -194,11 +199,6 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_passwordField.gridx = 4;
 		gbc_passwordField.gridy = 5;
 		add(passwordField, gbc_passwordField);
-		GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
-		gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
-		gbc_btnDeleteUser.gridx = 1;
-		gbc_btnDeleteUser.gridy = 7;
-		add(btnDeleteUser, gbc_btnDeleteUser);
 
 		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
@@ -216,6 +216,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 				
 						btnSave = new JButton("Save");
 						btnSave.addActionListener(clickListener);
+						
 						GridBagConstraints gbc_btnSave = new GridBagConstraints();
 						gbc_btnSave.insets = new Insets(0, 0, 0, 5);
 						gbc_btnSave.gridx = 4;
