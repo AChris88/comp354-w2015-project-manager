@@ -276,7 +276,9 @@ public class UserEditorPanel extends JPanel implements Observer {
 					
 					if(valid == 0)
 					{
-						manager.db.insertUser(u, passwordField.getPassword().toString().trim());
+						manager.db.insertUser(u, new String(passwordField.getPassword()));
+						
+						System.out.println(new String(passwordField.getPassword()));
 						
 						JOptionPane.showMessageDialog(null, "User was added with success.");
 					}

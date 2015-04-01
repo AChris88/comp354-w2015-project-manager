@@ -48,14 +48,14 @@ public class DashboardPanel extends JPanel {
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-
+		// create a click listener object to listen on all buttons in the panel
 
 		clickListener = new ButtonClickListener();
 
@@ -78,17 +78,32 @@ public class DashboardPanel extends JPanel {
 			add(btnNewProject, gbc_btnNewProject);
 			
 			btnNewProject.addActionListener(clickListener);
+			
+			JButton btnEditSupUser = new JButton("Edit / Delete Users");
+			GridBagConstraints gbc_btnEditSupUser = new GridBagConstraints();
+			gbc_btnEditSupUser.anchor = GridBagConstraints.NORTH;
+			gbc_btnEditSupUser.insets = new Insets(0, 0, 5, 0);
+			gbc_btnEditSupUser.gridx = 6;
+			gbc_btnEditSupUser.gridy = 5;
+			add(btnEditSupUser, gbc_btnEditSupUser);
+			
+			btnEditSupUser.addActionListener(clickListener);
 		}
-
-		// create a click listener object to listen on all buttons in the panel
-
-
+		
+		JButton btnEditMyProfile = new JButton("Edit my profile");
+		GridBagConstraints gbc_btnEditMyProfile = new GridBagConstraints();
+		gbc_btnEditMyProfile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnEditMyProfile.gridx = 6;
+		gbc_btnEditMyProfile.gridy = 1;
+		add(btnEditMyProfile, gbc_btnEditMyProfile);
+		
+		btnEditMyProfile.addActionListener(clickListener);
 
 		JLabel lblCurrentProjects = new JLabel("Current Projects: ");
 		GridBagConstraints gbc_lblCurrentProjects = new GridBagConstraints();
 		gbc_lblCurrentProjects.insets = new Insets(0, 0, 5, 0);
 		gbc_lblCurrentProjects.gridx = 6;
-		gbc_lblCurrentProjects.gridy = 6;
+		gbc_lblCurrentProjects.gridy = 7;
 		add(lblCurrentProjects, gbc_lblCurrentProjects);
 
 		// instantiate model for project table and populate it with projects for
@@ -102,7 +117,7 @@ public class DashboardPanel extends JPanel {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setAutoCreateRowSorter(true);
 
-//        table.setRowSelec
+//      table.setRowSelec
 
 		// set listener on table for double clicks
 		table.addMouseListener(((MouseListener) new DoubleClickListener()));
@@ -110,7 +125,7 @@ public class DashboardPanel extends JPanel {
 		GridBagConstraints gbc_table = new GridBagConstraints();
 		gbc_table.fill = GridBagConstraints.BOTH;
 		gbc_table.gridx = 6;
-		gbc_table.gridy = 7;
+		gbc_table.gridy = 8;
 
 		// place table in scroll pane to make headings visible and to allow for
 		// more projects than what can be displayed given the current size
