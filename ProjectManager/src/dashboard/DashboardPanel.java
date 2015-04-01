@@ -137,7 +137,8 @@ public class DashboardPanel extends JPanel {
 		this.setBounds(100, 100, 500, 277);
 	}
     //Method used for testing purpose only
-    public void openCurrentSelectedProject(){
+    public void openCurrentSelectedProject()
+    {
         int row = table.getSelectedRow();
         if (model.getProjectAt(row) != null)
             manager.openProject(model.getProjectAt(row));
@@ -148,38 +149,45 @@ public class DashboardPanel extends JPanel {
 	 * @author George Lambadas 7077076
 	 *
 	 */
-	private class ButtonClickListener implements ActionListener {
+	private class ButtonClickListener implements ActionListener 
+	{
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) 
+		{
 			JButton source = (JButton) e.getSource();
 
-			if (source == btnNewProject) {
+			if (source == btnNewProject) 
+			{
 				manager.openProject(new Project(-1, null, null, null, null));
 			}
-			else if (source == btnNewUser) {
+			else if (source == btnNewUser) 
+			{
 				manager.openUser(new User(-1, null, null, null, -1));
 			}
-			else if (source == btnEditSupUser) {
-				manager.openUser(new User(-1, null, null, null, -1));
+			else if (source == btnEditSupUser) 
+			{
+				manager.openList();
 			}
-			else if (source == btnEditMyProfile) {
-				manager.openUser(manager.currentUser, false);
+			else if (source == btnEditMyProfile) 
+			{
+				manager.openUser(manager.currentUser, false, false);
 			}
 		}
 	}
 
-	private class DoubleClickListener implements MouseListener {
-		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
+	private class DoubleClickListener implements MouseListener 
+	{
+		public void mouseClicked(MouseEvent e) 
+		{
+			if (e.getClickCount() == 2) 
+			{
 				JTable target = (JTable) e.getSource();
 				int row = target.getSelectedRow();
 				if (model.getProjectAt(row) != null)
 					manager.openProject(model.getProjectAt(row));
 			}
 		}
-
-
 
 		@Override
 		public void mouseEntered(MouseEvent arg0) {

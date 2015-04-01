@@ -67,18 +67,20 @@ public class UserEditorPanel extends JPanel implements Observer {
 	private JLabel lblPassword;
 	private JCheckBox chckbxRole;
 	private JPasswordField passwordField;
-	
+
 	private boolean roleActivated;
+	private boolean closeTab;
 
 	public UserEditorPanel(ProjectManager manager) {
-		this(manager, null, true);
+		this(manager, null, true, false);
 	}
 
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public UserEditorPanel(ProjectManager manager, User user, boolean r) {
+	public UserEditorPanel(ProjectManager manager, User user, boolean r, boolean c) {
 		this.roleActivated = r;
+		this.closeTab = c;
 		
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -313,7 +315,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(null, "User was added with success.");
 					}
 					else 
-					{
+					{						
 						manager.db.updateUser(u, new String(passwordField.getPassword()));
 						
 						JOptionPane.showMessageDialog(null, "User was updated with success.");
@@ -331,14 +333,28 @@ public class UserEditorPanel extends JPanel implements Observer {
 				
 				if(valid == 0)
 				{
-					manager.setActivePanel(new DashboardPanel(manager),
-							manager.currentUser.getFirstName() + "'s Dashboard");
+					if(closeTab)
+					{
+						manager.closeTab(UserEditorPanel.this);
+					}
+					else
+					{
+						manager.setActivePanel(new DashboardPanel(manager),
+								manager.currentUser.getFirstName() + "'s Dashboard");
+					}
 				}
 			} 
 			else if (source == btnCloseTab) 
 			{
-				manager.setActivePanel(new DashboardPanel(manager),
-						manager.currentUser.getFirstName() + "'s Dashboard");
+				if(closeTab)
+				{
+					manager.closeTab(UserEditorPanel.this);
+				}
+				else
+				{
+					manager.setActivePanel(new DashboardPanel(manager),
+							manager.currentUser.getFirstName() + "'s Dashboard");
+				}
 			} 
 			else if (source == btnDeleteUser) 
 			{

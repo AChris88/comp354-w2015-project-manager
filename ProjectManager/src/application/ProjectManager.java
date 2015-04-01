@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+
 // Libraries necessary for GANNT chart creation
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -22,12 +23,14 @@ import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
 
+
 // Other GANTT-related libraries
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
  
+
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -42,6 +45,7 @@ import obj.ProjectUser;
 //import obj.Task;
 import obj.User;
 import projectEditor.ProjectEditorPanel;
+import userEditor.ListOfUsers;
 import userEditor.UserEditorPanel;
 import dataAccess.DatabaseManager;
 import authentication.AuthenticationPanel;
@@ -259,22 +263,33 @@ public class ProjectManager extends JFrame implements Runnable{
 		// check if the project is a new project or one pulled from the database
 		tabbedPane.add(
 				u.getId() == -1 ? "New User" : "User: " + u.getFirstName() + " " + u.getLastName(),
-				new UserEditorPanel(this, u, true));
+				new UserEditorPanel(this, u, true, false));
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, u.getFirstName() == null ? "New User"
 				: "User: " + u.getFirstName() + " "  + u.getLastName());
 	}
-	public void openUser(User u, boolean roleActivated) {
+	
+	public void openUser(User u, boolean roleActivated, boolean closeTab) {
 		JTabbedPane tabbedPane = new JTabbedPane();
 
 
 		// check if the project is a new project or one pulled from the database
 		tabbedPane.add(
 				u.getId() == -1 ? "New User" : "User: " + u.getFirstName() + " " + u.getLastName(),
-				new UserEditorPanel(this, u, roleActivated));
+				new UserEditorPanel(this, u, roleActivated, closeTab));
 		tabbedPane.setBounds(new Rectangle(800, 400));
 		this.setActivePanel(tabbedPane, u.getFirstName() == null ? "New User"
 				: "User: " + u.getFirstName() + " "  + u.getLastName());
+	}
+	
+	public void openList() {
+		JTabbedPane tabbedPane = new JTabbedPane();
+
+		tabbedPane.add(
+				"List of registered Users",
+				new ListOfUsers(this));
+		tabbedPane.setBounds(new Rectangle(800, 400));
+		this.setActivePanel(tabbedPane, "List of registered Users");
 	}
 
 	/**
