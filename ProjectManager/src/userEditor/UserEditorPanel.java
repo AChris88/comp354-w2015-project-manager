@@ -314,7 +314,6 @@ public class UserEditorPanel extends JPanel implements Observer {
 					}
 					else 
 					{
-						System.out.println(new String(passwordField.getPassword()));
 						manager.db.updateUser(u, new String(passwordField.getPassword()));
 						
 						JOptionPane.showMessageDialog(null, "User was updated with success.");
