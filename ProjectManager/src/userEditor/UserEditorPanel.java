@@ -6,8 +6,10 @@ package userEditor;
 import javax.swing.JPanel;
 
 import obj.Project;
+import obj.ProjectUser;
 import obj.Task;
 import obj.User;
+import obj.UserTask;
 import taskEditor.TaskEditorPanel;
 import application.ProjectManager;
 
@@ -364,6 +366,25 @@ public class UserEditorPanel extends JPanel implements Observer {
 			} 
 			else if (source == btnDeleteUser) 
 			{
+				ArrayList<ProjectUser> pu = manager.db.getProjectUsers();
+				ArrayList<UserTask> ut = manager.db.getUserTasks();
+
+				for(int i = 0; i < pu.size(); ++i)
+				{
+					if(pu.get(i).getUserId() == userModel.getId())
+					{
+						manager.db.removeProjectUser(pu.get(i));
+					}
+				}
+				
+				for(int i = 0; i < ut.size(); ++i)
+				{
+					if(ut.get(i).getUserId() == userModel.getId())
+					{
+						manager.db.removeUserTask(ut.get(i));
+					}
+				}
+				
 				manager.db.removeUser(userModel.getUser());
 				
 				JOptionPane.showMessageDialog(null, "User was deleted.");
