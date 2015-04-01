@@ -9,9 +9,9 @@ import obj.Task;
 /**
  * 
  * @author Christian Allard
- *
- *	Utility used to perform project analysis such as critical path analysis,
- *	PERT analysis, and earned value analysis.
+ * 
+ *         Utility used to perform project analysis such as critical path
+ *         analysis, PERT analysis, and earned value analysis.
  */
 
 public class ProjectAnalysisUtil {
@@ -101,24 +101,47 @@ public class ProjectAnalysisUtil {
 	}
 
 	private long findTaskChainDuration(Task task) {
-		ArrayList<Task> prereqs = dm.getTaskRequirements(task);
 
-		if (prereqs.size() == 0)
-			return task.getEndDate().getTime() - task.getStartDate().getTime();
-		else {
+		long duration = -1L;
+
+		if (task.getStartDate() != null) {
+			if (task.getEndDate() != null) {
+				duration = task.getEndDate().getTime()
+						- task.getStartDate().getTime();
+			} else if (task.getProjectedEndDate() != null) {
+				duration = task.getProjectedEndDate().getTime()
+						- task.getStartDate().getTime();
+			}
+		} else if (task.getProjectedStartDate() != null) {
+			if (task.getEndDate() != null) {
+				duration = task.getEndDate().getTime()
+						- task.getProjectedStartDate().getTime();
+			} else if (task.getProjectedEndDate() != null) {
+				duration = task.getProjectedEndDate().getTime()
+						- task.getProjectedStartDate().getTime();
+			}
+		}
+
+		if (duration != -1L) {
+			ArrayList<Task> prereqs = dm.getTaskRequirements(task);
 			ArrayList<Long> sequences = new ArrayList<Long>();
-			long duration = 0L;
+			long chainDuration = 0L;
 
 			for (Task t : prereqs) {
 				sequences.add(findTaskChainDuration(t));
 			}
 
 			for (int i = 0; i < sequences.size(); i++) {
-				if (sequences.get(i) > duration)
-					duration = sequences.get(i);
+				if (sequences.get(i) > chainDuration)
+					chainDuration = sequences.get(i);
 			}
-			return duration + task.getEndDate().getTime()
-					- task.getStartDate().getTime();
+
+			if (chainDuration != -1) {
+				duration += chainDuration;
+			} else {
+				duration = -1L;
+			}
 		}
+		return duration;
 	}
 }

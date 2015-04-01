@@ -13,6 +13,7 @@ import taskEditor.TaskEditorPanel;
 import taskEditor.ViewTaskPanel;
 import userEditor.AddProjectUserPanel;
 import userEditor.UserChangeProjectRole;
+import util.ProjectAnalysisUtil;
 import application.ProjectManager;
 
 import java.awt.Color;
@@ -35,7 +36,6 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -85,6 +85,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 	private UserListModel listModel;
 	public JLabel errorMessageLabel;
+	private JButton btnGetCriticalPath;
+	private JButton btnPertAnalysis;
+	public JButton btnEarnedValueAnalysis;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -271,8 +274,20 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		btnCreateGANTTChart = new JButton("Create GANTT chart");
 		btnCreateGANTTChart.addActionListener(clickListener);
 
+		btnGetCriticalPath = new JButton("Get critical path");
+		btnGetCriticalPath.addActionListener(clickListener);
+
+		btnPertAnalysis = new JButton("Perform PERT analysis");
+		btnPertAnalysis.addActionListener(clickListener);
+
+		btnEarnedValueAnalysis = new JButton("Perform EVA");
+		btnEarnedValueAnalysis.addActionListener(clickListener);
+		
 		btnDeleteProject = new JButton("Delete Project");
 		btnDeleteProject.addActionListener(clickListener);
+		
+		
+
 		GridBagConstraints gbc_btnDeleteProject = new GridBagConstraints();
 		gbc_btnDeleteProject.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDeleteProject.gridx = 1;
@@ -317,17 +332,41 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		add(btnCreateGANTTChart, gbc_btnCreateGANTTChart);
 		btnCreateGANTTChart.setVisible(true);
 
+		GridBagConstraints gbc_btnGetCriticalPath = new GridBagConstraints();
+		gbc_btnGetCriticalPath.insets = new Insets(0, 0, 5, 5);
+		gbc_btnGetCriticalPath.gridx = 2;
+		gbc_btnGetCriticalPath.gridy = 0;
+		gbc_btnGetCriticalPath.gridwidth = 2;
+		add(btnGetCriticalPath, gbc_btnGetCriticalPath);
+		btnGetCriticalPath.setVisible(true);
+
+		GridBagConstraints gbc_btnPertAnalysis = new GridBagConstraints();
+		gbc_btnPertAnalysis.insets = new Insets(0, 0, 5, 5);
+		gbc_btnPertAnalysis.gridx = 4;
+		gbc_btnPertAnalysis.gridwidth = 2;
+		gbc_btnPertAnalysis.gridy = 0;
+		add(btnPertAnalysis, gbc_btnPertAnalysis);
+		btnPertAnalysis.setVisible(true);
+		
+		GridBagConstraints gbc_btnEarnedValueAnalysis = new GridBagConstraints();
+		gbc_btnEarnedValueAnalysis.insets = new Insets(0, 0, 5, 5);
+		gbc_btnEarnedValueAnalysis.gridx = 6;
+		gbc_btnEarnedValueAnalysis.gridwidth = 1;
+		gbc_btnEarnedValueAnalysis.gridy = 0;
+		add(btnEarnedValueAnalysis, gbc_btnEarnedValueAnalysis);
+		btnEarnedValueAnalysis.setVisible(true);
+
 		errorMessageLabel = new JLabel();
 		errorMessageLabel.setForeground(Color.RED);
 		GridBagConstraints gbc_errorMessageLabel = new GridBagConstraints();
 		gbc_errorMessageLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_errorMessageLabel.gridwidth = 3;
 		gbc_errorMessageLabel.gridx = 2;
-		gbc_errorMessageLabel.gridy = 0;
+		gbc_errorMessageLabel.gridy = 1;
 		add(errorMessageLabel, gbc_errorMessageLabel);
 
 		projectModel.setProject(project);
-		
+
 		reinitializePanel();
 	}
 
@@ -430,7 +469,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 				projectModel.setProject(p);
 
-				if (! p.getName().equals("")) {
+				if (!p.getName().equals("")) {
 					if (validDates(start, projectedEnd, end)) {
 						errorMessageLabel.setText("");
 						boolean success = true;
@@ -438,7 +477,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 							success = manager.db.insertProject(p,
 									manager.currentUser);
 							manager.currentProject = p;
-							manager.projectUser = manager.db.getProjectUser(p, manager.currentUser);
+							manager.projectUser = manager.db.getProjectUser(p,
+									manager.currentUser);
 							reinitializePanel();
 						} else {
 							success = manager.db.updateProject(p);
@@ -499,6 +539,27 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				ChartPanel CP = new ChartPanel(chart);
 
 				manager.addTab(new GanttPanel(manager, CP), "GANTT Chart");
+			} else if (source == btnGetCriticalPath) {
+				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
+						manager.currentProject);
+				
+				long crit = util.getCriticalPath();
+				String message; 
+				if (crit < 0L){
+					message = "Critical path could not be found due to missing dates in activities";
+				} else {
+					message = "Critical path for project is " + crit / 86400000 + " days.";
+				}
+				JOptionPane.showMessageDialog(null, message);
+
+			} else if (source == btnPertAnalysis) {
+				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
+						manager.currentProject);
+				manager.addTab(
+						new PertTablePanel(manager, util.pertAnalysis()),
+						"PERT: " + manager.currentProject.getName());
+			} else if (source == btnEarnedValueAnalysis) {
+				
 			}
 		}
 
@@ -587,7 +648,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	}
 
 	/**
-	 * Method to show or hide UI components based upon access level and whether or not the project is saved
+	 * Method to show or hide UI components based upon access level and whether
+	 * or not the project is saved
 	 */
 	public void reinitializePanel() {
 		if (manager.currentProject.getId() == -1) {
@@ -595,6 +657,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			btnAddTask.setVisible(false);
 			btnAddRemoveUser.setVisible(false);
 			btnCreateGANTTChart.setVisible(false);
+			btnGetCriticalPath.setVisible(false);
+			btnPertAnalysis.setVisible(false);
+			btnEarnedValueAnalysis.setVisible(false);
 			btnDeleteProject.setVisible(false);
 			table.setEnabled(false);
 			list.setEnabled(false);
@@ -602,6 +667,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			btnAddTask.setVisible(false);
 			btnAddRemoveUser.setVisible(false);
 			btnCreateGANTTChart.setVisible(false);
+			btnGetCriticalPath.setVisible(false);
+			btnPertAnalysis.setVisible(false);
+			btnEarnedValueAnalysis.setVisible(false);
 			btnDeleteProject.setVisible(false);
 			btnSave.setVisible(false);
 			table.setEnabled(false);
@@ -614,6 +682,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			btnAddTask.setVisible(true);
 			btnAddRemoveUser.setVisible(true);
 			btnCreateGANTTChart.setVisible(true);
+			btnGetCriticalPath.setVisible(true);
+			btnPertAnalysis.setVisible(true);
+			btnEarnedValueAnalysis.setVisible(true);
 			btnDeleteProject.setVisible(true);
 			btnSave.setVisible(true);
 			table.setEnabled(true);

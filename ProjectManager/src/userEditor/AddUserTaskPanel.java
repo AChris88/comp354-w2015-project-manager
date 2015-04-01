@@ -105,7 +105,7 @@ public class AddUserTaskPanel extends JPanel {
 
 		clickListener = new ButtonClickListener();
 		
-		btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Close Tab");
 		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
 		gbc_btnCancel.insets = new Insets(0, 0, 5, 5);
@@ -151,6 +151,8 @@ public class AddUserTaskPanel extends JPanel {
 							allUsers.get(i).getId(), 
 							task.getId(), getProjectUser(allUsers.get(i), project).getId()));
 				}
+				
+				manager.closeTab(AddUserTaskPanel.this);
 			} else if (source == btnCancel) {
 				usersToTaskTableModel.populateModel(manager.db.getUsersForTask(task));
 				manager.closeTab(AddUserTaskPanel.this);

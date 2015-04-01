@@ -15,9 +15,6 @@ public class ProjectManagerApp {
 
         DatabaseManager dbm = new DatabaseManager();
 
-        //User u = new User(0,"samuel","bl","s",0);
-        //dbm.insertUser(u,"s");
-
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new ProjectManager();

@@ -104,7 +104,7 @@ public class AddProjectUserPanel extends JPanel {
 
 		clickListener = new ButtonClickListener();
 
-		btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Close Tab");
 		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
 		gbc_btnCancel.insets = new Insets(0, 0, 5, 5);
@@ -163,6 +163,8 @@ public class AddProjectUserPanel extends JPanel {
 					manager.db.removeProjectUser(new ProjectUser(-1, project
 							.getId(), allUserNotInProject.get(i).getId(), 0));
 				}
+
+				manager.closeTab(AddProjectUserPanel.this);
 			} else if (source == btnCancel) {
 				projectUsersTableModel.populateModel(manager.db.getUsersForProject(manager.currentProject));
 				manager.closeTab(AddProjectUserPanel.this);

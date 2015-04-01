@@ -247,7 +247,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		btnAddRemoveUser = new JButton("Add/Remove Users");
 		btnAddRemoveUser.addActionListener(clickListener);
 
-		btnReset = new JButton("Reset");
+		btnReset = new JButton("Delete");
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
 		gbc_btnReset.insets = new Insets(0, 0, 5, 0);
 		gbc_btnReset.gridx = 5;
