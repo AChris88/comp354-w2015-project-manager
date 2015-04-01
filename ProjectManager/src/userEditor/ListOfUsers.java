@@ -63,6 +63,7 @@ public class ListOfUsers extends JPanel implements Observer {
 	private JTable table;
 	private UserListModel listModel;
 	private JTable list;
+	private JButton btnDeleteUser;
 
 	/**
 	 * @wbp.parser.constructor
@@ -80,8 +81,6 @@ public class ListOfUsers extends JPanel implements Observer {
 		setLayout(gridBagLayout);
 
 		this.setBounds(100, 100, 500, 450);
-		
-
 
 		listModel = new UserListModel();
 		ArrayList<User> users = manager.db.getUsers();
@@ -111,7 +110,6 @@ public class ListOfUsers extends JPanel implements Observer {
 								new UserEditorPanel(manager, u, true, true),
 								"User: " + u.getFirstName() + " "  + u.getLastName());	
 					}
-					
 				}
 			}
 		});

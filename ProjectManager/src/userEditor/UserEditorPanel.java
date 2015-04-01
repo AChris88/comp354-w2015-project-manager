@@ -176,24 +176,29 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_lblPassword.gridx = 2;
 		gbc_lblPassword.gridy = 5;
 		add(lblPassword, gbc_lblPassword);
+
+		btnDeleteUser = new JButton("Delete User");
+		
+		btnDeleteUser.addActionListener(clickListener);
+		
+		if(!closeTab)
+		{
+			btnDeleteUser.setEnabled(false);
+			btnDeleteUser.setVisible(false);
+		}
 				
-				btnDeleteUser = new JButton("Delete Project");
-				btnDeleteUser.setEnabled(false);
-				btnDeleteUser.addActionListener(clickListener);
-				btnDeleteUser.setVisible(false);
-				
-				passwordField = new JPasswordField();
-				GridBagConstraints gbc_passwordField = new GridBagConstraints();
-				gbc_passwordField.insets = new Insets(0, 0, 5, 5);
-				gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
-				gbc_passwordField.gridx = 4;
-				gbc_passwordField.gridy = 5;
-				add(passwordField, gbc_passwordField);
-				GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
-				gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
-				gbc_btnDeleteUser.gridx = 1;
-				gbc_btnDeleteUser.gridy = 7;
-				add(btnDeleteUser, gbc_btnDeleteUser);
+		passwordField = new JPasswordField();
+		GridBagConstraints gbc_passwordField = new GridBagConstraints();
+		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
+		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_passwordField.gridx = 4;
+		gbc_passwordField.gridy = 5;
+		add(passwordField, gbc_passwordField);
+		GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
+		gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
+		gbc_btnDeleteUser.gridx = 1;
+		gbc_btnDeleteUser.gridy = 7;
+		add(btnDeleteUser, gbc_btnDeleteUser);
 
 		GridBagConstraints gbc_btnAddTask = new GridBagConstraints();
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
@@ -358,7 +363,12 @@ public class UserEditorPanel extends JPanel implements Observer {
 			} 
 			else if (source == btnDeleteUser) 
 			{
+				manager.db.removeUser(userModel.getUser());
 				
+				JOptionPane.showMessageDialog(null, "User was deleted.");
+				
+				manager.setActivePanel(new DashboardPanel(manager),
+						manager.currentUser.getFirstName() + "'s Dashboard");
 			}
 		}
 	}
