@@ -119,4 +119,8 @@ public class UIRobot implements Runnable {
 		bot.mousePress(InputEvent.BUTTON1_MASK);
 		bot.mouseRelease(InputEvent.BUTTON1_MASK);
 	}
+	
+	public void pressButton(int vk){
+		bot.keyPress(vk);
+	}
 }
