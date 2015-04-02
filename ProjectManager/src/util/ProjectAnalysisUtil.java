@@ -20,10 +20,13 @@ public class ProjectAnalysisUtil {
 	ArrayList<Task> tasks;
 	Project project;
 
-	public ProjectAnalysisUtil(Project project) {
-		dm = new DatabaseManager();
+	public ProjectAnalysisUtil(Project project, DatabaseManager dm){
+		this.dm = dm;
 		tasks = dm.getTasksForProject(project);
 		this.project = project;
+	}
+	public ProjectAnalysisUtil(Project project) {
+		this(project, new DatabaseManager());
 	}
 
 	public long getCriticalPath() {
