@@ -3,6 +3,8 @@
  */
 package IntTest;
 
+import static org.junit.Assert.*;
+
 import java.awt.AWTException;
 import java.io.File;
 import java.util.Calendar;
@@ -95,6 +97,8 @@ public class AddTaskToProjectTest {
 
 	@Test
 	public void AddTaskTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+		String task_name = "New Task";
+		
 		JButton btn = ReflectionHelper.getElement("btnAddTask",ProjectEditorPanel.class,_pm);
 		_app_thread.sleep(2000);
 		btn.doClick();
@@ -109,6 +113,10 @@ public class AddTaskToProjectTest {
 		_app_thread.sleep(1000);
 		ReflectionHelper.<JButton>getElement("btnCloseTab",TaskEditorPanel.class,_pm, 1).doClick();
 		_app_thread.sleep(3000);
-	
+		
+		JTable jt = ReflectionHelper.getElement("table",ProjectEditorPanel.class,_pm);
+		jt.setRowSelectionInterval(0, 0);
+		String new_value = (String) jt.getModel().getValueAt(0, 0);
+		assertEquals(task_name,new_value);
 	}
 }
