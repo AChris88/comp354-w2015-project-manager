@@ -112,7 +112,7 @@ public class ResourceModuleTest {
 
         ((DashboardPanel)_pm.getActivePanel()).openCurrentSelectedProject();
 
-        assertTrue(getButton(ProjectEditorPanel.class,"btnAddUser").isVisible());
+        assertTrue(getButton(ProjectEditorPanel.class,"btnAddRemoveUser").isVisible());
 
 //
 //
@@ -138,9 +138,9 @@ public class ResourceModuleTest {
 
         ((DashboardPanel)_pm.getActivePanel()).openCurrentSelectedProject();
 
-        assertTrue(getButton(ProjectEditorPanel.class,"btnAddUser").isVisible());
+        assertTrue(getButton(ProjectEditorPanel.class,"btnAddRemoveUser").isVisible());
 
-        getButton(ProjectEditorPanel.class,"btnAddUser").doClick();
+        getButton(ProjectEditorPanel.class,"btnAddRemoveUser").doClick();
 
 //        private JTable allUsersTable;
 //        private JTable projectUsersTable

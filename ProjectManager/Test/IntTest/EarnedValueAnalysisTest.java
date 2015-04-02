@@ -95,7 +95,7 @@ public class EarnedValueAnalysisTest {
 		long beforeTime = System.currentTimeMillis();
 		ProjectAnalysisUtil util = new ProjectAnalysisUtil(_project);
         ReflectionHelper.<JButton>getElement("btnEarnedValueAnalysis", ProjectEditorPanel.class, _pm).doClick();
-        assertEquals(9,((ProjectEditorPanel)((JTabbedPane)_pm.getActivePanel()).getComponent(0)).evaValForTest[0]);
+        assertEquals(20,((ProjectEditorPanel)((JTabbedPane)_pm.getActivePanel()).getComponent(0)).evaValForTest[0]);
         assertTrue("If the user had to click ok, it'll take time to come back",System.currentTimeMillis() > 1000 );
 	}
 }

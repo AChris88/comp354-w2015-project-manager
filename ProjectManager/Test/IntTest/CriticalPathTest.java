@@ -99,7 +99,7 @@ public class CriticalPathTest {
     public void CPValue_Test() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         long beforeTime = System.currentTimeMillis();
         ReflectionHelper.<JButton>getElement("btnGetCriticalPath", ProjectEditorPanel.class, _pm).doClick();
-        assertEquals(25,((ProjectEditorPanel)((JTabbedPane)_pm.getActivePanel()).getComponent(0)).cpValForTest);
+        assertEquals(2,((ProjectEditorPanel)((JTabbedPane)_pm.getActivePanel()).getComponent(0)).cpValForTest);
         assertTrue("If the user had to click ok, it'll take time to come back",System.currentTimeMillis() > 1000 );
     }
 
