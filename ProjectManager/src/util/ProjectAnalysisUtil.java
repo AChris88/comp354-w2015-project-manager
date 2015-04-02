@@ -59,6 +59,8 @@ public class ProjectAnalysisUtil {
 		String taskReqTitles = "";
 		ArrayList<Task> prereqs = new ArrayList<Task>();
 
+		int day = 1000 * 60 * 60 * 24;
+
 		for (Task task : tasks) {
 			taskTitle = task.getName();
 			prereqs = dm.getTaskRequirements(task);
@@ -67,20 +69,25 @@ public class ProjectAnalysisUtil {
 				for (Task req : prereqs) {
 					taskReqTitles = taskReqTitles + req.getName() + ", ";
 				}
-				// remove last comma
-				taskReqTitles = taskReqTitles.substring(0,
-						taskReqTitles.length() - 2);
 			}
+			
+			shortest = (task.getProjectedEndDate().getTime() - task
+					.getProjectedStartDate().getTime()) / day;
+			likely = (shortest * likelyMod) / day;
+			worst = (shortest * pessimisticMod) / day;
+			expected = ((shortest + (4 * likely) + worst) / 6) / day;
+			deviation = ((worst - likely) / 6) / day;
 
-			shortest = task.getProjectedEndDate().getTime()
-					- task.getProjectedStartDate().getTime();
-			likely = shortest * likelyMod;
-			worst = shortest * pessimisticMod;
-			expected = (shortest + (4 * likely) + worst) / 6;
-			deviation = (worst - likely) / 6;
-
-			String[] record = { taskTitle, taskReqTitles, "" + shortest,
-					"" + likely, "" + worst, "" + expected, "" + deviation };
+			String[] record = {
+					taskTitle,
+					taskReqTitles,
+					"" + shortest + (shortest == 1 ? " day" : " days"),
+					("" + likely).substring(0, ("" + likely).indexOf('.') + 4) + (likely == 1 ? " day" : " days"),
+					("" + worst).substring(0, ("" + worst).indexOf('.') + 4) + (worst == 1 ? " day" : " days"),
+					("" + expected).substring(0,
+							("" + expected).indexOf('.') + 4) + (expected == 1 ? " day" : " days"),
+					("" + deviation).substring(0,
+							("" + deviation).indexOf('.') + 4) };
 
 			pert.add(record);
 		}
@@ -102,7 +109,7 @@ public class ProjectAnalysisUtil {
 
 		values[0] = earnedValue;
 		values[1] = total;
-		
+
 		return values;
 	}
 
