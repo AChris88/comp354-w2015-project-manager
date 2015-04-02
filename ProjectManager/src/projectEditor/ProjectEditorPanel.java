@@ -651,7 +651,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	 * Method to show or hide UI components based upon access level and whether
 	 * or not the project is saved
 	 */
-	public void reinitializePanel() {
+	private void reinitializePanel() {
 		if (manager.currentProject.getId() == -1) {
 			btnViewTask.setVisible(false);
 			btnAddTask.setVisible(false);

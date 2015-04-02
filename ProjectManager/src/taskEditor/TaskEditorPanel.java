@@ -577,11 +577,9 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		 */
 		private boolean validDates(Calendar projectedStart, Calendar start,
 				Calendar projectedEnd, Calendar end) {
-			boolean valid = true;
-			if (end != null) {
-				valid &= projectedStart != null;
+			boolean valid = projectedStart != null && projectedEnd != null;
+			if (end != null && valid) {
 				valid &= start != null;
-				valid &= projectedEnd != null;
 				valid &= start.getTimeInMillis() < projectedEnd
 						.getTimeInMillis();
 				valid &= start.getTimeInMillis() < end.getTimeInMillis();
@@ -589,16 +587,6 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						.getTimeInMillis();
 				valid &= projectedStart.getTimeInMillis() < end
 						.getTimeInMillis();
-			} else if (projectedEnd != null) {
-				valid &= projectedStart != null;
-				valid &= projectedStart.getTimeInMillis() < projectedEnd
-						.getTimeInMillis();
-				if (start != null) {
-					valid &= start.getTimeInMillis() < projectedEnd
-							.getTimeInMillis();
-				}
-			} else if (start != null) {
-				valid &= projectedStart != null;
 			}
 			return valid;
 		}
