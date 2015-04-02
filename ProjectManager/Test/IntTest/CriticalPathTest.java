@@ -16,7 +16,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by Samuel on 4/2/2015.
@@ -31,8 +34,11 @@ public class CriticalPathTest {
     public void setup() throws AWTException, NoSuchFieldException, IllegalAccessException, InterruptedException {
 
 
-        String dbFile = "ITtestdb.db";
+
+        String dbFile = "iTtestdb.db";
         File testDbFile = new File(dbFile);
+
+
         if (testDbFile.exists()) {
             testDbFile.delete();
         }
@@ -48,8 +54,8 @@ public class CriticalPathTest {
 
         ProjectUser pu = _dbm.getProjectUsers().get(0);
 
-        Task taskToAdd = new Task(0, p.getId(), "task", new Date(),
-                new Date(), new Date(), new Date(), 0);
+        Task taskToAdd = new Task(0, p.getId(), "task", date(1,1,2000),
+                date(2,1,2000), date(3,1,2000), date(4,1,2000), 0);
 
         _dbm.insertTask(taskToAdd);
 
@@ -90,9 +96,21 @@ public class CriticalPathTest {
     }
 
     @Test
-    public void CP_Test(){
+    public void CPValue_Test() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
 
+        long beforeTime = System.currentTimeMillis();
+        ReflectionHelper.<JButton>getElement("btnGetCriticalPath", ProjectEditorPanel.class, _pm).doClick();
+        assertEquals(2,((ProjectEditorPanel)((JTabbedPane)_pm.getActivePanel()).getComponent(0)).cpValForTest);
+        assertTrue("If the user had to click ok, it'll take time to come back",System.currentTimeMillis() > 1000 );
 
+    }
+
+    private static Date date(final int day, final int month, final int year) {
+
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        final Date result = calendar.getTime();
+        return result;
 
     }
 

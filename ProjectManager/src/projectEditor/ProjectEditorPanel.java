@@ -89,6 +89,8 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	private JButton btnPertAnalysis;
 	public JButton btnEarnedValueAnalysis;
 
+    public long cpValForTest;
+
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
 	}
@@ -544,12 +546,14 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 						manager.currentProject);
 				
 				long crit = util.getCriticalPath();
+                cpValForTest = crit / 86400000;
 				String message; 
 				if (crit < 0L){
 					message = "Critical path could not be found due to missing dates in activities";
 				} else {
 					message = "Critical path for project is " + crit / 86400000 + " days.";
 				}
+
 				JOptionPane.showMessageDialog(null, message);
 
 			} else if (source == btnPertAnalysis) {
