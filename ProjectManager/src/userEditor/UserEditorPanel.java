@@ -187,6 +187,9 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_btnDeleteUser.gridx = 3;
 		gbc_btnDeleteUser.gridy = 7;
 		add(btnDeleteUser, gbc_btnDeleteUser);
+		if(user.getId() == manager.currentUser.getId()) {
+			btnDeleteUser.setVisible(false);
+		}
 
 		if (!closeTab) {
 			btnDeleteUser.setEnabled(false);

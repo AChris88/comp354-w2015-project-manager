@@ -15,11 +15,11 @@ public class ProjectManagerApp {
 
         DatabaseManager dbm = new DatabaseManager();
 
-        /*
+        
         //test user for when using mysql
-        User u = new User(0,"mysql","mysql","mysql",1);
-        dbm.insertUser(u,"password");
-		*/
+        //User u = new User(0,"PManager","PManager","pmanager",0);
+        //dbm.insertUser(u,"pmanager");
+		
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
