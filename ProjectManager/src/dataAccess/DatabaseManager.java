@@ -46,7 +46,7 @@ public class DatabaseManager {
 		preparedStatement = null;
 		createTables();
 	}
-	/*
+	
 	//sqlite connector
 	private void connect() {
 		try {
@@ -58,8 +58,8 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 	}
- 	*/
 	
+	/*
 	//mysql connector
 	private void connect() {
 		try {
@@ -73,6 +73,7 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 	}
+	*/
 	
 	private void close() {
 		try {

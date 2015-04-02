@@ -561,7 +561,14 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 			} else if (source == btnEarnedValueAnalysis) {
 				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
 						manager.currentProject);
-				//TODO things
+				int[] earned = util.earnedValueAnalysis();
+				String message; 
+				if (earned[0] == 0){
+					message = "No progess has been performed on this project.";
+				} else {
+					message = "Project value earned: " + earned[0] + " / " + earned[1];
+				}
+				JOptionPane.showMessageDialog(null, message);
 			}
 		}
 
