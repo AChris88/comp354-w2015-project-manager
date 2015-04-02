@@ -22,9 +22,11 @@ import obj.User;
 import org.junit.Before;
 import org.junit.Test;
 
+import customComponents.PertTableModel;
+
+import projectEditor.PertTablePanel;
 import projectEditor.ProjectEditorPanel;
 
-import taskEditor.TaskEditorPanel;
 import ui.UIRobot;
 import Helper.ReflectionHelper;
 import application.ProjectManager;
@@ -36,8 +38,7 @@ import dataAccess.DatabaseManager;
  * @author George Lambadas 7077076
  *
  */
-public class CloseProjectTest {
-
+public class PertAnalysisTest {
 	private DatabaseManager _dbm;
 	private Project _project;
 	private JFrame _frame;
@@ -90,16 +91,17 @@ public class CloseProjectTest {
         
         jt.setRowSelectionInterval(0, 0);
         ((DashboardPanel) _pm.getActivePanel()).openCurrentSelectedProject();
+
 	}
 	
 	@Test
-	public void CloseProjectTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-		_app_thread.sleep(1000);
-		assertTrue(_pm.getActivePanel() instanceof JTabbedPane);
-		JButton btn = ReflectionHelper.getElement("btnCloseTab",ProjectEditorPanel.class,_pm);
+	public void testPertAnalysis() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
 		_app_thread.sleep(2000);
+		JButton btn = ReflectionHelper.getElement("btnPertAnalysis",ProjectEditorPanel.class,_pm);
 		btn.doClick();
-		_app_thread.sleep(1000);
-		assertTrue(_pm.getActivePanel() instanceof DashboardPanel);
+		assertTrue(((JTabbedPane)_pm.getActivePanel()).getComponentAt(1) instanceof PertTablePanel);
+		_app_thread.sleep(2000);
+		PertTableModel model = ReflectionHelper.getElement("tableModel",PertTablePanel.class,_pm, 1);
+		assertEquals(_pm.db.getTasksForProject(_pm.currentProject).size(), model.getRowCount());
 	}
 }

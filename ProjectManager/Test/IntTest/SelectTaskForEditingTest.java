@@ -3,8 +3,6 @@
  */
 package IntTest;
 
-import static org.junit.Assert.*;
-
 import java.awt.AWTException;
 import java.io.File;
 import java.util.Date;
@@ -12,7 +10,6 @@ import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPasswordField;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
@@ -22,9 +19,6 @@ import obj.User;
 import org.junit.Before;
 import org.junit.Test;
 
-import projectEditor.ProjectEditorPanel;
-
-import taskEditor.TaskEditorPanel;
 import ui.UIRobot;
 import Helper.ReflectionHelper;
 import application.ProjectManager;
@@ -36,8 +30,7 @@ import dataAccess.DatabaseManager;
  * @author George Lambadas 7077076
  *
  */
-public class CloseProjectTest {
-
+public class SelectTaskForEditingTest {
 	private DatabaseManager _dbm;
 	private Project _project;
 	private JFrame _frame;
@@ -90,16 +83,11 @@ public class CloseProjectTest {
         
         jt.setRowSelectionInterval(0, 0);
         ((DashboardPanel) _pm.getActivePanel()).openCurrentSelectedProject();
+
 	}
 	
 	@Test
-	public void CloseProjectTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-		_app_thread.sleep(1000);
-		assertTrue(_pm.getActivePanel() instanceof JTabbedPane);
-		JButton btn = ReflectionHelper.getElement("btnCloseTab",ProjectEditorPanel.class,_pm);
-		_app_thread.sleep(2000);
-		btn.doClick();
-		_app_thread.sleep(1000);
-		assertTrue(_pm.getActivePanel() instanceof DashboardPanel);
+	public void TestSelectTaskForEditing() {
+		
 	}
 }

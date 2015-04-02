@@ -117,6 +117,7 @@ public class AddTaskToProjectTest {
 		JTable jt = ReflectionHelper.getElement("table",ProjectEditorPanel.class,_pm);
 		jt.setRowSelectionInterval(0, 0);
 		String new_value = (String) jt.getModel().getValueAt(0, 0);
-		assertEquals(task_name,new_value);
+		
+		assertEquals(task_name, new_value);
 	}
 }

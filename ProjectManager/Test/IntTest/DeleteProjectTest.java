@@ -3,6 +3,8 @@
  */
 package IntTest;
 
+import static org.junit.Assert.*;
+
 import java.awt.AWTException;
 import java.io.File;
 import java.util.Date;
@@ -92,9 +94,15 @@ public class DeleteProjectTest {
 	@Test
 	public void testDeleteProject() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
 		_app_thread.sleep(1000);
+		int proj_id = _pm.currentProject.getId();
 		JButton btn = ReflectionHelper.getElement("btnDeleteProject",ProjectEditorPanel.class,_pm);
 		_app_thread.sleep(2000);
 		btn.doClick();
 		_app_thread.sleep(2000);
+		assertTrue(_pm.getActivePanel() instanceof DashboardPanel);
+		
+		Project null_proj = _dbm.getProjectByID(proj_id);
+		assertTrue(null_proj == null);
+		
 	}
 }
