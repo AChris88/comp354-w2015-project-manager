@@ -32,6 +32,7 @@ public class TaskEditorTest {
     private Thread _app_thread;
     private UIRobot _bot;
     private DatabaseManager _dbm;
+    private Task _task;
 
     @Before
     public void setup() throws AWTException, NoSuchFieldException, IllegalAccessException, InterruptedException {
@@ -58,12 +59,12 @@ public class TaskEditorTest {
 
         ProjectUser pu = _dbm.getProjectUsers().get(0);
 
-        Task taskToAdd = new Task(0, p.getId(), "task", new Date(),
+        _task = new Task(0, p.getId(), "task", new Date(),
                 new Date(), new Date(), new Date(), 0);
 
-        _dbm.insertTask(taskToAdd);
+        _dbm.insertTask(_task);
 
-        UserTask ut = new UserTask(0, u.getId(), taskToAdd.getId(), pu.getId());
+        UserTask ut = new UserTask(0, u.getId(), _task.getId(), pu.getId());
         _dbm.insertUserTask(ut);
 
 
@@ -103,7 +104,7 @@ public class TaskEditorTest {
         _bot.getRobot().mousePress(InputEvent.BUTTON1_MASK);
         _bot.getRobot().mouseRelease(InputEvent.BUTTON1_MASK);
 
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
 
 
@@ -118,7 +119,7 @@ public class TaskEditorTest {
     public void Open_Test() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
 
         assertTrue(((JTabbedPane) _pm.getActivePanel()).getSelectedComponent() instanceof TaskEditorPanel);
-        assertTrue(ReflectionHelper.<JTextField>getElement("nameTextField",TaskEditorPanel.class,_pm).getText() == "task");
+        assertTrue(ReflectionHelper.<JTextField>getElement("nameTextField",TaskEditorPanel.class,_pm,1).getText().equals(_task.getName()));
 
     }
 
