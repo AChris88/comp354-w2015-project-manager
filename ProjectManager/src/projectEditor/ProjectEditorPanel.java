@@ -602,10 +602,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 		ArrayList<Task> currentTasks = manager.db
 				.getTasksForProject(projectModel.getProject());
 		Task currentTask = null;
-		for (int i = 0; i < currentTasks.size(); i++) {
+		for (Task task : currentTasks) {
 			// Access the current task
-			currentTask = manager.db.getTaskByName(currentTasks.get(i)
-					.getName());
+			currentTask = task;
 
 			// Add each individual task with its name, projected start date and
 			// end date
@@ -624,10 +623,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 		// A task series with the actual tasks dates on the series.
 		TaskSeries actualSeries = new TaskSeries("Actual Implementation");
-		for (int i = 0; i < currentTasks.size(); i++) {
+		for (Task task : currentTasks) {
 			// Access the current task
-			currentTask = manager.db.getTaskByName(currentTasks.get(i)
-					.getName());
+			currentTask = task;
 
 			// Add each individual task with its name, projected start date and
 			// end date

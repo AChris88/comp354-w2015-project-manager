@@ -5,11 +5,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -44,7 +46,8 @@ public class DatabaseManager {
 		preparedStatement = null;
 		createTables();
 	}
-
+	/*
+	//sqlite connector
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -55,7 +58,22 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 	}
-
+ 	*/
+	
+	//mysql connector
+	private void connect() {
+		try {
+			String url = "jdbc:mysql://localhost:3306/testdb";
+			String user = "root";
+			String password = "";
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void close() {
 		try {
 			connection.close();
