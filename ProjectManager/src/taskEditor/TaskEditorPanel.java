@@ -59,7 +59,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private int tabCtr;
 	private JLabel lblPrerequisites;
 	private JButton btnSave;
-	private JButton btnReset;
+	private JButton btnDelete;
 	private ProjectManager manager;
 	private JButton btnChangePrerequisites;
 	private JButton btnCloseTab;
@@ -70,16 +70,11 @@ public class TaskEditorPanel extends JPanel implements Observer {
 	private JLabel errorMessageLabel;
 	private JLabel lblTaskValue;
 	private JTextField valueTextField;
+	private TaskTableModel projectTaskTableModel;
 
-	/**
-	 * @wbp.parser.constructor
-	 */
-	public TaskEditorPanel(ProjectManager manager) {
-		this(manager, null);
-	}
-
-	public TaskEditorPanel(ProjectManager manager, Task task) {
+	public TaskEditorPanel(ProjectManager manager, Task task, TaskTableModel projectTaskTableModel) {
 		this.manager = manager;
+		this.projectTaskTableModel = projectTaskTableModel;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -239,13 +234,15 @@ public class TaskEditorPanel extends JPanel implements Observer {
 		btnAddRemoveUser = new JButton("Add/Remove Users");
 		btnAddRemoveUser.addActionListener(clickListener);
 
-		btnReset = new JButton("Delete");
+		btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(clickListener);
+		
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
 		gbc_btnReset.insets = new Insets(0, 0, 5, 0);
 		gbc_btnReset.gridx = 5;
 		gbc_btnReset.gridy = 7;
 		// TODO add button action listener to reset fields
-		add(btnReset, gbc_btnReset);
+		add(btnDelete, gbc_btnReset);
 
 		lblPrerequisites = new JLabel("Prerequisites:");
 		GridBagConstraints gbc_lblPrerequisites = new GridBagConstraints();
@@ -333,7 +330,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			btnChangePrerequisites.setVisible(false);
 			btnAddRemoveUser.setVisible(false);
 			btnSave.setVisible(false);
-			btnReset.setVisible(false);
+			btnDelete.setVisible(false);
 			nameTextField.setEditable(false);
 			valueTextField.setEditable(false);
 			endTextField.setEditable(false);
@@ -346,7 +343,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 			btnChangePrerequisites.setVisible(true);
 			btnAddRemoveUser.setVisible(true);
 			btnSave.setVisible(true);
-			btnReset.setVisible(true);
+			btnDelete.setVisible(true);
 			nameTextField.setEditable(true);
 			valueTextField.setEditable(true);
 			endTextField.setEditable(true);
@@ -414,7 +411,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 				if (tableModel.getTaskAt(row) != null) {
 					manager.addTab(
 							new TaskEditorPanel(manager, tableModel
-									.getTaskAt(row)), "Task: "
+									.getTaskAt(row), projectTaskTableModel), "Task: "
 									+ tableModel.getTaskAt(row).getName());
 				}
 			}
@@ -530,6 +527,8 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 						if (t.getId() == -1) {
 							success = manager.db.insertTask(t);
+							if(success)
+								projectTaskTableModel.addTask(t);
 							reinitializePanel();
 						} else {
 							success = manager.db.updateTask(t);
@@ -537,6 +536,7 @@ public class TaskEditorPanel extends JPanel implements Observer {
 
 						if (success) {
 							errorMessageLabel.setText("");
+							projectTaskTableModel.fireTableDataChanged();
 						} else {
 							errorMessageLabel
 									.setText("Task with this name already exists.");
@@ -560,6 +560,10 @@ public class TaskEditorPanel extends JPanel implements Observer {
 						new AddUserTaskPanel(manager, taskModel.getTask(),
 								listModel), "Users: " + taskModel.getTaskName());
 			} else if (source == btnCloseTab) {
+				manager.closeTab(TaskEditorPanel.this);
+			} else if (source == btnDelete) {
+				manager.db.removeTask(taskModel.getTask());
+				projectTaskTableModel.removeTask(taskModel.getTask());
 				manager.closeTab(TaskEditorPanel.this);
 			}
 		}

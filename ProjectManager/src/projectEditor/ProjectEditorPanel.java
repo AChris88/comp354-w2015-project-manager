@@ -502,7 +502,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				Task t = new Task(-1, projectModel.getProject().getId(), null,
 						null, null, null, null, 1);
 				// add tab for new task
-				manager.addTab(new TaskEditorPanel(manager, t), "New Task");
+				manager.addTab(new TaskEditorPanel(manager, t, tableModel), "New Task");
 
 				// close tab case
 			} else if (source == btnAddRemoveUser) {
@@ -734,7 +734,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				if (table.isEnabled() && tableModel.getTaskAt(row) != null)
 					manager.addTab(
 							new TaskEditorPanel(manager, tableModel
-									.getTaskAt(row)), "Task: "
+									.getTaskAt(row), tableModel), "Task: "
 									+ tableModel.getTaskAt(row).getName());
 
 			}

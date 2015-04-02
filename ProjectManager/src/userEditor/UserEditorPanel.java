@@ -80,20 +80,21 @@ public class UserEditorPanel extends JPanel implements Observer {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public UserEditorPanel(ProjectManager manager, User user, boolean r, boolean c) {
+	public UserEditorPanel(ProjectManager manager, User user, boolean r,
+			boolean c) {
 		this.roleActivated = r;
 		this.closeTab = c;
-		
+
 		this.manager = manager;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,
-				Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0,
+				1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-		
+
 		JLabel lblName = new JLabel("First Name");
 		GridBagConstraints gbc_lblName = new GridBagConstraints();
 		gbc_lblName.anchor = GridBagConstraints.EAST;
@@ -118,7 +119,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_lblLastName.gridx = 2;
 		gbc_lblLastName.gridy = 2;
 		add(lblLastName, gbc_lblLastName);
-				
+
 		txtLastName = new JTextField();
 		txtLastName.setColumns(10);
 		GridBagConstraints gbc_txtLastName = new GridBagConstraints();
@@ -135,7 +136,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_lblUserName.gridx = 2;
 		gbc_lblUserName.gridy = 3;
 		add(lblUserName, gbc_lblUserName);
-		
+
 		txtUserName = new JTextField();
 		txtUserName.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_txtUserName = new GridBagConstraints();
@@ -154,16 +155,15 @@ public class UserEditorPanel extends JPanel implements Observer {
 		userModel.addObserver(this);
 
 		clickListener = new ButtonClickListener();
-	
-		if(roleActivated)
-		{
+
+		if (roleActivated) {
 			JLabel lblRole = new JLabel("Project Manager");
 			GridBagConstraints gbc_lblRole = new GridBagConstraints();
 			gbc_lblRole.insets = new Insets(0, 0, 5, 5);
 			gbc_lblRole.gridx = 2;
 			gbc_lblRole.gridy = 4;
 			add(lblRole, gbc_lblRole);
-			
+
 			chckbxRole = new JCheckBox("");
 			GridBagConstraints gbc_chckbxRole = new GridBagConstraints();
 			gbc_chckbxRole.insets = new Insets(0, 0, 5, 5);
@@ -171,7 +171,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 			gbc_chckbxRole.gridy = 4;
 			add(chckbxRole, gbc_chckbxRole);
 		}
-		
+
 		lblPassword = new JLabel("Password");
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
 		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
@@ -180,20 +180,19 @@ public class UserEditorPanel extends JPanel implements Observer {
 		add(lblPassword, gbc_lblPassword);
 
 		btnDeleteUser = new JButton("Delete User");
-		
+
 		btnDeleteUser.addActionListener(clickListener);
 		GridBagConstraints gbc_btnDeleteUser = new GridBagConstraints();
 		gbc_btnDeleteUser.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDeleteUser.gridx = 3;
 		gbc_btnDeleteUser.gridy = 7;
 		add(btnDeleteUser, gbc_btnDeleteUser);
-		
-		if(!closeTab)
-		{
+
+		if (!closeTab) {
 			btnDeleteUser.setEnabled(false);
 			btnDeleteUser.setVisible(false);
 		}
-				
+
 		passwordField = new JPasswordField();
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
 		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
@@ -206,41 +205,36 @@ public class UserEditorPanel extends JPanel implements Observer {
 		gbc_btnAddTask.insets = new Insets(0, 0, 0, 5);
 		gbc_btnAddTask.gridx = 4;
 		gbc_btnAddTask.gridy = 8;
-				
-						btnCloseTab = new JButton("Close Tab");
-						btnCloseTab.addActionListener(clickListener);
-						
-						GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
-						gbc_btnCloseTab.insets = new Insets(0, 0, 0, 5);
-						gbc_btnCloseTab.gridx = 2;
-						gbc_btnCloseTab.gridy = 7;
-						add(btnCloseTab, gbc_btnCloseTab);
-				
-						btnSave = new JButton("Save");
-						btnSave.addActionListener(clickListener);
-						
-						GridBagConstraints gbc_btnSave = new GridBagConstraints();
-						gbc_btnSave.insets = new Insets(0, 0, 0, 5);
-						gbc_btnSave.gridx = 4;
-						gbc_btnSave.gridy = 7;
-						add(btnSave, gbc_btnSave);
+
+		btnCloseTab = new JButton("Close Tab");
+		btnCloseTab.addActionListener(clickListener);
+
+		GridBagConstraints gbc_btnCloseTab = new GridBagConstraints();
+		gbc_btnCloseTab.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCloseTab.gridx = 2;
+		gbc_btnCloseTab.gridy = 7;
+		add(btnCloseTab, gbc_btnCloseTab);
+
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(clickListener);
+
+		GridBagConstraints gbc_btnSave = new GridBagConstraints();
+		gbc_btnSave.insets = new Insets(0, 0, 0, 5);
+		gbc_btnSave.gridx = 4;
+		gbc_btnSave.gridy = 7;
+		add(btnSave, gbc_btnSave);
 
 		userModel.setUser(user);
-		
-		if(user.getId() != -1)
-		{
+
+		if (user.getId() != -1) {
 			txtUserName.setText(user.getFirstName());
 			txtLastName.setText(user.getLastName());
 			txtUserName.setText(user.getUsername());
-			
-			if(roleActivated)
-			{
-				if(user.getRole() == 1)
-				{
+
+			if (roleActivated) {
+				if (user.getRole() == 1) {
 					chckbxRole.setSelected(true);
-				}
-				else 
-				{
+				} else {
 					chckbxRole.setSelected(false);
 				}
 			}
@@ -248,8 +242,7 @@ public class UserEditorPanel extends JPanel implements Observer {
 	}
 
 	@Override
-	public void update(Observable arg0, Object arg1) 
-	{
+	public void update(Observable arg0, Object arg1) {
 		txtFirstName.setText(userModel.getFirstName());
 	}
 
@@ -265,169 +258,111 @@ public class UserEditorPanel extends JPanel implements Observer {
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
 
-			if (source == btnSave) 
-			{
+			if (source == btnSave) {
 				User u = userModel.getUser();
 				u.setFirstName(txtFirstName.getText().trim());
 				u.setLastName(txtLastName.getText().trim());
 				u.setUsername(txtUserName.getText().trim());
-				
-				if(roleActivated)
-				{
-					if(chckbxRole.isSelected())
-					{
+
+				if (roleActivated) {
+					if (chckbxRole.isSelected()) {
 						u.setRole(1);
-					}
-					else 
-					{
+					} else {
 						u.setRole(0);
 					}
 				}
 
 				userModel.setUser(u);
-				
+
 				int valid = 0;
-				
-				if(u.getUsername().length() == 0 || 
-					u.getFirstName().length() == 0 || 
-					u.getLastName().length() == 0 || 
-					passwordField.getPassword().length == 0)
-				{
+
+				if (u.getUsername().length() == 0
+						|| u.getFirstName().length() == 0
+						|| u.getLastName().length() == 0
+						|| passwordField.getPassword().length == 0) {
 					valid = -2;
 				}
 
 				ArrayList<User> users = manager.db.getUsers();
-				
-				for(int i = 0; i < users.size(); ++i)
-				{
-					if(u.getUsername().equals(users.get(i).getUsername()) &&
-					   u.getId() != users.get(i).getId())
-					{
+
+				for (int i = 0; i < users.size(); ++i) {
+					if (u.getUsername().equals(users.get(i).getUsername())
+							&& u.getId() != users.get(i).getId()) {
 						valid = -1;
 					}
-					
-					if(valid != 0)
-					{
+
+					if (valid != 0) {
 						break;
 					}
 				}
-				
-				if(valid == 0)
-				{
-					if (u.getId() == -1) 
-					{
-						manager.db.insertUser(u, new String(passwordField.getPassword()));
-						
-						System.out.println(new String(passwordField.getPassword()));
-						
-						JOptionPane.showMessageDialog(null, "User was added with success.");
+
+				if (valid == 0) {
+					if (u.getId() == -1) {
+						manager.db.insertUser(u,
+								new String(passwordField.getPassword()));
+
+						System.out.println(new String(passwordField
+								.getPassword()));
+
+						JOptionPane.showMessageDialog(null,
+								"User was added with success.");
+					} else {
+						manager.db.updateUser(u,
+								new String(passwordField.getPassword()));
+
+						JOptionPane.showMessageDialog(null,
+								"User was updated with success.");
 					}
-					else 
-					{						
-						manager.db.updateUser(u, new String(passwordField.getPassword()));
-						
-						JOptionPane.showMessageDialog(null, "User was updated with success.");
-					}
-					
+
+				} else if (valid == -1) {
+					JOptionPane
+							.showMessageDialog(null,
+									"This username is already used. Please choose another one.");
+				} else if (valid == -2) {
+					JOptionPane.showMessageDialog(null,
+							"At least one field is missing.");
 				}
-				else if (valid == -1)
-				{
-					JOptionPane.showMessageDialog(null, "This username is already used. Please choose another one.");
-				}
-				else if (valid == -2)
-				{
-					JOptionPane.showMessageDialog(null, "At least one field is missing.");
-				}
-				
-				if(valid == 0)
-				{
-					if(closeTab)
-					{
+
+				if (valid == 0) {
+					if (closeTab) {
 						manager.closeTab(UserEditorPanel.this);
-					}
-					else
-					{
+					} else {
 						manager.setActivePanel(new DashboardPanel(manager),
-								manager.currentUser.getFirstName() + "'s Dashboard");
+								manager.currentUser.getFirstName()
+										+ "'s Dashboard");
 					}
 				}
-			} 
-			else if (source == btnCloseTab) 
-			{
-				if(closeTab)
-				{
+			} else if (source == btnCloseTab) {
+				if (closeTab) {
 					manager.closeTab(UserEditorPanel.this);
-				}
-				else
-				{
+				} else {
 					manager.setActivePanel(new DashboardPanel(manager),
 							manager.currentUser.getFirstName() + "'s Dashboard");
 				}
-			} 
-			else if (source == btnDeleteUser) 
-			{
+			} else if (source == btnDeleteUser) {
 				ArrayList<ProjectUser> pu = manager.db.getProjectUsers();
 				ArrayList<UserTask> ut = manager.db.getUserTasks();
 
-				for(int i = 0; i < pu.size(); ++i)
-				{
-					if(pu.get(i).getUserId() == userModel.getId())
-					{
+				for (int i = 0; i < pu.size(); ++i) {
+					if (pu.get(i).getUserId() == userModel.getId()) {
 						manager.db.removeProjectUser(pu.get(i));
 					}
 				}
-				
-				for(int i = 0; i < ut.size(); ++i)
-				{
-					if(ut.get(i).getUserId() == userModel.getId())
-					{
+
+				for (int i = 0; i < ut.size(); ++i) {
+					if (ut.get(i).getUserId() == userModel.getId()) {
 						manager.db.removeUserTask(ut.get(i));
 					}
 				}
-				
+
 				manager.db.removeUser(userModel.getUser());
-				
+
 				JOptionPane.showMessageDialog(null, "User was deleted.");
-				
+
 				manager.setActivePanel(new DashboardPanel(manager),
 						manager.currentUser.getFirstName() + "'s Dashboard");
 			}
 		}
 	}
 
-	private class DoubleClickListener implements MouseListener {
-		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
-				JTable target = (JTable) e.getSource();
-				int row = target.getSelectedRow();
-				if (tableModel.getTaskAt(row) != null)
-					manager.addTab(
-							new TaskEditorPanel(manager, tableModel
-									.getTaskAt(row)), "Task: "
-									+ tableModel.getTaskAt(row).getName());
-
-			}
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-		}
-
-	}
 }

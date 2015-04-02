@@ -99,7 +99,7 @@ public class AlterPrerequisitesPanel extends JPanel {
 
 		clickListener = new ButtonClickListener();
 
-		btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Close Tab");
 		btnCancel.addActionListener(clickListener);
 		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
 		gbc_btnCancel.insets = new Insets(0, 0, 5, 5);
@@ -138,15 +138,15 @@ public class AlterPrerequisitesPanel extends JPanel {
 					// potentially doesn't delete if doesn't already exist
 					manager.db.removeTaskRequirement(new TaskRequirement(-1,
 							task.getId(), allNonPrereq.get(i).getId()));
-
 				}
+
+				manager.closeTab(AlterPrerequisitesPanel.this);
 			} else if (source == btnCancel) {
 				// close tab
 				prerequisitesModel.populateModel(manager.db.getTaskRequirements(task));
 				manager.closeTab(AlterPrerequisitesPanel.this);
 			}
 		}
-
 	}
 
 	private class DoubleClickListener implements MouseListener {

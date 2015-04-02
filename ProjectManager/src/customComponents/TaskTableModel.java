@@ -93,5 +93,14 @@ public class TaskTableModel extends AbstractTableModel {
 	public ArrayList<Task> getAllTasks() {
 		return data;
 	}
+	
+	public void removeTask(Task t) {
+		for(int i = 0; i < data.size(); i++) {
+			if (data.get(i).getId() == t.getId()) {
+				data.remove(i);
+				i = data.size();
+			}
+		}
+	}
 
 }

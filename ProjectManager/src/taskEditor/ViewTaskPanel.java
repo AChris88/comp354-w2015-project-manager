@@ -173,7 +173,7 @@ public class ViewTaskPanel extends JPanel implements Observer {
 					System.out.println(manager);
 					manager.addTab(
 							new TaskEditorPanel(manager, tableModel
-									.getTaskAt(row)), "Task: "
+									.getTaskAt(row), null), "Task: "
 									+ tableModel.getTaskAt(row).getName());
 				}
 			}
