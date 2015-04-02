@@ -544,7 +544,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				manager.addTab(new GanttPanel(manager, CP), "GANTT Chart");
 			} else if (source == btnGetCriticalPath) {
 				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
-						manager.currentProject);
+						manager.currentProject, manager.db);
 				
 				long crit = util.getCriticalPath();
                 cpValForTest = crit / 86400000;
@@ -566,7 +566,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 						"PERT: " + manager.currentProject.getName());
 			} else if (source == btnEarnedValueAnalysis) {
 				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
-						manager.currentProject);
+						manager.currentProject, manager.db);
 				int[] earned = util.earnedValueAnalysis();
 				String message; 
 				evaValForTest = util.earnedValueAnalysis();
