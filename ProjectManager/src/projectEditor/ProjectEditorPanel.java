@@ -90,6 +90,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 	public JButton btnEarnedValueAnalysis;
 
     public long cpValForTest;
+    public int[] evaValForTest;
 
 	public ProjectEditorPanel(ProjectManager manager) {
 		this(manager, null);
@@ -547,6 +548,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 				
 				long crit = util.getCriticalPath();
                 cpValForTest = crit / 86400000;
+                
 				String message; 
 				if (crit < 0L){
 					message = "Critical path could not be found due to missing dates in activities";
@@ -567,6 +569,7 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 						manager.currentProject);
 				int[] earned = util.earnedValueAnalysis();
 				String message; 
+				evaValForTest = util.earnedValueAnalysis();
 				if (earned[0] == 0){
 					message = "No progess has been performed on this project.";
 				} else {
