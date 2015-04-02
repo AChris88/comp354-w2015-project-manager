@@ -12,6 +12,7 @@ import obj.Project;
 import obj.ProjectUser;
 import obj.User;
 import org.junit.*;
+
 import projectEditor.ProjectEditorPanel;
 import ui.UIRobot;
 import userEditor.AddProjectUserPanel;
@@ -158,6 +159,11 @@ public class ResourceModuleTest {
 //
 //        Thread.sleep(15000);
 
+    }
+    
+    @After
+    public void TearDown(){
+        _pm.exit();
     }
 
     private JTable getTable(Class c, String t) throws NoSuchFieldException, IllegalAccessException {

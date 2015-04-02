@@ -144,19 +144,19 @@ public class MemberModuleTest {
 
 //        JButton btnAddU = getButton(ProjectEditorPanel.class,"btnAddUser");
 
-        assertFalse(getButton(ProjectEditorPanel.class, "btnAddUser").isVisible());
+        assertFalse(getButton(ProjectEditorPanel.class, "btnAddRemoveUser").isVisible());
         assertFalse(getButton(ProjectEditorPanel.class, "btnSave").isVisible());
         assertFalse(getButton(ProjectEditorPanel.class, "btnAddTask").isVisible());
         assertFalse(getButton(ProjectEditorPanel.class, "btnDeleteProject").isVisible());
         assertFalse(getButton(ProjectEditorPanel.class, "btnCreateGANTTChart").isVisible());
 
-        assertFalse(getTF(ProjectEditorPanel.class, "txtProjectName").isVisible());
-        assertFalse(getTF(ProjectEditorPanel.class, "txtStartDate").isVisible());
-        assertFalse(getTF(ProjectEditorPanel.class, "txtProjectedEndDate").isVisible());
-        assertFalse(getTF(ProjectEditorPanel.class, "txtActualEndDate").isVisible());
+        assertFalse(getTF(ProjectEditorPanel.class, "txtProjectName").isEditable());
+        assertFalse(getTF(ProjectEditorPanel.class, "txtStartDate").isEditable());
+        assertFalse(getTF(ProjectEditorPanel.class, "txtProjectedEndDate").isEditable());
+        assertFalse(getTF(ProjectEditorPanel.class, "txtActualEndDate").isEditable());
 
 
-        assertFalse(getTable(ProjectEditorPanel.class, "table").isVisible());
+        assertFalse(getTable(ProjectEditorPanel.class, "table").isEnabled());
 
 
     }

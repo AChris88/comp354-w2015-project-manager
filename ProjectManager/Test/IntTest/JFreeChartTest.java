@@ -86,7 +86,6 @@ public class JFreeChartTest {
     }
 
 
-
     @Test(expected = IllegalArgumentException.class)
     public void ErrorHandlingTest() {
         obj.Task t1 = new obj.Task(0, _project.getId(), "Do the first thing", date(9, Calendar.MARCH, 2015), date(9, Calendar.MARCH, 2015), date(1, Calendar.MARCH, 2015), date(10, Calendar.MARCH, 2015), 0);

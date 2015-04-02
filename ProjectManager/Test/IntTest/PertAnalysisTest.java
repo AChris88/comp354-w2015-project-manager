@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import obj.Project;
 import obj.User;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,6 +94,10 @@ public class PertAnalysisTest {
         ((DashboardPanel) _pm.getActivePanel()).openCurrentSelectedProject();
 
 	}
+	@After
+    public void TearDown(){
+        _pm.exit();
+    }
 	
 	@Test
 	public void testPertAnalysis() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
