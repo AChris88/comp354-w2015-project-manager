@@ -21,6 +21,10 @@ public class UIRobot implements Runnable {
 		setMonitorDimensions();
 	}
 
+    public Robot getRobot(){
+        return bot;
+    }
+
 	@Override
 	public void run() {
 	}

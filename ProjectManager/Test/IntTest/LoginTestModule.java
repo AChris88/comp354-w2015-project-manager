@@ -11,6 +11,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.Date;
 import org.junit.*;
@@ -80,19 +82,19 @@ public class LoginTestModule {
 
     //Test1 : The window opens first and everything is visible
 
-    @Test
-    public void ModuleOpens_Test() throws NoSuchFieldException, IllegalAccessException {
-
-        assertTrue(_pm.getActivePanel() instanceof AuthenticationPanel);
-        assertTrue(ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm).isVisible());
-        assertTrue(ReflectionHelper.<JButton>getElement("cancelButton",AuthenticationPanel.class,_pm).isVisible());
-        assertTrue(ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm).isVisible());
-        assertTrue(ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm).isEditable());
-        assertTrue(ReflectionHelper.<JPasswordField>getElement("passwordField",AuthenticationPanel.class,_pm).isVisible());
-        assertTrue(ReflectionHelper.<JPasswordField>getElement("passwordField",AuthenticationPanel.class,_pm).isEditable());
-        assertTrue(ReflectionHelper.<JLabel>getElement("errorMessageLabel", AuthenticationPanel.class, _pm).getText().length() == 0);
-
-    }
+//    @Test
+//    public void ModuleOpens_Test() throws NoSuchFieldException, IllegalAccessException {
+//
+//        assertTrue(_pm.getActivePanel() instanceof AuthenticationPanel);
+//        assertTrue(ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm).isVisible());
+//        assertTrue(ReflectionHelper.<JButton>getElement("cancelButton",AuthenticationPanel.class,_pm).isVisible());
+//        assertTrue(ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm).isVisible());
+//        assertTrue(ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm).isEditable());
+//        assertTrue(ReflectionHelper.<JPasswordField>getElement("passwordField",AuthenticationPanel.class,_pm).isVisible());
+//        assertTrue(ReflectionHelper.<JPasswordField>getElement("passwordField",AuthenticationPanel.class,_pm).isEditable());
+//        assertTrue(ReflectionHelper.<JLabel>getElement("errorMessageLabel", AuthenticationPanel.class, _pm).getText().length() == 0);
+//
+//    }
 
     //Test2 : The user cancels and everything closes
     @Test
@@ -125,43 +127,92 @@ public class LoginTestModule {
     }
 
 
-    //Test4 : User logins, the module closes and transistion is ok
-    @Test
-    public void GoodLogin_Test()throws NoSuchFieldException, IllegalAccessException {
+    public class WindowEventListener implements WindowListener {
 
-        JButton btnLog = ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm);
-        JTextField txtUsername = ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm);
-        JPasswordField pwd = ReflectionHelper.<JPasswordField>getElement("passwordField", AuthenticationPanel.class, _pm);
+        private boolean _has_been_closed;
 
-        txtUsername.setText("test");
-        pwd.setText("test");
+        public WindowEventListener(){
+            _has_been_closed = false;
+        }
 
-        btnLog.doClick();
+        public boolean getHasBeenClosed(){
+            return _has_been_closed;
+        }
 
-        assertEquals("The current user should be correct (firstname)", _pm.currentUser.getFirstName(), "test");
-        assertEquals("The current user should be correct(lastname)", _pm.currentUser.getLastName(), "test");
+        @Override
+        public void windowOpened(WindowEvent e) {
 
-        assertFalse(_pm.getActivePanel() instanceof AuthenticationPanel);
-        assertTrue(_pm.getActivePanel() instanceof DashboardPanel);
+        }
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) {
+            _has_been_closed = true;
+        }
+
+        @Override
+        public void windowIconified(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowDeiconified(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowActivated(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowDeactivated(WindowEvent e) {
+
+        }
     }
+
+
+    //Test4 : User logins, the module closes and transistion is ok
+//    @Test
+//    public void GoodLogin_Test()throws NoSuchFieldException, IllegalAccessException {
+//
+//        JButton btnLog = ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm);
+//        JTextField txtUsername = ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm);
+//        JPasswordField pwd = ReflectionHelper.<JPasswordField>getElement("passwordField", AuthenticationPanel.class, _pm);
+//
+//        txtUsername.setText("test");
+//        pwd.setText("test");
+//
+//        btnLog.doClick();
+//
+//        assertEquals("The current user should be correct (firstname)", _pm.currentUser.getFirstName(), "test");
+//        assertEquals("The current user should be correct(lastname)", _pm.currentUser.getLastName(), "test");
+//
+//        assertFalse(_pm.getActivePanel() instanceof AuthenticationPanel);
+//        assertTrue(_pm.getActivePanel() instanceof DashboardPanel);
+//    }
 
 
     //Test5 : User inputs input that is way too long
-    @Test
-    public void BadLoginInfo_Test()throws NoSuchFieldException, IllegalAccessException {
-
-        JButton btnLog = ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm);
-        JTextField txtUsername = ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm);
-        JPasswordField pwd = ReflectionHelper.<JPasswordField>getElement("passwordField", AuthenticationPanel.class, _pm);
-
-        txtUsername.setText("rhgdshbjknckjndjknsdfkjnvfkjnkjnfdjnjnfdljndslfkjnlsdjfnvlsdjfnvljndfljhdfjhkjhfkjhfjkhkjdfjkfjkfkh;ij;kv;fkjhvfkj;kjfvkjdflkjjhfvkjhfljvhsfldjkvhsldkfjvhlksjdfhvlksjdvhlkdjfvhlkjfhvlkjhijncijnkdjnkjdhfkjdhfk");
-        pwd.setText("rhgdshbjknckjndjknsdfkjnvfkjnkjnfdjnjnfdljndslfkjnlsdjfnvlsdjfnvljndfljhdfjhkjhfkjhfjkhkjdfjkfjkfkh;ij;kv;fkjhvfkj;kjfvkjdflkjjhfvkjhfljvhsfldjkvhsldkfjvhlksjdfhvlksjdvhlkdjfvhlkjfhvlkjhijncijnkdjnkjdhfkjdhfk");
-
-        btnLog.doClick();
-        assertFalse(ReflectionHelper.<JLabel>getElement("errorMessageLabel", AuthenticationPanel.class, _pm).getText().length() == 0);
-
-
-    }
+//    @Test
+//    public void BadLoginInfo_Test()throws NoSuchFieldException, IllegalAccessException {
+//
+//        JButton btnLog = ReflectionHelper.<JButton>getElement("loginButton", AuthenticationPanel.class, _pm);
+//        JTextField txtUsername = ReflectionHelper.<JTextField>getElement("usernameField", AuthenticationPanel.class, _pm);
+//        JPasswordField pwd = ReflectionHelper.<JPasswordField>getElement("passwordField", AuthenticationPanel.class, _pm);
+//
+//        txtUsername.setText("rhgdshbjknckjndjknsdfkjnvfkjnkjnfdjnjnfdljndslfkjnlsdjfnvlsdjfnvljndfljhdfjhkjhfkjhfjkhkjdfjkfjkfkh;ij;kv;fkjhvfkj;kjfvkjdflkjjhfvkjhfljvhsfldjkvhsldkfjvhlksjdfhvlksjdvhlkdjfvhlkjfhvlkjhijncijnkdjnkjdhfkjdhfk");
+//        pwd.setText("rhgdshbjknckjndjknsdfkjnvfkjnkjnfdjnjnfdljndslfkjnlsdjfnvlsdjfnvljndfljhdfjhkjhfkjhfjkhkjdfjkfjkfkh;ij;kv;fkjhvfkj;kjfvkjdflkjjhfvkjhfljvhsfldjkvhsldkfjvhlksjdfhvlksjdvhlkdjfvhlkjfhvlkjhijncijnkdjnkjdhfkjdhfk");
+//
+//        btnLog.doClick();
+//        assertFalse(ReflectionHelper.<JLabel>getElement("errorMessageLabel", AuthenticationPanel.class, _pm).getText().length() == 0);
+//
+//
+//    }
 
 
 }

@@ -23,4 +23,17 @@ public class ReflectionHelper {
         return elem;
     }
 
+    public static <T> T getElement(String elementName, Class sourceClass, ProjectManager pm, int index) throws NoSuchFieldException, IllegalAccessException{
+        Field f = sourceClass.getDeclaredField(elementName);
+        f.setAccessible(true);
+        T elem;
+        if (pm.getActivePanel() instanceof JTabbedPane){
+            elem = (T) f.get(((JTabbedPane)pm.getActivePanel()).getComponent(index));
+        }else{
+            elem = (T) f.get(pm.getActivePanel());
+
+        }
+        return elem;
+    }
+
 }
