@@ -559,7 +559,9 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 						new PertTablePanel(manager, util.pertAnalysis()),
 						"PERT: " + manager.currentProject.getName());
 			} else if (source == btnEarnedValueAnalysis) {
-				
+				ProjectAnalysisUtil util = new ProjectAnalysisUtil(
+						manager.currentProject);
+				//TODO things
 			}
 		}
 
