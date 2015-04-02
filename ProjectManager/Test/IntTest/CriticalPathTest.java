@@ -30,10 +30,6 @@ public class CriticalPathTest {
     @Before
     public void setup() throws AWTException, NoSuchFieldException, IllegalAccessException, InterruptedException {
 
-        _bot = new UIRobot();
-
-        Thread botThread = new Thread(_bot);
-
 
         String dbFile = "ITtestdb.db";
         File testDbFile = new File(dbFile);
