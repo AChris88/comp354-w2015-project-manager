@@ -643,12 +643,22 @@ public class ProjectEditorPanel extends JPanel implements Observer {
 
 			// Add each individual task with its name, projected start date and
 			// end date
-			actualSeries.add(new org.jfree.data.gantt.Task(currentTask
-					.getName(),
-					(currentTask.getStartDate() == null ? new Date()
-							: currentTask.getStartDate()), (currentTask
-							.getEndDate() == null ? new Date() : currentTask
-							.getEndDate())));
+			if(task.getStartDate() != null && task.getEndDate() != null){
+//				actualSeries.add(new org.jfree.data.gantt.Task(currentTask
+//						.getName(),
+//						(currentTask.getStartDate() == null ? new Date()
+//								: currentTask.getStartDate()), (currentTask
+//								.getEndDate() == null ? new Date() : currentTask
+//								.getEndDate())));
+
+				actualSeries.add(new org.jfree.data.gantt.Task(currentTask
+						.getName(),
+						(currentTask.getStartDate() == null ? new Date()
+								: currentTask.getStartDate()), (currentTask
+								.getEndDate() == null ? new Date() : currentTask
+								.getEndDate())));
+			}
+			
 		}
 
 		// Create a final object of type task series collection

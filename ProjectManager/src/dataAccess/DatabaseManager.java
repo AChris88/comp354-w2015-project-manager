@@ -48,6 +48,7 @@ public class DatabaseManager {
 	}
 	
 	//sqlite connector
+	
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -59,9 +60,10 @@ public class DatabaseManager {
 		}
 	}
 	
-	/*
+	
 	//mysql connector
-	private void connect() {
+	/*
+	 private void connect() {
 		try {
 			String url = "jdbc:mysql://localhost:3306/testdb";
 			String user = "root";
@@ -74,7 +76,6 @@ public class DatabaseManager {
 		}
 	}
 	*/
-	
 	private void close() {
 		try {
 			connection.close();
@@ -1067,7 +1068,7 @@ public class DatabaseManager {
 		try {
 			connect();
 			preparedStatement = connection
-					.prepareStatement("SELECT * FROM tasks WHERE  id = (SELECT task_req FROM task_reqs WHERE task_id = ?)");
+					.prepareStatement("SELECT * FROM tasks WHERE  id in (SELECT task_req FROM task_reqs WHERE task_id = ?)");
 			preparedStatement.setInt(1, task.getId());
 			resultSet = preparedStatement.executeQuery();
 			tasks = new ArrayList<Task>();

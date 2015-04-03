@@ -70,10 +70,10 @@ public class ProjectAnalysisUtil {
 
 			if (prereqs.size() > 0) {
 				for (Task req : prereqs) {
-					taskReqTitles = taskReqTitles + req.getName() + ", ";
+					if(!taskReqTitles.contains(req.getName()))
+						taskReqTitles = taskReqTitles + req.getName() + ", ";
 				}
 			}
-			
 			shortest = (task.getProjectedEndDate().getTime() - task
 					.getProjectedStartDate().getTime()) / day;
 			likely = (shortest * likelyMod) / day;
@@ -140,6 +140,8 @@ public class ProjectAnalysisUtil {
 
 		if (duration != -1L) {
 			ArrayList<Task> prereqs = dm.getTaskRequirements(task);
+			System.out.println(task.getName());
+			System.out.println(prereqs.size());
 			ArrayList<Long> sequences = new ArrayList<Long>();
 			long chainDuration = 0L;
 
@@ -158,6 +160,8 @@ public class ProjectAnalysisUtil {
 				duration = -1L;
 			}
 		}
+		System.out.println(task.getName());
+		System.out.println(duration);
 		return duration;
 	}
 }

@@ -103,5 +103,6 @@ public class ViewAssignedTasksTest {
 		_app_thread.sleep(2000);
 		JTable table = ReflectionHelper.getElement("table", ViewTaskPanel.class,_pm,1);
 		assertEquals(_pm.db.getTasksForUser(pMan).size(), table.getRowCount());
+		_app_thread.sleep(5000);
 	}
 }
