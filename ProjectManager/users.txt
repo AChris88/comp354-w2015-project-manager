@@ -1,0 +1,13 @@
+Users for the SQLite db
+
+SYSTEM MANAGER
+    username: admin
+    password: admin
+
+PROJECT MANAGER
+    username: pmanager
+    password: pmanager
+
+REGULAR USER
+    username: regular
+    password: regular
